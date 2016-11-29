@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
@@ -30,13 +31,13 @@ import org.apache.commons.io.IOUtils;
  * 
  * @author Richard Degenne
  */
-@MultipartConfig(location="E:\\Users\\richou\\Desktop") // This folder is for temporary storage ONLY.
+@MultipartConfig(location="/home/richou/Desktop/upload") // This folder is for temporary storage ONLY.
 public class importServlet extends HttpServlet {
 
     /**
      * Target folder for the uploaded files.
      */
-    public static String UPLOAD_FOLDER = "E:\\Users\\richou\\Desktop\\";
+    public static String UPLOAD_FOLDER = "/home/richou/Desktop/upload";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -119,4 +120,19 @@ public class importServlet extends HttpServlet {
         return "This servlet handles media importation.";
     }// </editor-fold>
 
+    private static String getNextFileName() {
+        File folder = new File(UPLOAD_FOLDER);
+        File[] files = folder.listFiles();
+        
+        for(int i=0 ; i<files.length ; ++i) {
+            if(files[i].isFile()) {
+                System.out.println(files[i].getName());
+            }
+        }
+        return "";
+    }
+    
+    public static void main(String[] args) {
+        getNextFileName();
+    }
 }
