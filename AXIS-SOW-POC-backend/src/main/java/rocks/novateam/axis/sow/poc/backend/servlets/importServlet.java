@@ -10,12 +10,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -31,13 +33,20 @@ import org.apache.commons.io.IOUtils;
  * 
  * @author Richard Degenne
  */
-@MultipartConfig(location="/home/richou/Desktop/upload") // This folder is for temporary storage ONLY.
+@MultipartConfig(location="E:\\Users\\richou\\AppData\\Local\\") // This folder is for temporary storage ONLY.
 public class importServlet extends HttpServlet {
 
     /**
      * Target folder for the uploaded files.
      */
-    public static String UPLOAD_FOLDER = "/home/richou/Desktop/upload";
+    public static String UPLOAD_FOLDER = "E:\\Users\\richou\\Desktop\\upload\\";
+    
+    /**
+     * File extension for uploaded files.
+     * 
+     * AXIS-SOW-POC will only work with MP4 files for the time being.
+     */
+    public static String FILE_EXTENSION = ".mp4";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -57,7 +66,7 @@ public class importServlet extends HttpServlet {
             if(filePart == null) {
                 throw new FileNotFoundException("No 'file' part given in the request.");
             }
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // This is an IE fix.
+            String fileName = getNextFileName();
             InputStream fileContent = filePart.getInputStream();
 
             // Copy media to disk
@@ -120,19 +129,25 @@ public class importServlet extends HttpServlet {
         return "This servlet handles media importation.";
     }// </editor-fold>
 
-    private static String getNextFileName() {
+    /**
+     * Gets the best filename for an uploaded file.
+     * 
+     * Iterates over the <code>UPLOAD_FOLDER</code> to find the first integer
+     * number not already present in the folder.
+     * 
+     * @return The best filename to give to a newly uplaoded file.
+     */
+    private String getNextFileName() {
         File folder = new File(UPLOAD_FOLDER);
         File[] files = folder.listFiles();
+        int fileNumber = 1; // File names start from 1.
         
-        for(int i=0 ; i<files.length ; ++i) {
-            if(files[i].isFile()) {
-                System.out.println(files[i].getName());
+        for(int i=0 ; i<files.length ; ++i, ++fileNumber) {
+            System.out.println("Comparing "+files[i]+" to "+fileNumber+FILE_EXTENSION);
+            if(files[i].compareTo(new File(UPLOAD_FOLDER+fileNumber+FILE_EXTENSION)) != 0) {
+                break;
             }
         }
-        return "";
-    }
-    
-    public static void main(String[] args) {
-        getNextFileName();
+        return fileNumber+FILE_EXTENSION; // WARNING: Hardcoded file extension here.
     }
 }
