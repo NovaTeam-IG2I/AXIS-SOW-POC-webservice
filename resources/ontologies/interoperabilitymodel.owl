@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#"
+     xml:base="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4">
+        <owl:imports rdf:resource="http://protege.stanford.edu/plugins/owl/dc/protege-dc.owl"/>
+        <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roger Roberts</dc:contributor>
+        <dc:language xml:lang="en">English</dc:language>
+        <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guy Maréchal</dc:contributor>
+        <dc:description xml:lang="en">This ontology defines the concepts for AXIS-CSRM interoperability model. 
+    It introduces the key concepts Autonomous Resource Domain (ARE), InterOperability Window (IOW) and P-Autonomous eXchange Entity (P-AXE).</dc:description>
+        <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guillaume Rachez</dc:contributor>
+        <rdfs:label xml:lang="en">AXIS-CSRM Interoperability model</rdfs:label>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2016-10-20</dc:date>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ARD -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ARD">
+        <rdfs:label xml:lang="en">Autonomous Resource Domain</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#AXE -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#AXE">
+        <rdfs:subClassOf rdf:resource="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#Entity"/>
+        <rdfs:label xml:lang="en">Autonomous eXchange Entity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#AXEProfile -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#AXEProfile">
+        <rdfs:label xml:lang="en">AXE Profile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ClientARD -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ClientARD">
+        <rdfs:subClassOf rdf:resource="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ARD"/>
+        <rdfs:label xml:lang="en">Client Autonomous Resource Domain</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ConfigurationManagementService -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ConfigurationManagementService">
+        <rdfs:subClassOf rdf:resource="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ARD"/>
+        <rdfs:label xml:lang="en">Configuration management service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#Entity -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#Entity">
+        <rdfs:label xml:lang="en">Entity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#IOW -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#IOW">
+        <rdfs:label xml:lang="en">Interoperability Wicket</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#IdentificationService -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#IdentificationService">
+        <rdfs:subClassOf rdf:resource="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ConfigurationManagementService"/>
+        <rdfs:label xml:lang="en">Identification service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ResolvingService -->
+
+    <owl:Class rdf:about="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ResolvingService">
+        <rdfs:subClassOf rdf:resource="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#ConfigurationManagementService"/>
+        <rdfs:label xml:lang="en">Resolving service</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

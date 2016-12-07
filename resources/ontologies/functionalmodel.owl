@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY xsp "http://www.owl-ontologies.com/2005/08/07/xsp.owl#" >
+    <!ENTITY axis-datamodel "http://titan.be/axis-csrm/datamodel/ontology/0.4#" >
+]>
+
+
+<rdf:RDF xmlns="http://titan.be/axis-csrm/functionalmodel/ontology/0.4#"
+     xml:base="http://titan.be/axis-csrm/functionalmodel/ontology/0.4"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:axis-datamodel="http://titan.be/axis-csrm/datamodel/ontology/0.4#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="">
+        <dc:contributor rdf:datatype="&xsd;string"
+            >Guillaume Rachez</dc:contributor>
+        <dc:contributor rdf:datatype="&xsd;string">Guy Mar&#233;chal</dc:contributor>
+        <dc:contributor rdf:datatype="&xsd;string">Roger Roberts</dc:contributor>
+        <dc:date rdf:datatype="&xsd;string">2016-11-07</dc:date>
+        <dc:description xml:lang="en"
+            >This ontology defines the concepts and properties from the AXIS-CSRM 
+    functional model. It introduces the main functional concepts Working, 
+    PerformingARole, Working, Expressing, Modeling as subclasses of Event, and the relations from and to Document and Register from AXIS-CSRM data model. It imports the AXIS-CSRM data model.</dc:description>
+        <dc:language xml:lang="en">English</dc:language>
+        <rdfs:label xml:lang="en"
+            >AXIS-CSRM Functional model</rdfs:label>
+        <owl:imports rdf:resource="http://titan.be/axis-csrm/datamodel/ontology/0.4"/>
+    </owl:Ontology>
+    <owl:ObjectProperty rdf:ID="acquires">
+        <rdfs:domain rdf:resource="&axis-datamodel;Register"/>
+        <owl:inverseOf rdf:resource="#isAcquiredBy"/>
+        <rdfs:label xml:lang="en">acquires</rdfs:label>
+        <rdfs:range rdf:resource="#Modeling"/>
+    </owl:ObjectProperty>
+    <owl:Class rdf:ID="Authoring">
+        <rdfs:subClassOf rdf:resource="#Working"/>
+        <rdfs:label xml:lang="en">Authoring</rdfs:label>
+    </owl:Class>
+    <owl:Class rdf:ID="Enjoying">
+        <rdfs:subClassOf rdf:resource="#Working"/>
+        <rdfs:label xml:lang="en">Enjoying</rdfs:label>
+    </owl:Class>
+    <owl:Class rdf:ID="Expressing">
+        <rdfs:subClassOf rdf:resource="#Working"/>
+        <rdfs:label xml:lang="en">Expressing</rdfs:label>
+    </owl:Class>
+    <rdf:Description rdf:about="http://xmlns.com/foaf/0.1/homepage"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Activity"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Actor"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Company"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Department"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Event"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Genre"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Language"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Name"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Person"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Place"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Publisher"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/School"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Software"/>
+    <rdf:Description rdf:about="http://dbpedia.org/ontology/Type"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/creator"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/description"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/hasVersion"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/issued"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/modified"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/publisher"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/source"/>
+    <rdf:Description rdf:about="http://purl.org/dc/terms/title"/>
+    <rdf:Description rdf:about="http://purl.org/vocommons/voaf#Vocabulary"/>
+    <owl:ObjectProperty rdf:ID="impliesRole">
+        <rdfs:domain rdf:resource="#PerformingARole"/>
+        <rdfs:label xml:lang="en">implies role</rdfs:label>
+        <rdfs:range rdf:resource="&axis-datamodel;Role"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="isAcquiredBy">
+        <rdfs:domain rdf:resource="#Modeling"/>
+        <owl:inverseOf rdf:resource="#acquires"/>
+        <rdfs:label xml:lang="en">is acquired by</rdfs:label>
+        <rdfs:range rdf:resource="&axis-datamodel;Register"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="isModelProducedBy">
+        <rdfs:domain rdf:resource="&axis-datamodel;Document"/>
+        <owl:inverseOf rdf:resource="#producesModel"/>
+        <rdfs:label xml:lang="en">is produced by</rdfs:label>
+        <rdfs:range rdf:resource="#Modeling"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="isPerformedBy">
+        <rdfs:domain rdf:resource="#PerformingARole"/>
+        <owl:inverseOf rdf:resource="#performs"/>
+        <rdfs:label xml:lang="en">is performed by</rdfs:label>
+        <rdfs:range rdf:resource="&axis-datamodel;Agent"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="isPrescribedBy">
+        <rdfs:domain rdf:resource="#Expressing"/>
+        <owl:inverseOf rdf:resource="#prescribes"/>
+        <rdfs:label xml:lang="en"
+            >is prescribed by</rdfs:label>
+        <rdfs:range rdf:resource="&axis-datamodel;Document"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="isProducedBy">
+        <rdfs:domain rdf:resource="&axis-datamodel;Register"/>
+        <owl:inverseOf rdf:resource="#produces"/>
+        <rdfs:label xml:lang="en">is produced by</rdfs:label>
+        <rdfs:range rdf:resource="#Expressing"/>
+    </owl:ObjectProperty>
+    <owl:Class rdf:ID="Modeling">
+        <rdfs:subClassOf rdf:resource="#Working"/>
+        <rdfs:label xml:lang="en">Modeling</rdfs:label>
+    </owl:Class>
+    <rdf:Description rdf:about="http://creativecommons.org/ns#license"/>
+    <rdf:Description rdf:about="http://purl.org/vocab/vann/preferredNamespacePrefix"/>
+    <rdf:Description rdf:about="http://purl.org/vocab/vann/preferredNamespaceUri"/>
+    <rdf:Description rdf:about="http://open.vocab.org/terms/defines"/>
+    <rdf:Description rdf:about="http://open.vocab.org/terms/describes"/>
+    <rdf:Description rdf:about="&owl;versionIRI"/>
+    <owl:Class rdf:ID="PerformingARole">
+        <rdfs:subClassOf rdf:resource="&axis-datamodel;Event"/>
+        <rdfs:label xml:lang="en"
+            >Performing a role</rdfs:label>
+    </owl:Class>
+    <owl:ObjectProperty rdf:ID="performs">
+        <rdfs:domain rdf:resource="&axis-datamodel;Agent"/>
+        <owl:inverseOf rdf:resource="#isPerformedBy"/>
+        <rdfs:label xml:lang="en">performs</rdfs:label>
+        <rdfs:range rdf:resource="#PerformingARole"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="prescribes">
+        <rdfs:domain rdf:resource="&axis-datamodel;Document"/>
+        <owl:inverseOf rdf:resource="#isPrescribedBy"/>
+        <rdfs:label xml:lang="en">prescribes</rdfs:label>
+        <rdfs:range rdf:resource="#Expressing"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="produces">
+        <rdfs:domain rdf:resource="#Expressing"/>
+        <owl:inverseOf rdf:resource="#isProducedBy"/>
+        <rdfs:label xml:lang="en">produces</rdfs:label>
+        <rdfs:range rdf:resource="&axis-datamodel;Register"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:ID="producesModel">
+        <rdfs:domain rdf:resource="#Modeling"/>
+        <owl:inverseOf rdf:resource="#isModelProducedBy"/>
+        <rdfs:label xml:lang="en">produces</rdfs:label>
+        <rdfs:range rdf:resource="&axis-datamodel;Document"/>
+    </owl:ObjectProperty>
+    <rdf:Description rdf:about="http://www.w3.org/2004/02/skos/core#note"/>
+    <owl:Class rdf:ID="Speaking">
+        <rdfs:subClassOf rdf:resource="#Expressing"/>
+        <rdfs:label xml:lang="en">Speaking</rdfs:label>
+    </owl:Class>
+    <rdf:Description rdf:about="http://www.w3.org/2007/05/powder-s#describedby"/>
+    <owl:Class rdf:ID="Working">
+        <rdfs:subClassOf rdf:resource="#PerformingARole"/>
+        <rdfs:label xml:lang="en">Working</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
