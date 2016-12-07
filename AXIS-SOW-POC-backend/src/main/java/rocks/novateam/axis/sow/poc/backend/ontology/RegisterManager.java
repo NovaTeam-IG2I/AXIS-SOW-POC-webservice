@@ -36,8 +36,21 @@ public class RegisterManager {
         ds.commit();
     }
     
+    public void addSubRegisterInstance(String name){
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        OntClass class_ = ont.getOntClass(NS+"Register");
+        //need to use listSubClasse for further implementation with interface
+        //TODO: change exemple
+        class_.getSubClass().createIndividual(NS+name);
+        ds.commit();
+    }
+    
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
         rm.addRegisterInstance("Martin Luther King");
+        rm.addSubRegisterInstance("Test");
     }
 }
