@@ -12,6 +12,8 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  *
@@ -48,9 +50,23 @@ public class RegisterManager {
         ds.commit();
     }
     
+    public void deleteInstance(String name){
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        Resource resource = ont.getIndividual(NS+name);
+        // remove statements where resource is subject
+        ont.removeAll(resource, null, (RDFNode) null);
+        // remove statements where resource is object
+        ont.removeAll(null, null, resource);
+        ds.commit();
+    }
+    
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
         rm.addRegisterInstance("Martin Luther King");
         rm.addSubRegisterInstance("Test");
+        rm.deleteInstances("Test");
     }
 }
