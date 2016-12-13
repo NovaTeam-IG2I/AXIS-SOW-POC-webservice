@@ -36,6 +36,12 @@
             <type>pom</type>
             <version>3.1.0</version>
         </dependency>
+    
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.11</version>
+        </dependency>
     </dependencies>
 
     <build>
