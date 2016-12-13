@@ -33,11 +33,10 @@ import org.apache.jena.tdb.TDBFactory;
  */
 public class TDBManager {
 
-    // Please note that these files names should not be hardcoded.
-    private static final String TDB_FOLDER = "E:\\Users\\richou\\Desktop\\tdb";
-    private static final String DATAMODEL_FILE = "E:\\Users\\richou\\src\\AXIS-SOW-POC-backend\\resources\\ontologies\\datamodel.owl";
-    private static final String FUNCTIONALMADEL_FILE = "E:\\Users\\richou\\src\\AXIS-SOW-POC-backend\\resources\\ontologies\\functionalmodel.owl";
-    private static final String INTEROPERABILITY_FILE = "E:\\Users\\richou\\src\\AXIS-SOW-POC-backend\\resources\\ontologies\\interoperabilitymodel.owl";
+    private static final String TDB_FOLDER = "../tdb";
+    private static final String DATAMODEL_FILE = "../resources/ontologies/datamodel.owl";
+    private static final String FUNCTIONALMADEL_FILE = "../resources/ontologies/functionalmodel.owl";
+    private static final String INTEROPERABILITY_FILE = "../resources/ontologies/interoperabilitymodel.owl";
 
     /**
      * This nested class contains the TDB models' name as static Strings.
@@ -138,6 +137,7 @@ public class TDBManager {
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
         tdbm.setUp();
+        
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();
