@@ -1,0 +1,4 @@
+tdbFolder: "../tdb"
+datamodelFile: "../resources/ontologies/datamodel.owl"
+interoperabilitymodelFile: "../resources/ontologies/interoperabilitymodel.owl"
+functionalmodelFile: "../resources/ontologies/functionalmodel.owl"

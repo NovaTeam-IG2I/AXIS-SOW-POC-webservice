@@ -9,6 +9,7 @@ import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
+import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 /**
  * A <code>TDBManager</code> is a singleton object through which one can access
@@ -33,10 +34,6 @@ import org.apache.jena.tdb.TDBFactory;
  */
 public class TDBManager {
 
-    private static final String TDB_FOLDER = "../tdb";
-    private static final String DATAMODEL_FILE = "../resources/ontologies/datamodel.owl";
-    private static final String FUNCTIONALMADEL_FILE = "../resources/ontologies/functionalmodel.owl";
-    private static final String INTEROPERABILITY_FILE = "../resources/ontologies/interoperabilitymodel.owl";
 
     /**
      * This nested class contains the TDB models' name as static Strings.
@@ -75,7 +72,7 @@ public class TDBManager {
      * @see TDBManager#getInstance()
      */
     private TDBManager() {
-        dataset = TDBFactory.createDataset(TDB_FOLDER);
+        dataset = TDBFactory.createDataset(Configuration.getInstance().getTdbFolder());
     }
 
     /**
@@ -108,11 +105,12 @@ public class TDBManager {
         Model dataModel = dataset.getDefaultModel();
         Model interoperabilityModel = dataset.getNamedModel(Models.INTEROPERABILITYMODEL_NAME);
         Model functionalModel = dataset.getNamedModel(Models.FUNCTIONALMODEL_NAME);
+        Configuration config = Configuration.getInstance();
 
         try {
-            dataModel.read(new FileInputStream(DATAMODEL_FILE), null, null);
-            interoperabilityModel.read(new FileInputStream(INTEROPERABILITY_FILE), null, null);
-            functionalModel.read(new FileInputStream(FUNCTIONALMADEL_FILE), null, null);
+            dataModel.read(new FileInputStream(config.getDatamodelFile()), null, null);
+            interoperabilityModel.read(new FileInputStream(config.getInteroperabilityModelFile()), null, null);
+            functionalModel.read(new FileInputStream(config.getFunctionalModelFile()), null, null);
             dataset.commit();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TDBManager.class.getName()).log(Level.SEVERE, null, ex);
