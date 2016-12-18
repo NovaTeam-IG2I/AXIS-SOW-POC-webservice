@@ -1,22 +1,52 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package rocks.novateam.axis.sow.poc.backend.servlets;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
- *
- * @author richou
+ * This servlet handles media importation.
+ * 
+ * The HTTP request @b must
+ *     + Have a <code>multipart/form-data</code> MIME type ;
+ *     + Contain a field named <code>file</code> containing the file to import.
+ * 
+ * The HTTP response will have a <code>application/json</code> MIME type, and may contain:
+ *     + <code>{'status': 'ok', 'filename': <em>filename</em>}</code> if the request succeeded ;
+ *     + <code>{'status': 'ko', 'message': <em>message</em>}</code> if the request failed.
+ * 
+ * @author Richard Degenne
  */
+@MultipartConfig(location="E:\\Users\\richou\\AppData\\Local\\") // This folder is for temporary storage ONLY.
 public class importServlet extends HttpServlet {
+
+    /**
+     * Target folder for the uploaded files.
+     */
+    public static String UPLOAD_FOLDER = "E:\\Users\\richou\\Desktop\\upload\\";
+    
+    /**
+     * File extension for uploaded files.
+     * 
+     * AXIS-SOW-POC will only work with MP4 files for the time being.
+     */
+    public static String FILE_EXTENSION = ".mp4";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -29,18 +59,34 @@ public class importServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        try {
+            // Get data from the request object
+            Part filePart = request.getPart("file");
+            if(filePart == null) {
+                throw new FileNotFoundException("No 'file' part given in the request.");
+            }
+            String fileName = getNextFileName();
+            InputStream fileContent = filePart.getInputStream();
+
+            // Copy media to disk
+            File file = new File(UPLOAD_FOLDER+fileName);
+            file.createNewFile();
+            FileOutputStream fileOutputStream = new FileOutputStream(file, false); // TODO: Have an incremental id for file names.
+            IOUtils.copy(fileContent, fileOutputStream);
+            
+            json.add("status", "ok")
+                    .add("filename", fileName);
+        }
+        catch(FileNotFoundException e) {
+            json.add("status", "ko")
+                    .add("message", e.getMessage());
+        }
+        
+        // Send response
+        response.setContentType("application/json");
         try(PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet importServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet importServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            out.println(json.build().toString());
         }
     }
 
@@ -80,7 +126,28 @@ public class importServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "This servlet handles media importation.";
     }// </editor-fold>
 
+    /**
+     * Gets the best filename for an uploaded file.
+     * 
+     * Iterates over the <code>UPLOAD_FOLDER</code> to find the first integer
+     * number not already present in the folder.
+     * 
+     * @return The best filename to give to a newly uplaoded file.
+     */
+    private String getNextFileName() {
+        File folder = new File(UPLOAD_FOLDER);
+        File[] files = folder.listFiles();
+        int fileNumber = 1; // File names start from 1.
+        
+        for(int i=0 ; i<files.length ; ++i, ++fileNumber) {
+            System.out.println("Comparing "+files[i]+" to "+fileNumber+FILE_EXTENSION);
+            if(files[i].compareTo(new File(UPLOAD_FOLDER+fileNumber+FILE_EXTENSION)) != 0) {
+                break;
+            }
+        }
+        return fileNumber+FILE_EXTENSION; // WARNING: Hardcoded file extension here.
+    }
 }
