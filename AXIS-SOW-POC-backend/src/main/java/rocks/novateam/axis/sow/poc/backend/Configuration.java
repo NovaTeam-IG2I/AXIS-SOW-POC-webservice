@@ -34,6 +34,7 @@ public final class Configuration {
     private String datamodelFile;
     private String interoperabilitymodelFile;
     private String functionalmodelFile;
+    private String uploadFolder;
 
 
     /**
@@ -44,11 +45,12 @@ public final class Configuration {
      *
      * @see Configuration#getInstance()
      */
-    private Configuration(String tdbFolder, String datamodelFile, String interoperabilityModelFile, String functionalModelFile) {
+    private Configuration(String tdbFolder, String datamodelFile, String interoperabilityModelFile, String functionalModelFile, String uploadFolder) {
         this.tdbFolder = tdbFolder;
         this.datamodelFile = datamodelFile;
         this.interoperabilitymodelFile = interoperabilityModelFile;
         this.functionalmodelFile = functionalModelFile;
+        this.uploadFolder = uploadFolder;
     }
 
     /**
@@ -61,7 +63,7 @@ public final class Configuration {
      * @return The instance of {@link Configuration}.
      *
      */
-    public static Configuration getInstance() {
+    public static Configuration getInstance() {     
         if (INSTANCE == null) {
             Yaml yaml = new Yaml();
 
@@ -76,12 +78,14 @@ public final class Configuration {
                     && map.containsKey("tdbFolder")
                     && map.containsKey("datamodelFile")
                     && map.containsKey("interoperabilitymodelFile")
-                    && map.containsKey("functionalmodelFile")) {
+                    && map.containsKey("functionalmodelFile")
+                    && map.containsKey("uploadFolder")) {
                 INSTANCE = new Configuration(map.get("tdbFolder"),
                         map.get("datamodelFile"),
                         map.get("interoperabilitymodelFile"),
-                        map.get("functionalmodelFile"));
-            }
+                        map.get("functionalmodelFile"),
+                        map.get("uploadFolder"));
+                        }
         }
         return INSTANCE;
     }
@@ -117,6 +121,14 @@ public final class Configuration {
     public String getFunctionalModelFile() {
         return functionalmodelFile;
     }
+    
+    /**
+     * 
+     * @return The pathname of the uploads folder.
+     */
+    public String getUploadFolder() {
+        return uploadFolder;
+    }
 
     public static void main(String[] args) throws IOException {
         // Get a Confuration instance.
@@ -127,5 +139,6 @@ public final class Configuration {
         System.out.println("Data Model:\t" + c.getDatamodelFile());
         System.out.println("Inter Model:\t" + c.getInteroperabilityModelFile());
         System.out.println("Func Model:\t" + c.getFunctionalModelFile());
+        System.out.println("Upload Folder:\t" + c.getUploadFolder());
     }
 }
