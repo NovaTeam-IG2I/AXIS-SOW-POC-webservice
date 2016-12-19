@@ -35,7 +35,7 @@ import rocks.novateam.axis.sow.poc.backend.Configuration;
  * @author Richard Degenne
  */
 @MultipartConfig
-public class importServlet extends HttpServlet {
+public class ImportServlet extends HttpServlet {
     
     /**
      * File extension for uploaded files.
