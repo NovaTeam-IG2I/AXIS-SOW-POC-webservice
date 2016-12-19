@@ -37,7 +37,7 @@ import rocks.novateam.axis.sow.poc.backend.Configuration;
  * 
  * @author richou
  */
-public class listServlet extends HttpServlet {
+public class ListServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

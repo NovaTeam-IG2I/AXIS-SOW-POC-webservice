@@ -6,7 +6,7 @@
     </servlet>
     <servlet>
         <servlet-name>listServlet</servlet-name>
-        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.listServlet</servlet-class>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ListServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>importServlet</servlet-name>
