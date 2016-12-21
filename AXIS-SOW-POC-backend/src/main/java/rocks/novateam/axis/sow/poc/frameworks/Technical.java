@@ -1,6 +1,13 @@
 package rocks.novateam.axis.sow.poc.frameworks;
 
 import java.io.IOException;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 import org.apache.jena.rdf.model.Model;
@@ -58,17 +65,33 @@ public class Technical {
         // Data test definition
         String filmId = "Selma";
         String fileName = "Selma.mp4";
+        String filmIdURI = POC_URI + filmId;
+        String fileNamePropertyURI = DATAMODEL_URI + "FileName";
 
         // Inserting data in the model
         Model model = FileManager.get().loadModel(
                 Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
         );
-        Resource selma = model.createResource(POC_URI + filmId);
+        Resource selma = model.createResource(filmIdURI);
         Property isA = model.createProperty(RDF_URI + "type");
         selma.addProperty(isA, DATAMODEL_URI + "AudiovisualWork");
-        Property fileNamePro = model.createProperty(DATAMODEL_URI + "FileName");
+        Property fileNamePro = model.createProperty(fileNamePropertyURI);
         selma.addProperty(fileNamePro, fileName);
 
         // model.write(System.out);  // Printing the data (should be saved)
+
+        // Looking for information
+        String queryString = PREFIX + "SELECT ?fileName WHERE \n" +
+                "{ <" + filmIdURI + "> <" + fileNamePropertyURI + "> ?fileName. }";
+        Query query = QueryFactory.create(queryString);
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+            while ( results.hasNext() ) {
+                QuerySolution solution = results.nextSolution();
+                System.out.println(solution.toString());
+                Literal name = solution.getLiteral("fileName");
+                System.out.println(name);
+            }
+        }
     }
 }
