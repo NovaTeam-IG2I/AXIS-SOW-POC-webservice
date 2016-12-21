@@ -15,31 +15,39 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
+import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
  * This servlet handles media importation.
- * 
- * Uploaded files will be stored in the folder given in the `configuration.yml` file.
- * 
- * The HTTP request @b must
- *     + Have a <code>multipart/form-data</code> MIME type ;
- *     + Contain a field named <code>file</code> containing the file to import.
- * 
- * The HTTP response will have a <code>application/json</code> MIME type, and may contain:
- *     + <code>{'status': 'ok', 'filename': <em>filename</em>}</code> if the request succeeded ;
- *     + <code>{'status': 'ko', 'message': <em>message</em>}</code> if the request failed.
- * 
+ *
+ * Uploaded files will be stored in the folder given in the `configuration.yml`
+ * file.
+ *
+ * The HTTP request @b must + Have a <code>multipart/form-data</code> MIME type
+ * ; + Contain a field named <code>file</code> containing the file to import.
+ *
+ * The HTTP response will have a <code>application/json</code> MIME type, and
+ * may contain: + <code>{'status': 'ok', 'filename': <em>filename</em>}</code>
+ * if the request succeeded ; + <code>{'status': 'ko', 'message':
+ * <em>message</em>}</code> if the request failed.
+ *
  * @see Configuration
- * 
+ *
  * @author Richard Degenne
  */
 @MultipartConfig
 public class ImportServlet extends HttpServlet {
-    
+
     /**
      * File extension for uploaded files.
-     * 
+     *
      * AXIS-SOW-POC will only work with MP4 files for the time being.
      */
     public static String FILE_EXTENSION = ".mp4";
@@ -59,6 +67,7 @@ public class ImportServlet extends HttpServlet {
         try {
             // Get data from the request object
             Part filePart = request.getPart("file");
+            String title = request.getParameter("title");
             if(filePart == null) {
                 throw new FileNotFoundException("No 'file' part given in the request.");
             }
@@ -70,7 +79,10 @@ public class ImportServlet extends HttpServlet {
             file.createNewFile();
             FileOutputStream fileOutputStream = new FileOutputStream(file, false); // TODO: Have an incremental id for file names.
             IOUtils.copy(fileContent, fileOutputStream);
-            
+
+            // Create semantic entites in the TDB
+            persist((title == null) ? fileName : title);
+
             json.add("status", "ok")
                     .add("filename", fileName);
         }
@@ -78,7 +90,7 @@ public class ImportServlet extends HttpServlet {
             json.add("status", "ko")
                     .add("message", e.getMessage());
         }
-        
+
         // Send response
         response.setContentType("application/json");
         try(PrintWriter out = response.getWriter()) {
@@ -127,12 +139,12 @@ public class ImportServlet extends HttpServlet {
 
     /**
      * Gets the best filename for an uploaded file.
-     * 
-     * Iterates over the upload folder to find the first integer
-     * number not already present in the folder.
-     * 
+     *
+     * Iterates over the upload folder to find the first integer number not
+     * already present in the folder.
+     *
      * @return The best filename to give to a newly uplaoded file.
-     * 
+     *
      * @see Configuration#uploadFolder()
      */
     private String getNextFileName() {
@@ -140,7 +152,7 @@ public class ImportServlet extends HttpServlet {
         File folder = new File(Configuration.getInstance().getUploadFolder());
         File[] files = folder.listFiles();
         int fileNumber = 1; // File names start from 1.
-        
+
         for(int i=0 ; i<files.length ; ++i, ++fileNumber) {
             System.out.println("Comparing "+files[i]+" to "+fileNumber+FILE_EXTENSION);
             if(files[i].compareTo(new File(Configuration.getInstance().getUploadFolder()+fileNumber+FILE_EXTENSION)) != 0) {
@@ -148,5 +160,18 @@ public class ImportServlet extends HttpServlet {
             }
         }
         return fileNumber+FILE_EXTENSION; // WARNING: Hardcoded file extension here.
+    }
+
+    private void persist(String name) {
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        String NS = TDBManager.DATAMODEL_NS;
+
+        dataset.begin(ReadWrite.WRITE);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+        Individual film = model.getOntClass(NS + "Film").createIndividual(NS + name);
+        Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name +"_AFP");
+        film.addProperty(model.getProperty(NS+"isDeclaredBy"), afp);
+        dataset.commit();
+
     }
 }

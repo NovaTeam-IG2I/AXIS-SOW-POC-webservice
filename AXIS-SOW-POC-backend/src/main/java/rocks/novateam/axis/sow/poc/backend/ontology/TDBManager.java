@@ -2,6 +2,8 @@ package rocks.novateam.axis.sow.poc.backend.ontology;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.query.Dataset;
@@ -50,6 +52,8 @@ public class TDBManager {
          */
         public static final String FUNCTIONALMODEL_NAME = "FunctionalModel";
     }
+    
+    public static String DATAMODEL_NS = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
 
     private static TDBManager INSTANCE;
 
@@ -129,8 +133,17 @@ public class TDBManager {
     public Dataset getDataset() {
         return dataset;
     }
+    
+    private void exportOwl(OutputStream out) {
+        dataset.begin(ReadWrite.READ);
+        // Get model inside the transaction
+        Model model = dataset.getDefaultModel();
+        dataset.end();
 
-    public static void main(String[] args) {
+        model.write(out);
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
         TDBManager tdbm = TDBManager.getInstance();
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
@@ -145,5 +158,8 @@ public class TDBManager {
         for(StmtIterator i = model.listStatements() ; i.hasNext() ;) {
             System.out.println(i.nextStatement().toString());
         }
+        
+        // Uncomment the following line to export the ontology to a given file
+        // tdbm.exportOwl(new FileOutputStream("../resources/ontologies/export.owl"));
     }
 }
