@@ -184,6 +184,7 @@ public class ImportServlet extends HttpServlet {
         Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         film.addProperty(model.getProperty(NS + "isDeclaredBy"), afp);
         Individual document = model.getOntClass(NS+"VideoDocument").createIndividual(NS+name+"_Document");
+        document.addLiteral(model.getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
         film.addProperty(model.getProperty(NS+"hasExpression"), document);
         Individual embodiment = model.getOntClass(NS+"VideoEmbodiment").createIndividual(NS+name+"_Embodiment");
         document.addProperty(model.getProperty(NS+"hasManifestation"), embodiment);
