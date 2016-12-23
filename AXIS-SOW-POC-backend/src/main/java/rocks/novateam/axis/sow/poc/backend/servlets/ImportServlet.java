@@ -30,13 +30,25 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * Uploaded files will be stored in the folder given in the `configuration.yml`
  * file.
  *
- * The HTTP request @b must + Have a <code>multipart/form-data</code> MIME type
- * ; + Contain a field named <code>file</code> containing the file to import.
+ * The HTTP request @b must
+ * <ul>
+ * <li>Have a <code>multipart/form-data</code> MIME type;</li>
+ * <li>Contain a field named <code>file</code> containing the file to
+ * import.</li>
+ * </ul>
+ *
+ * It can also have an optional <code>title</code> attribute to name the
+ * semantic entity. If <code>title</code> is not provided, the uploaded file
+ * name will be used instead.
  *
  * The HTTP response will have a <code>application/json</code> MIME type, and
- * may contain: + <code>{'status': 'ok', 'filename': <em>filename</em>}</code>
- * if the request succeeded ; + <code>{'status': 'ko', 'message':
- * <em>message</em>}</code> if the request failed.
+ * may contain:
+ * <ul>
+ * <li><code>{'status': 'ok', 'filename': <em>filename</em>}</code> if the
+ * request succeeded ;</li>
+ * <li><code>{'status': 'ko', 'message': <em>message</em>}</code> if the request
+ * failed.</li>
+ * </ul>
  *
  * @see Configuration
  *
@@ -68,32 +80,31 @@ public class ImportServlet extends HttpServlet {
             // Get data from the request object
             Part filePart = request.getPart("file");
             String title = request.getParameter("title");
-            if(filePart == null) {
+            if (filePart == null) {
                 throw new FileNotFoundException("No 'file' part given in the request.");
             }
             String fileName = getNextFileName();
             InputStream fileContent = filePart.getInputStream();
 
             // Copy media to disk
-            File file = new File(Configuration.getInstance().getUploadFolder()+fileName);
+            File file = new File(Configuration.getInstance().getUploadFolder() + fileName);
             file.createNewFile();
             FileOutputStream fileOutputStream = new FileOutputStream(file, false); // TODO: Have an incremental id for file names.
             IOUtils.copy(fileContent, fileOutputStream);
 
             // Create semantic entites in the TDB
-            persist((title == null) ? fileName : title);
+            persist((title == null) ? fileName : title, file.getAbsolutePath());
 
             json.add("status", "ok")
                     .add("filename", fileName);
-        }
-        catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             json.add("status", "ko")
                     .add("message", e.getMessage());
         }
 
         // Send response
         response.setContentType("application/json");
-        try(PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             out.println(json.build().toString());
         }
     }
@@ -148,30 +159,38 @@ public class ImportServlet extends HttpServlet {
      * @see Configuration#uploadFolder()
      */
     private String getNextFileName() {
-        System.out.println("Upload folder: "+Configuration.getInstance().getUploadFolder());
+        System.out.println("Upload folder: " + Configuration.getInstance().getUploadFolder());
         File folder = new File(Configuration.getInstance().getUploadFolder());
         File[] files = folder.listFiles();
         int fileNumber = 1; // File names start from 1.
 
-        for(int i=0 ; i<files.length ; ++i, ++fileNumber) {
-            System.out.println("Comparing "+files[i]+" to "+fileNumber+FILE_EXTENSION);
-            if(files[i].compareTo(new File(Configuration.getInstance().getUploadFolder()+fileNumber+FILE_EXTENSION)) != 0) {
+        for (int i = 0; i < files.length; ++i, ++fileNumber) {
+            System.out.println("Comparing " + files[i] + " to " + fileNumber + FILE_EXTENSION);
+            if (files[i].compareTo(new File(Configuration.getInstance().getUploadFolder() + fileNumber + FILE_EXTENSION)) != 0) {
                 break;
             }
         }
-        return fileNumber+FILE_EXTENSION; // WARNING: Hardcoded file extension here.
+        return fileNumber + FILE_EXTENSION; // WARNING: Hardcoded file extension here.
     }
 
-    private void persist(String name) {
+    private void persist(String name, String filePath) {
         Dataset dataset = TDBManager.getInstance().getDataset();
         String NS = TDBManager.DATAMODEL_NS;
 
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+        
         Individual film = model.getOntClass(NS + "Film").createIndividual(NS + name);
-        Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name +"_AFP");
-        film.addProperty(model.getProperty(NS+"isDeclaredBy"), afp);
+        Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+        film.addProperty(model.getProperty(NS + "isDeclaredBy"), afp);
+        Individual document = model.getOntClass(NS+"VideoDocument").createIndividual(NS+name+"_Document");
+        film.addProperty(model.getProperty(NS+"hasExpression"), document);
+        Individual embodiment = model.getOntClass(NS+"VideoEmbodiment").createIndividual(NS+name+"_Embodiment");
+        document.addProperty(model.getProperty(NS+"hasManifestation"), embodiment);
+        Individual location = model.getOntClass(NS+"Location").createIndividual(NS+name+"_Location");
+        location.addProperty(model.getDatatypeProperty(NS+"hyperlink"), filePath);
+        embodiment.addProperty(model.getProperty(NS+"hasLocation"), location);
+        
         dataset.commit();
-
     }
 }
