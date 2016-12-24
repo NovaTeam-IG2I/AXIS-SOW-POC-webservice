@@ -119,7 +119,7 @@ public class Technical {
     public static String TYPE_OBJECT = DATAMODEL_URI + "AudiovisualWork";
 
     /**
-     * Fills the object with fake data: DELETE THIS FUNCTION.
+     * Fills the object with fake data: for test purpose, can be deleted.
      */
     private void fillObjectWithFakeData() {
         id = POC_URI + "Selma";
@@ -132,7 +132,7 @@ public class Technical {
     }
 
     /**
-     * Fills the model with fake data: DELETE THIS FUNCTION.
+     * Fills the model with fake data: for test purpose, can be deleted.
      */
     private void fillModelWithFakeData(String id) {
         String fileName = "Selma.mp4";
@@ -183,16 +183,16 @@ public class Technical {
         String IMPORT_DATE_SELECT = "importDate";
 
         String queryString = PREFIX + "SELECT " +
-                "?" + FILE_NAME_SELECT + " ?" + FILE_SIZE_SELECT + " "+
-                "?" + HYPERLINK_SELECT + " ?" + RIGHTS_SELECT + " "+
-                "?" + DURATION_SELECT + " ?" + IMPORT_DATE_SELECT + " "+
+                "?" + FILE_NAME_SELECT + " ?" + FILE_SIZE_SELECT + " " +
+                "?" + HYPERLINK_SELECT + " ?" + RIGHTS_SELECT + " " +
+                "?" + DURATION_SELECT + " ?" + IMPORT_DATE_SELECT + " " +
                 "WHERE \n{\n" +
-                "<" + id + "> <" + FILE_NAME_PROPERTY + "> ?" + FILE_NAME_SELECT + ".\n"+
-                "<" + id + "> <" + FILE_SIZE_PROPERTY + "> ?" + FILE_SIZE_SELECT + ".\n"+
-                "<" + id + "> <" + HYPERLINK_PROPERTY + "> ?" + HYPERLINK_SELECT + ".\n"+
-                "<" + id + "> <" + RIGHTS_PROPERTY + "> ?" + RIGHTS_SELECT + ".\n"+
-                "<" + id + "> <" + DURATION_PROPERTY + "> ?" + DURATION_SELECT + ".\n"+
-                "<" + id + "> <" + IMPORT_DATE_PROPERTY + "> ?" + IMPORT_DATE_SELECT + ".\n"+
+                "<" + id + "> <" + FILE_NAME_PROPERTY + "> ?" + FILE_NAME_SELECT + ".\n" +
+                "<" + id + "> <" + FILE_SIZE_PROPERTY + "> ?" + FILE_SIZE_SELECT + ".\n" +
+                "<" + id + "> <" + HYPERLINK_PROPERTY + "> ?" + HYPERLINK_SELECT + ".\n" +
+                "<" + id + "> <" + RIGHTS_PROPERTY + "> ?" + RIGHTS_SELECT + ".\n" +
+                "<" + id + "> <" + DURATION_PROPERTY + "> ?" + DURATION_SELECT + ".\n" +
+                "<" + id + "> <" + IMPORT_DATE_PROPERTY + "> ?" + IMPORT_DATE_SELECT + ".\n" +
                 "}";
 
         Query query = QueryFactory.create(queryString);
