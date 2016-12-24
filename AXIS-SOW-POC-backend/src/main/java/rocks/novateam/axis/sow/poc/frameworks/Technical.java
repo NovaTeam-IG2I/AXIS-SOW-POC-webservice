@@ -7,11 +7,9 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Literal;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.FileManager;
 
@@ -71,7 +69,7 @@ public class Technical {
 
     // TODO: move all those URIs and SPARQL prefix in a special Register class
     /**
-     * URI of the proof of concept.
+     * The proof of concept uri.
      */
     private static final String POC_URI = "http://axis.sow/poc/";
 
@@ -154,6 +152,17 @@ public class Technical {
     }
 
     /**
+     * This class holds all informations about the technical framework. Data are
+     * automatically loaded from the TDB.
+     *
+     * @param id The entity id of which the framework refers to.
+     */
+    public Technical(String id) {
+        fillModelWithFakeData(id);
+        retrieveData(id);
+    }
+
+    /**
      * Returns the model used. It should be replaced when good CRUD methods will
      * be implemented.
      *
@@ -212,11 +221,6 @@ public class Technical {
             }
         }
         this.id = id;
-    }
-
-    public Technical(String id) {
-        fillModelWithFakeData(id);
-        retrieveData(id);
     }
 
     /**
