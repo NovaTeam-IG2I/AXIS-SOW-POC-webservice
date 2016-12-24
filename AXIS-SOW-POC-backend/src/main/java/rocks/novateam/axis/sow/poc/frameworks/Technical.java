@@ -21,17 +21,85 @@ import org.apache.jena.util.FileManager;
  * A technical framework describes all technical information of a file like its
  * name, size...
  *
- * @author alex
+ * @author Alex Canales
  */
 public class Technical {
 
+    /**
+     * The entity id of which the framework refers to.
+     */
+    private String id = "";
+
+    /**
+     * The file name.
+     */
     private String fileName = "";
+
+    /**
+     * The file size in Mega Octet.
+     */
+    private int fileSize = 0;
+
+    /**
+     * Hyperlink giving more information about the file or content.
+     */
+    private String hyperLink = "";
+
+    /**
+     * The owner of the file.
+     */
+    private String rights = "";
+
+    /**
+     * The duration of the video in minutes.
+     */
+    private int duration = 0;
+
+    /**
+     * The import date of the file.
+     */
+    private String importDate = "";
+
+    // TODO: move all those URIs and SPARQL prefix in a special Register class
+    /**
+     * URI of the proof of concept.
+     */
+    private static final String POC_URI = "http://axis.sow/poc/";
+
+    /**
+     * The AXIS-CSRM datamodel uri.
+     */
+    private static final String DATAMODEL_URI = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
+
+    /**
+     * The RDF URI.
+     */
+    private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+    /**
+     * The RDFS URI.
+     */
+    private static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
+
+    /**
+     * The prefix used in every SPARQL requests.
+     */
+    private static final String PREFIX = "PREFIX rdfs: <" + RDFS_URI + ">\n" +
+            "PREFIX rdf: <" + RDF_URI + ">\n" +
+            "PREFIX datamodel: <" + DATAMODEL_URI + ">\n" +
+            "PREFIX poc: <" + POC_URI + ">\n";
 
     /**
      * Fills the object with fake data: DELETE THIS FUNCTION.
      */
     private void fillWithFakeData() {
-        fileName = "Selma";
+        id = POC_URI + "Selma";
+        fileName = "Selma.mp4";
+        fileSize = 700;
+        hyperLink = "http://www.imdb.com/title/tt1020072/";
+        rights = "Pathé";
+        duration = 128;
+        importDate = "2016-12-22";
     }
 
     public Technical(String register) {
@@ -52,16 +120,6 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        // URIs and SPARQL prefix, should be moved in a special class
-        final String POC_URI = "http://axis.sow/poc/";
-        final String DATAMODEL_URI = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
-        final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-        final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
-        final String PREFIX = "PREFIX rdfs: <" + RDFS_URI + ">\n" +
-                "PREFIX rdf: <" + RDF_URI + ">\n" +
-                "PREFIX datamodel: <" + DATAMODEL_URI + ">\n" +
-                "PREFIX poc: <" + POC_URI + ">\n";  // NOTE: Have to be decided
-
         // Data test definition
         String filmId = "Selma";
         String fileName = "Selma.mp4";
