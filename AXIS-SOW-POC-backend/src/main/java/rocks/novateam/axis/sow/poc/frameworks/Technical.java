@@ -8,6 +8,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
+import rocks.novateam.axis.sow.poc.frameworks.Reg;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -67,60 +68,25 @@ public class Technical {
      */
     private String importDate = "";
 
-    // TODO: move all those URIs and SPARQL prefix in a special Register class
-    /**
-     * The proof of concept uri.
-     */
-    private static final String POC_URI = "http://axis.sow/poc/";
-
-    /**
-     * The AXIS-CSRM datamodel uri.
-     */
-    private static final String DATAMODEL_URI = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
-
-    /**
-     * The CIDOC CRM uri.
-     */
-    private static final String CIDOC_URI = "http://www.cidoc-crm.org/cidoc-crm/";
-
-    /**
-     * The RDF URI.
-     */
-    private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
-    /**
-     * The RDFS URI.
-     */
-    private static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
-
-    /**
-     * The prefix used in every SPARQL requests.
-     */
-    private static final String PREFIX = "PREFIX rdfs: <" + RDFS_URI + ">\n" +
-            "PREFIX rdf: <" + RDF_URI + ">\n" +
-            "PREFIX datamodel: <" + DATAMODEL_URI + ">\n" +
-            "PREFIX cidoc: <" + CIDOC_URI + ">\n" +
-            "PREFIX poc: <" + POC_URI + ">\n";
-
     // All property names relative to the framework
-    public static String TYPE_PROPERTY = RDF_URI + "type";
-    public static String FILE_NAME_PROPERTY = DATAMODEL_URI + "fileName";
-    public static String FILE_SIZE_PROPERTY = DATAMODEL_URI + "fileSize";
-    public static String HYPERLINK_PROPERTY = DATAMODEL_URI + "hyperlink";
-    public static String RIGHTS_PROPERTY = DATAMODEL_URI + "rights";
-    public static String DURATION_PROPERTY = CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
-    public static String IMPORT_DATE_PROPERTY = DATAMODEL_URI + "date";
+    public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
+    public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
+    public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
+    public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
+    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "rights";
+    public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
+    public static String IMPORT_DATE_PROPERTY = Reg.DATAMODEL_URI + "date";
 
     /**
      * The type object value.
      */
-    public static String TYPE_OBJECT = DATAMODEL_URI + "AudiovisualWork";
+    public static String TYPE_OBJECT = Reg.DATAMODEL_URI + "AudiovisualWork";
 
     /**
      * Fills the object with fake data: for test purpose, can be deleted.
      */
     private void fillObjectWithFakeData() {
-        id = POC_URI + "Selma";
+        id = Reg.POC_URI + "Selma";
         fileName = "Selma.mp4";
         fileSize = "700";
         hyperlink = "http://www.imdb.com/title/tt1020072/";
@@ -191,7 +157,7 @@ public class Technical {
         String DURATION_SELECT = "duration";
         String IMPORT_DATE_SELECT = "importDate";
 
-        String queryString = PREFIX + "SELECT " +
+        String queryString = Reg.PREFIX + "SELECT " +
                 "?" + FILE_NAME_SELECT + " ?" + FILE_SIZE_SELECT + " " +
                 "?" + HYPERLINK_SELECT + " ?" + RIGHTS_SELECT + " " +
                 "?" + DURATION_SELECT + " ?" + IMPORT_DATE_SELECT + " " +
@@ -242,7 +208,7 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmIdURI = POC_URI + "Selma";
+        String filmIdURI = Reg.POC_URI + "Selma";
         Technical framework = new Technical(filmIdURI);
         System.out.println(framework.exportJSONFormat());
     }
