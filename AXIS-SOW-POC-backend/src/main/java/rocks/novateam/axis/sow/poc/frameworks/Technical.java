@@ -43,10 +43,10 @@ public class Technical {
     /**
      * Hyperlink giving more information about the file or content.
      */
-    private String hyperLink = "";
+    private String hyperlink = "";
 
     /**
-     * The owner of the file.
+     * The owner or entity name who has the rights on the file.
      */
     private String rights = "";
 
@@ -72,6 +72,11 @@ public class Technical {
     private static final String DATAMODEL_URI = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
 
     /**
+     * The CIDOC CRM uri.
+     */
+    private static final String CIDOC_URI = "http://www.cidoc-crm.org/cidoc-crm/";
+
+    /**
      * The RDF URI.
      */
     private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -87,7 +92,16 @@ public class Technical {
     private static final String PREFIX = "PREFIX rdfs: <" + RDFS_URI + ">\n" +
             "PREFIX rdf: <" + RDF_URI + ">\n" +
             "PREFIX datamodel: <" + DATAMODEL_URI + ">\n" +
+            "PREFIX cidoc: <" + CIDOC_URI + ">\n" +
             "PREFIX poc: <" + POC_URI + ">\n";
+
+    // All property names relative to the framework
+    public static String FILE_NAME_PROPERTY = DATAMODEL_URI + "FileName";
+    public static String FILE_SIZE_PROPERTY = DATAMODEL_URI + "fileSize";
+    public static String HYPERLINK_PROPERTY = DATAMODEL_URI + "hyperlink";
+    public static String RIGHTS_PROPERTY = DATAMODEL_URI + "rights";
+    public static String DURATION_PROPERTY = CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
+    public static String IMPORT_DATE_PROPERTY = DATAMODEL_URI + "date";
 
     /**
      * Fills the object with fake data: DELETE THIS FUNCTION.
@@ -96,7 +110,7 @@ public class Technical {
         id = POC_URI + "Selma";
         fileName = "Selma.mp4";
         fileSize = 700;
-        hyperLink = "http://www.imdb.com/title/tt1020072/";
+        hyperlink = "http://www.imdb.com/title/tt1020072/";
         rights = "Pathé";
         duration = 128;
         importDate = "2016-12-22";
@@ -115,8 +129,16 @@ public class Technical {
      * @return The information in JSON.
      */
     public String exportJSONFormat() {
-        // TODO
-        return " { fileName : \"" + fileName + "\" }";
+        String json = "{\n";
+        json += "\"id\" : \"" + id + "\",\n";
+        json += "\"fileName\" : \"" + fileName + "\",\n";
+        json += "\"fileSize\" : " + fileSize + ",\n";
+        json += "\"hyperLink\" : \"" + hyperlink + "\",\n";
+        json += "\"rights\" : \"" + rights + "\",\n";
+        json += "\"duration\" : " + duration + ",\n";
+        json += "\"importDate\" : \"" + importDate + "\"\n";
+        json += "}";
+        return json;
     }
 
     public static void main(String[] args) throws IOException {
@@ -151,5 +173,9 @@ public class Technical {
                 System.out.println(name);
             }
         }
+
+        // Testing JSON exportation
+        Technical framework = new Technical(filmIdURI);
+        System.out.println(framework.exportJSONFormat());
     }
 }
