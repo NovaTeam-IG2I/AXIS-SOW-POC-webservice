@@ -21,9 +21,18 @@ import org.apache.jena.util.FileManager;
  * A technical framework describes all technical information of a file like its
  * name, size...
  *
+ * So far, it can only have one data by fields (for example, only one right
+ * owner).
+ *
  * @author Alex Canales
  */
 public class Technical {
+
+    /**
+     * Holds the model, should be deleted when it will be possible to get the
+     * model correctly. Do not use this field directly, use getModel function.
+     */
+    private Model model = null;
 
     /**
      * The entity id of which the framework refers to.
@@ -97,7 +106,7 @@ public class Technical {
 
     // All property names relative to the framework
     public static String TYPE_PROPERTY = RDF_URI + "type";
-    public static String FILE_NAME_PROPERTY = DATAMODEL_URI + "FileName";
+    public static String FILE_NAME_PROPERTY = DATAMODEL_URI + "fileName";
     public static String FILE_SIZE_PROPERTY = DATAMODEL_URI + "fileSize";
     public static String HYPERLINK_PROPERTY = DATAMODEL_URI + "hyperlink";
     public static String RIGHTS_PROPERTY = DATAMODEL_URI + "rights";
@@ -133,24 +142,81 @@ public class Technical {
         String duration = "128";
         String importDate = "2016-12-22";
 
-        Model model = FileManager.get().loadModel(
+        Model model = getModel();
+        Resource resource = model.createResource(id);
+        resource.addProperty(model.createProperty(TYPE_PROPERTY), TYPE_OBJECT);
+        resource.addProperty(model.createProperty(FILE_NAME_PROPERTY), fileName);
+        resource.addProperty(model.createProperty(FILE_SIZE_PROPERTY), fileSize);
+        resource.addProperty(model.createProperty(HYPERLINK_PROPERTY), hyperlink);
+        resource.addProperty(model.createProperty(RIGHTS_PROPERTY), rights);
+        resource.addProperty(model.createProperty(DURATION_PROPERTY), duration);
+        resource.addProperty(model.createProperty(IMPORT_DATE_PROPERTY), importDate);
+    }
+
+    /**
+     * Returns the model used. It should be replaced when good CRUD methods will
+     * be implemented.
+     *
+     * @return The model used.
+     */
+    private Model getModel() {
+        if(model == null) {
+            model = FileManager.get().loadModel(
                 Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
-        );
-        Resource selma = model.createResource(id);
-        selma.addProperty(model.createProperty(TYPE_PROPERTY), TYPE_OBJECT);
-        selma.addProperty(model.createProperty(FILE_NAME_PROPERTY), fileName);
-        selma.addProperty(model.createProperty(FILE_SIZE_PROPERTY), fileSize);
-        selma.addProperty(model.createProperty(HYPERLINK_PROPERTY), hyperlink);
-        selma.addProperty(model.createProperty(RIGHTS_PROPERTY), rights);
-        selma.addProperty(model.createProperty(DURATION_PROPERTY), duration);
-        selma.addProperty(model.createProperty(IMPORT_DATE_PROPERTY), importDate);
+            );
+        }
+        return model;
+    }
+
+    /**
+     * Retrieves all the technical framework data.
+     *
+     * @param id The entity id the framewok is associated with.
+     */
+    private void retrieveData(String id)
+    {
+        String FILE_NAME_SELECT = "fileName";
+        String FILE_SIZE_SELECT = "fileSize";
+        String HYPERLINK_SELECT = "hyperlink";
+        String RIGHTS_SELECT = "rights";
+        String DURATION_SELECT = "duration";
+        String IMPORT_DATE_SELECT = "importDate";
+
+        String queryString = PREFIX + "SELECT " +
+                "?" + FILE_NAME_SELECT + " ?" + FILE_SIZE_SELECT + " "+
+                "?" + HYPERLINK_SELECT + " ?" + RIGHTS_SELECT + " "+
+                "?" + DURATION_SELECT + " ?" + IMPORT_DATE_SELECT + " "+
+                "WHERE \n{\n" +
+                "<" + id + "> <" + FILE_NAME_PROPERTY + "> ?" + FILE_NAME_SELECT + ".\n"+
+                "<" + id + "> <" + FILE_SIZE_PROPERTY + "> ?" + FILE_SIZE_SELECT + ".\n"+
+                "<" + id + "> <" + HYPERLINK_PROPERTY + "> ?" + HYPERLINK_SELECT + ".\n"+
+                "<" + id + "> <" + RIGHTS_PROPERTY + "> ?" + RIGHTS_SELECT + ".\n"+
+                "<" + id + "> <" + DURATION_PROPERTY + "> ?" + DURATION_SELECT + ".\n"+
+                "<" + id + "> <" + IMPORT_DATE_PROPERTY + "> ?" + IMPORT_DATE_SELECT + ".\n"+
+                "}";
+
+        Query query = QueryFactory.create(queryString);
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, getModel())) {
+            ResultSet results = qexec.execSelect();
+            while ( results.hasNext() ) {
+                QuerySolution solution = results.nextSolution();
+
+                // Should maybe use Literal
+                fileName = solution.getLiteral(FILE_NAME_SELECT).toString();
+                fileSize = solution.getLiteral(FILE_SIZE_SELECT).toString();
+                hyperlink = solution.getLiteral(HYPERLINK_SELECT).toString();
+                rights = solution.getLiteral(RIGHTS_SELECT).toString();
+                duration = solution.getLiteral(DURATION_SELECT).toString();
+                importDate = solution.getLiteral(IMPORT_DATE_SELECT).toString();
+
+            }
+        }
+        this.id = id;
     }
 
     public Technical(String id) {
-        // TODO:
-        // 1. SPARQL request
-        // 2. Setting everything
         fillModelWithFakeData(id);
+        retrieveData(id);
     }
 
     /**
@@ -172,39 +238,7 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        // Data test definition
-        String filmId = "Selma";
-        String fileName = "Selma.mp4";
-        String filmIdURI = POC_URI + filmId;
-        String fileNamePropertyURI = DATAMODEL_URI + "FileName";
-
-        // Inserting data in the model
-        Model model = FileManager.get().loadModel(
-                Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
-        );
-        Resource selma = model.createResource(filmIdURI);
-        Property isA = model.createProperty(RDF_URI + "type");
-        selma.addProperty(isA, DATAMODEL_URI + "AudiovisualWork");
-        Property fileNamePro = model.createProperty(fileNamePropertyURI);
-        selma.addProperty(fileNamePro, fileName);
-
-        // model.write(System.out);  // Printing the data (should be saved)
-
-        // Looking for information
-        String queryString = PREFIX + "SELECT ?fileName WHERE \n" +
-                "{ <" + filmIdURI + "> <" + fileNamePropertyURI + "> ?fileName. }";
-        Query query = QueryFactory.create(queryString);
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-            ResultSet results = qexec.execSelect();
-            while ( results.hasNext() ) {
-                QuerySolution solution = results.nextSolution();
-                System.out.println(solution.toString());
-                Literal name = solution.getLiteral("fileName");
-                System.out.println(name);
-            }
-        }
-
-        // Testing JSON exportation
+        String filmIdURI = POC_URI + "Selma";
         Technical framework = new Technical(filmIdURI);
         System.out.println(framework.exportJSONFormat());
     }
