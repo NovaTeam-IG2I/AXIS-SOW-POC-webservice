@@ -38,7 +38,7 @@ public class Technical {
     /**
      * The file size in Mega Octet.
      */
-    private int fileSize = 0;
+    private String fileSize = "";
 
     /**
      * Hyperlink giving more information about the file or content.
@@ -53,7 +53,7 @@ public class Technical {
     /**
      * The duration of the video in minutes.
      */
-    private int duration = 0;
+    private String duration = "";
 
     /**
      * The import date of the file.
@@ -96,6 +96,7 @@ public class Technical {
             "PREFIX poc: <" + POC_URI + ">\n";
 
     // All property names relative to the framework
+    public static String TYPE_PROPERTY = RDF_URI + "type";
     public static String FILE_NAME_PROPERTY = DATAMODEL_URI + "FileName";
     public static String FILE_SIZE_PROPERTY = DATAMODEL_URI + "fileSize";
     public static String HYPERLINK_PROPERTY = DATAMODEL_URI + "hyperlink";
@@ -104,23 +105,52 @@ public class Technical {
     public static String IMPORT_DATE_PROPERTY = DATAMODEL_URI + "date";
 
     /**
+     * The type object value.
+     */
+    public static String TYPE_OBJECT = DATAMODEL_URI + "AudiovisualWork";
+
+    /**
      * Fills the object with fake data: DELETE THIS FUNCTION.
      */
-    private void fillWithFakeData() {
+    private void fillObjectWithFakeData() {
         id = POC_URI + "Selma";
         fileName = "Selma.mp4";
-        fileSize = 700;
+        fileSize = "700";
         hyperlink = "http://www.imdb.com/title/tt1020072/";
         rights = "Pathé";
-        duration = 128;
+        duration = "128";
         importDate = "2016-12-22";
     }
 
-    public Technical(String register) {
+    /**
+     * Fills the model with fake data: DELETE THIS FUNCTION.
+     */
+    private void fillModelWithFakeData(String id) {
+        String fileName = "Selma.mp4";
+        String fileSize = "700";
+        String hyperlink = "http://www.imdb.com/title/tt1020072/";
+        String rights = "Pathé";
+        String duration = "128";
+        String importDate = "2016-12-22";
+
+        Model model = FileManager.get().loadModel(
+                Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
+        );
+        Resource selma = model.createResource(id);
+        selma.addProperty(model.createProperty(TYPE_PROPERTY), TYPE_OBJECT);
+        selma.addProperty(model.createProperty(FILE_NAME_PROPERTY), fileName);
+        selma.addProperty(model.createProperty(FILE_SIZE_PROPERTY), fileSize);
+        selma.addProperty(model.createProperty(HYPERLINK_PROPERTY), hyperlink);
+        selma.addProperty(model.createProperty(RIGHTS_PROPERTY), rights);
+        selma.addProperty(model.createProperty(DURATION_PROPERTY), duration);
+        selma.addProperty(model.createProperty(IMPORT_DATE_PROPERTY), importDate);
+    }
+
+    public Technical(String id) {
         // TODO:
         // 1. SPARQL request
         // 2. Setting everything
-        fillWithFakeData();
+        fillModelWithFakeData(id);
     }
 
     /**
