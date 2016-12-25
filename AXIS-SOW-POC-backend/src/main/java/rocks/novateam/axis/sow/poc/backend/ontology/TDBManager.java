@@ -4,9 +4,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
 
@@ -34,11 +37,13 @@ import org.apache.jena.tdb.TDBFactory;
 public class TDBManager {
 
     // Please note that these files names should not be hardcoded.
-    private static final String TDB_FOLDER = "E:\\Users\\richou\\Desktop\\tdb";
-    private static final String DATAMODEL_FILE = "E:\\Users\\richou\\src\\AXIS-SOW-POC-backend\\resources\\ontologies\\datamodel.owl";
-    private static final String FUNCTIONALMADEL_FILE = "E:\\Users\\richou\\src\\AXIS-SOW-POC-backend\\resources\\ontologies\\functionalmodel.owl";
-    private static final String INTEROPERABILITY_FILE = "E:\\Users\\richou\\src\\AXIS-SOW-POC-backend\\resources\\ontologies\\interoperabilitymodel.owl";
-
+    private static final String TDB_FOLDER = "D:\\Users\\Melody\\ProjetPRP\\tdb";
+    private static final String DATAMODEL_FILE = "D:\\Users\\Melody\\ProjetPRP\\AXIS-SOW-POC-backend\\resources\\ontologies\\datamodel.owl";
+    private static final String FUNCTIONALMADEL_FILE = "D:\\Users\\Melody\\ProjetPRP\\AXIS-SOW-POC-backend\\resources\\ontologies\\functionalmodel.owl";
+    private static final String INTEROPERABILITY_FILE = "D:\\Users\\Melody\\ProjetPRP\\AXIS-SOW-POC-backend\\resources\\ontologies\\interoperabilitymodel.owl";
+    
+    public static final String DATAMODEL_URL = "http://titan.be/axis-csrm/datamodel/ontology/0.4";
+    
     /**
      * This nested class contains the TDB models' name as static Strings.
      */
@@ -137,7 +142,7 @@ public class TDBManager {
         TDBManager tdbm = TDBManager.getInstance();
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
-        tdbm.setUp();
+        //tdbm.setUp();
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();

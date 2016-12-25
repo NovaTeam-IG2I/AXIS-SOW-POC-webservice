@@ -5,15 +5,19 @@
  */
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
+import java.util.ArrayList;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.util.iterator.ExtendedIterator;
 
 /**
  *
@@ -29,6 +33,7 @@ public class RegisterManager {
     }
     
     public void addRegisterInstance(String name) {
+        //TODO add instance classe afp + objectproperty .isDeclaredBy(afp)
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
@@ -50,6 +55,22 @@ public class RegisterManager {
         ds.commit();
     }
     
+    public ArrayList getProperties(){
+        ArrayList properties = new ArrayList();
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+
+        ExtendedIterator<DatatypeProperty> exItr;        
+        exItr = ont.listDatatypeProperties();      
+        while (exItr.hasNext()) {
+          DatatypeProperty prop = exItr.next();
+          System.out.println("Datatype prop: "+ prop.getLocalName());
+        }
+        return properties;
+    }
+    
     public void deleteInstance(String name){
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
@@ -63,10 +84,13 @@ public class RegisterManager {
         ds.commit();
     }
     
+    
+    
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
-        rm.addRegisterInstance("Martin Luther King");
-        rm.addSubRegisterInstance("Test");
-        rm.deleteInstances("Test");
+        rm.getProperties();
+        //rm.addRegisterInstance("Martin Luther King");
+        //rm.addSubRegisterInstance("Test");
+        //rm.deleteInstance("Test");
     }
 }
