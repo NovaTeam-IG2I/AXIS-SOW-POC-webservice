@@ -1,6 +1,8 @@
 AXIS-SOW-POC
 ============
 
+Using Java 8 with Jena 3.
+
 License
 -------
 
