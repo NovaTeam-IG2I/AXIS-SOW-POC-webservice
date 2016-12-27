@@ -10,6 +10,8 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -31,44 +33,89 @@ public class RegisterManager {
     public RegisterManager() {
         tdbm = TDBManager.getInstance();
     }
+
     
-    public void addRegisterInstance(String name) {
-        //TODO add instance classe afp + objectproperty .isDeclaredBy(afp)
+    public void addRegisterInstance(String name, String className, ArrayList<String> properties){
+        int cpt = 0;
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        OntClass class_ = ont.getOntClass(NS+"Register");
-        class_.createIndividual(NS+name);
+        OntClass class_ = ont.getOntClass(NS+className);
+        ExtendedIterator<OntProperty> exItr;        
+        exItr = class_.listDeclaredProperties();
+        Individual ind = class_.createIndividual(NS+name);
+        while (exItr.hasNext()) {
+          OntProperty prop = exItr.next();
+          if(prop.isDatatypeProperty()){
+            System.out.println("Datatype prop: "+ prop.getLocalName());
+            ind.addProperty(prop, properties.get(cpt));
+            cpt++;
+          }
+        }
         ds.commit();
     }
     
-    public void addSubRegisterInstance(String name){
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        OntClass class_ = ont.getOntClass(NS+"Register");
-        //need to use listSubClasse for further implementation with interface
-        //TODO: change exemple
-        class_.getSubClass().createIndividual(NS+name);
-        ds.commit();
-    }
-    
+    /**
+     * Get all the datatypeProperties from the ontModel
+     * Add their name to an array called properties and return it
+     * @return properties
+     */
     public ArrayList getProperties(){
         ArrayList properties = new ArrayList();
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-
+        
         ExtendedIterator<DatatypeProperty> exItr;        
         exItr = ont.listDatatypeProperties();      
         while (exItr.hasNext()) {
           DatatypeProperty prop = exItr.next();
           System.out.println("Datatype prop: "+ prop.getLocalName());
+          properties.add(prop.getLocalName());
         }
+        ds.commit();
         return properties;
+    }
+    
+    public ArrayList<Category> getCategories(){
+        ArrayList<Category> cats = new ArrayList();
+        ArrayList<Category> cats2 = new ArrayList();
+        Category cat = new Category();
+        Category cat2 = new Category();
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        OntClass classRegister = ont.getOntClass(NS+"Register");
+        System.out.println(classRegister);
+        ExtendedIterator<OntClass> exItr;
+        ExtendedIterator<OntClass> exItr2;
+        if(classRegister.hasSubClass()){
+            System.out.println("subclass!!!!");
+        }
+        exItr = classRegister.listSubClasses();
+        System.out.println(exItr);
+        for (exItr = classRegister.listSubClasses(); exItr.hasNext();) {
+            System.out.println("blblbl");
+          OntClass class_ = exItr.next();
+          cat.setLabel(class_.getLocalName());
+          if(class_.hasSubClass()){
+              exItr2 = class_.listSubClasses();
+              while(exItr2.hasNext()){
+                  OntClass subClass= exItr2.next();
+                  cat2.setLabel(subClass.getLocalName());
+                  cats2.add(cat2);
+              }
+              cat.setSubClass(cats2);
+          }
+          cats.add(cat);
+          cats.toString();
+        }
+        
+        ds.commit();
+        return cats;
     }
     
     public void deleteInstance(String name){
@@ -88,7 +135,18 @@ public class RegisterManager {
     
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
-        rm.getProperties();
+        //rm.getProperties();
+        //rm.getCategories();
+        ArrayList<String> al = new ArrayList();
+        al.add("p1");
+        al.add("p2");
+        al.add("p2");
+        al.add("p2");
+        al.add("p2");
+        al.add("p2");
+        al.add("p2");
+        al.add("p2");
+        rm.addRegisterInstance("InstanceNameTest","MoralPerson",al);
         //rm.addRegisterInstance("Martin Luther King");
         //rm.addSubRegisterInstance("Test");
         //rm.deleteInstance("Test");
