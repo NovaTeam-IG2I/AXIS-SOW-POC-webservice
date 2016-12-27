@@ -8,7 +8,8 @@ package rocks.novateam.axis.sow.poc.frameworks;
  * @author Alex Canales
  */
 public class Reg {
-/**
+
+    /**
      * The proof of concept URI.
      */
     public static final String POC_URI = "http://axis.sow/poc/";

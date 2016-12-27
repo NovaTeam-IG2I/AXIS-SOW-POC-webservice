@@ -20,7 +20,7 @@ import org.apache.jena.util.FileManager;
  * A technical framework describes all technical information of a file like its
  * name, size...
  *
- * So far, it can only have one data by fields (for example, only one right
+ * So far, it can only have one data by field (for example, only one right
  * owner).
  *
  * @author Alex Canales
@@ -73,7 +73,7 @@ public class Technical {
     public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
     public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
     public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
-    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "rights";
+    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
     public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
     public static String IMPORT_DATE_PROPERTY = Reg.DATAMODEL_URI + "date";
 
