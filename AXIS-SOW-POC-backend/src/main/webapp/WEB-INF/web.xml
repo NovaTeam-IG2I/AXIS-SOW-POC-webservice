@@ -8,6 +8,14 @@
         <servlet-name>ImportServlet</servlet-name>
         <url-pattern>/import</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>ListServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListServlet</servlet-name>
+        <url-pattern>/list</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
