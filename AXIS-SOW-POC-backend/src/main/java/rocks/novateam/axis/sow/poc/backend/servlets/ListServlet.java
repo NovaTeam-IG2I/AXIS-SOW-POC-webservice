@@ -9,15 +9,24 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
-import rocks.novateam.axis.sow.poc.backend.Configuration;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.OntResource;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.ModelFactory;
+import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
  * Lists all the available media.
@@ -54,11 +63,8 @@ public class ListServlet extends HttpServlet {
         JsonArrayBuilder videos = Json.createArrayBuilder();
 
         try {
-            // For each filename, construct a JSON object
-            for (String s : getFilenames()) {
-                JsonObjectBuilder video = Json.createObjectBuilder();
-                video.add("id", s);
-                videos.add(video);
+            for(JsonObject data : getData()) {
+                videos.add(data);
             }
             
             // Build the response object
@@ -116,24 +122,39 @@ public class ListServlet extends HttpServlet {
     }// </editor-fold>
 
     /**
-     * Lists all filenames present in the upload folder.
+     * Lists all films present in the triple store.
      *
-     * @return an Iterable containing extension-less filenames.
+     * @return an Iterable containing film data as {@link JsonObject}s.
      */
-    private Iterable<String> getFilenames() throws IOException {
-        System.out.println("Upload folder: " + Configuration.getInstance().getUploadFolder());
-        File folder = new File(Configuration.getInstance().getUploadFolder());
-
-        if (!folder.isDirectory()) {
-            throw new IOException(Configuration.getInstance().getUploadFolder() + " is not a directory.");
+    private Iterable<JsonObject> getData() throws IOException {
+        String NS = TDBManager.DATAMODEL_NS;
+        ArrayList<JsonObject> jsons = new ArrayList<>();
+        
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        dataset.begin(ReadWrite.READ);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+        dataset.end();
+        
+        for(Iterator i = model.getOntClass(NS+"Film").listInstances(); i.hasNext() ;) {
+            JsonObjectBuilder json = Json.createObjectBuilder();
+            Individual film = ((OntResource) i.next()).asIndividual();
+            Individual document = film.getPropertyValue(model.getProperty(NS+"hasExpression")).as(Individual.class);
+            String title = document.getPropertyValue(model.getProperty("http://www.w3.org/ns/ma-ont#title")).asLiteral().getString();
+            Individual embodiment = document.getPropertyValue(model.getProperty(NS+"hasManifestation")).as(Individual.class);
+            Individual location = embodiment.getPropertyValue(model.getProperty(NS+"hasLocation")).as(Individual.class);
+            String filename = location.getPropertyValue(model.getProperty(NS+"hyperlink")).asLiteral().getString();
+            
+            json.add("uri", film.getURI());
+            json.add("title", title);
+            json.add("id", getId(filename));
+            
+            jsons.add(json.build());
         }
-
-        File[] files = folder.listFiles();
-        ArrayList<String> filenames = new ArrayList<>();
-
-        for (File file : files) {
-            filenames.add(FilenameUtils.getBaseName(file.getName()));
-        }
-        return filenames;
+        
+        return jsons;
+    }
+    
+    private int getId(String filename) {
+        return Integer.valueOf(FilenameUtils.getBaseName(filename));
     }
 }

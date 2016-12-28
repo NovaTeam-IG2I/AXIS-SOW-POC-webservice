@@ -51,6 +51,8 @@ public class TDBManager {
         public static final String FUNCTIONALMODEL_NAME = "FunctionalModel";
     }
 
+    public static String DATAMODEL_NS = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
+
     private static TDBManager INSTANCE;
 
     /**
