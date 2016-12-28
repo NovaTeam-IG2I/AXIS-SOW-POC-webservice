@@ -4,6 +4,14 @@
         <servlet-name>ImportServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ImportServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>VideoServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.VideoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VideoServlet</servlet-name>
+        <url-pattern>/video</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImportServlet</servlet-name>
         <url-pattern>/import</url-pattern>
