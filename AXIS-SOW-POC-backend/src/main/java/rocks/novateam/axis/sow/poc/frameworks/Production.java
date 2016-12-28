@@ -1,5 +1,9 @@
 package rocks.novateam.axis.sow.poc.frameworks;
 
+import java.io.IOException;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+
 /**
  * This class holds all informations about the production framework.
  *
@@ -54,12 +58,56 @@ public class Production {
     private String productor = "";
 
     // All property names relative to the framework
+    // TODO: define the properties
     public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
-    public static String TITLE_PROPERTY = Reg.CIDOC_URI + "P102_has_title";  // TODO: find better
+    public static String TITLE_PROPERTY = "";
     public static String THEME_PROPERTY = "";
     public static String RELEASE_PROPERTY = "";
     public static String DURATION_PROPERTY = "";
     public static String NATIONALITY_PROPERTY = "";
     public static String DIRECTOR_PROPERTY = "";
     public static String PRODUCTOR_PROPERTY = "";
+
+    /**
+     * Fills the object with fake data: for test purpose, can be deleted.
+     */
+    private void fillObjectWithFakeData() {
+        id = Reg.POC_URI + "Selma";
+        title = "Selma";
+        theme = "Historical drama";
+        release = "2015-01-09";
+        duration = "128";
+        nationality = "United States";
+        director = "Ava DuVernay";
+        productor = " Cloud Eight Films";
+    }
+
+    public Production(String id) {
+        fillObjectWithFakeData();
+    }
+
+    /**
+     * Exports the information in JSON.
+     *
+     * @return The information in JSON.
+     */
+    public String exportJSONFormat() {
+        String json = "{\n";
+        json += "\"id\" : \"" + id + "\",\n";
+        json += "\"title\" : \"" + title + "\",\n";
+        json += "\"theme\" : \"" + theme + "\",\n";
+        json += "\"release\" : \"" + release + "\",\n";
+        json += "\"duration\" : \"" + duration + "\",\n";
+        json += "\"nationality\" : \"" + nationality + "\",\n";
+        json += "\"director\" : \"" + director + "\",\n";
+        json += "\"productor\" : \"" + productor + "\"\n";
+        json += "}";
+        return json;
+    }
+
+    public static void main(String[] args) throws IOException {
+        String filmIdURI = Reg.POC_URI + "Selma";
+        Production production = new Production(filmIdURI);
+        System.out.println(production.exportJSONFormat());
+    }
 }
