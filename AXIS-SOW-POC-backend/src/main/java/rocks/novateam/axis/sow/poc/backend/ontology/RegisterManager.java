@@ -34,7 +34,12 @@ public class RegisterManager {
         tdbm = TDBManager.getInstance();
     }
 
-    
+    /**
+     * TODO: AFP + search existence
+     * @param name
+     * @param className
+     * @param properties 
+     */
     public void addRegisterInstance(String name, String className, ArrayList<String> properties){
         int cpt = 0;
         Dataset ds = tdbm.getDataset();
@@ -55,6 +60,24 @@ public class RegisterManager {
         }
         ds.commit();
     }
+    /**
+     * TODO: camelCase
+     * @param name 
+     */
+    public void addPredicate(String name){
+        //put the string in camelCase
+        name = org.apache.commons.lang3.text.WordUtils.capitalizeFully(name);
+        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        name = name.replace(" ","");
+        System.out.println(name);
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        ont.createOntProperty(name);
+        ds.commit();
+    }
+    
     
     /**
      * Get all the datatypeProperties from the ontModel
@@ -118,6 +141,10 @@ public class RegisterManager {
         return cats;
     }
     
+    /**
+     * Delete an instance by name
+     * @param name 
+     */
     public void deleteInstance(String name){
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
@@ -137,7 +164,7 @@ public class RegisterManager {
         RegisterManager rm = new RegisterManager();
         //rm.getProperties();
         //rm.getCategories();
-        ArrayList<String> al = new ArrayList();
+        /*ArrayList<String> al = new ArrayList();
         al.add("p1");
         al.add("p2");
         al.add("p2");
@@ -146,7 +173,8 @@ public class RegisterManager {
         al.add("p2");
         al.add("p2");
         al.add("p2");
-        rm.addRegisterInstance("InstanceNameTest","MoralPerson",al);
+        rm.addRegisterInstance("InstanceNameTest","MoralPerson",al);*/
+        rm.addPredicate("aaah dzgeb dee_fbj");
         //rm.addRegisterInstance("Martin Luther King");
         //rm.addSubRegisterInstance("Test");
         //rm.deleteInstance("Test");
