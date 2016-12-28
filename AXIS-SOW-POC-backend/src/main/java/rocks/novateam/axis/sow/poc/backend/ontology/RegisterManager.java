@@ -19,6 +19,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.StmtIterator;
+
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 /**
@@ -35,7 +36,7 @@ public class RegisterManager {
     }
 
     /**
-     * TODO: AFP + search existence
+     * TODO: AFP + search existence + put name given in labal and camelCase in ont
      * @param name
      * @param className
      * @param properties 
@@ -61,7 +62,8 @@ public class RegisterManager {
         ds.commit();
     }
     /**
-     * TODO: camelCase
+     * Add a predicate to the ontology. Put its name in camelCase 
+     * before the insertion.
      * @param name 
      */
     public void addPredicate(String name){
@@ -155,6 +157,24 @@ public class RegisterManager {
         ont.removeAll(resource, null, (RDFNode) null);
         // remove statements where resource is object
         ont.removeAll(null, null, resource);
+        ds.commit();
+    }
+    
+    /**
+     * Create a statement with given registers
+     * @param subjectName
+     * @param objectName
+     * @param predicateName 
+     */
+    public void addPredicateToRegisters(String subjectName, String objectName, String predicateName){
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.WRITE);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        Resource subject = ont.getIndividual(NS+subjectName);
+        Resource object = ont.getIndividual(NS+objectName);
+        OntProperty predicate = ont.getOntProperty(NS+predicateName);
+        subject.addProperty(predicate, object);
         ds.commit();
     }
     
