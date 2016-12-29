@@ -155,6 +155,50 @@ public class RegisterManager {
         
         return cats;
     }
+
+
+    /**
+     * Get recursively all categories from the Register class.
+     * This public method is used to instantiate variables, before looping, and to return the result.
+     *
+     * @return A list of categories
+     */
+    public ArrayList<Category> getCategoriesRecusively() throws NullPointerException { // before the first loop, we have to create our variables
+        ArrayList<Category> categories = new ArrayList<>();
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.READ);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        ds.end();
+        OntClass classRegister = ont.getOntClass(NS+"Register");
+        if(classRegister == null) throw new NullPointerException("\nError on getting \""+NS+"Register"+"\" OntClass.");
+        System.out.println("Processing class: " + classRegister.getLocalName());
+        return getCategoriesRecusively(categories, classRegister);
+    }
+
+    /**
+     * Get recursively all categories from the given OntClass.
+     * This private method is used to loop, and finally to return the result.
+     *
+     * @param categories This is the list we want to put register's categories in
+     * @param currentOntClass This is the current OntClass from which we want to retrieve categories
+     *
+     * @return A list of categories
+     */
+    private ArrayList<Category> getCategoriesRecusively(ArrayList<Category> categories, OntClass currentOntClass){
+        Category c = new Category(currentOntClass.getLocalName());
+        if(currentOntClass.hasSubClass()){
+            ExtendedIterator<OntClass> iter = currentOntClass.listSubClasses();
+            while(iter.hasNext())
+            {
+                OntClass currentLoopOntClass = iter.next();
+                System.out.println("Processing class: " + currentLoopOntClass.getLocalName());
+                c.setSubClass(getCategoriesRecusively(new ArrayList<Category>(), currentLoopOntClass));
+            }
+        }
+        categories.add(c);
+        return categories;
+    }
     
     /**
      * Delete an instance by name
@@ -197,6 +241,7 @@ public class RegisterManager {
         RegisterManager rm = new RegisterManager();
         //rm.getProperties();
         //rm.getCategories();
+        rm.getCategoriesRecusively();
         /*ArrayList<String> al = new ArrayList();
         al.add("p1");
         al.add("p2");
@@ -207,7 +252,7 @@ public class RegisterManager {
         al.add("p2");
         al.add("p2");
         rm.addRegisterInstance("InstanceNameTest","MoralPerson",al);*/
-        rm.addPredicate("aaah dzgeb dee_fbj");
+        //rm.addPredicate("aaah dzgeb dee_fbj");
         //rm.addRegisterInstance("Martin Luther King");
         //rm.addSubRegisterInstance("Test");
         //rm.deleteInstance("Test");
