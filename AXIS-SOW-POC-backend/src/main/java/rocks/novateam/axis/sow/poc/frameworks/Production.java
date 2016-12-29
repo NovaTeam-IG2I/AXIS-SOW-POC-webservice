@@ -82,7 +82,17 @@ public class Production {
         productor = " Cloud Eight Films";
     }
 
+    /**
+     * This class holds all informations about the production framework. Data
+     * are automatically loaded from the TDB. If no data are not found, the
+     * framework holds empty information.
+     *
+     * @param id The entity id of which the framework refers to. If null, the
+     * data holds empty information.
+     */
     public Production(String id) {
+        if(id == null)
+            return;
         fillObjectWithFakeData();
     }
 
