@@ -12,9 +12,9 @@ and open the template in the editor.
     </head>
     <body>
         <h1>Video Test Page</h1>
-        <video width="320" height="240" controls>
-            <source src="/AXIS-SOW-POC-backend/video" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <form action="/AXIS-SOW-POC-backend/video" method="GET">
+            <input type="text" name="uri" placeholder="Video URI"/><br />
+            <input type="submit" value="Submit" />
+        </form>
     </body>
 </html>
