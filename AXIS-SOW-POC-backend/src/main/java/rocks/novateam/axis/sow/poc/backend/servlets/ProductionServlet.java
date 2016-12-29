@@ -59,7 +59,7 @@ public class ProductionServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "This servlet handles production framework return.";
     }// </editor-fold>
 
 }
