@@ -8,7 +8,8 @@ package rocks.novateam.axis.sow.poc.frameworks;
  * @author Alex Canales
  */
 public class Reg {
-/**
+
+    /**
      * The proof of concept URI.
      */
     public static final String POC_URI = "http://axis.sow/poc/";
@@ -32,6 +33,17 @@ public class Reg {
      * The RDFS URI.
      */
     public static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
+
+    /**
+     * The MA URI.
+     */
+    public static final String MA_URI = "http://www.w3.org/ns/ma-ont#";
+
+    /**
+     * The XSD URI.
+     */
+    public static final String XSD_URI = "http://www.w3.org/2001/XMLSchema#";
+
 
     /**
      * The prefix used in every SPARQL requests.
