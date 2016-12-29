@@ -35,6 +35,17 @@ public class Reg {
     public static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
 
     /**
+     * The MA URI.
+     */
+    public static final String MA_URI = "http://www.w3.org/ns/ma-ont#";
+
+    /**
+     * The XSD URI.
+     */
+    public static final String XSD_URI = "http://www.w3.org/2001/XMLSchema#";
+
+
+    /**
      * The prefix used in every SPARQL requests.
      */
     public static final String PREFIX = "PREFIX rdfs: <" + RDFS_URI + ">\n" +
