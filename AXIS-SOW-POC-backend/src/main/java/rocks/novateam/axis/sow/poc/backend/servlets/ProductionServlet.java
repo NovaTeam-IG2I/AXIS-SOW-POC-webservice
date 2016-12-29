@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import rocks.novateam.axis.sow.poc.frameworks.Production;
 
 /**
  * This servlet handles production framework return.
@@ -30,7 +31,9 @@ public class ProductionServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            out.println("Production servlet page test");
+            String id = request.getParameter("id");
+            Production production = new Production(id);
+            out.println(production.exportJSONFormat());
         }
     }
 
