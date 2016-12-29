@@ -22,19 +22,9 @@ public class Production {
     private String id = "";
 
     /**
-     * The work original title.
+     * The work director's name.
      */
-    private String title = "";
-
-    /**
-     * The work theme.
-     */
-    private String theme = "";
-
-    /**
-     * The year of the work release.
-     */
-    private String release = "";
+    private String director = "";
 
     /**
      * The work duration in minutes.
@@ -42,19 +32,27 @@ public class Production {
     private String duration = "";
 
     /**
-     * The work nationality.
-     */
-    // private String nationality = "";  // No reference in the ontology
-
-    /**
-     * The work director's name.
-     */
-    private String director = "";
-
-    /**
      * The work productor's name, can be a society.
      */
     private String productor = "";
+
+    /**
+     * The year of the work release.
+     */
+    private String release = "";
+
+    /**
+     * The work theme.
+     */
+    private String theme = "";
+
+    /**
+     * The work original title.
+     */
+    private String title = "";
+
+    // private String nationality = "";  // No reference in the ontology
+
     // ---- End framework field definition
 
     // ---- Begin framework ontology property and value defintion
@@ -183,13 +181,13 @@ public class Production {
         // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
         json += "\"id\" : \"" + id + "\",\n";
-        json += "\"title\" : \"" + title + "\",\n";
-        json += "\"theme\" : \"" + theme + "\",\n";
-        json += "\"release\" : \"" + release + "\",\n";
-        json += "\"duration\" : \"" + duration + "\",\n";
-        // json += "\"nationality\" : \"" + nationality + "\",\n";
         json += "\"director\" : \"" + director + "\",\n";
+        json += "\"duration\" : \"" + duration + "\",\n";
         json += "\"productor\" : \"" + productor + "\"\n";
+        json += "\"release\" : \"" + release + "\",\n";
+        json += "\"theme\" : \"" + theme + "\",\n";
+        json += "\"title\" : \"" + title + "\",\n";
+        // json += "\"nationality\" : \"" + nationality + "\",\n";
         json += "}";
         return json;
     }
