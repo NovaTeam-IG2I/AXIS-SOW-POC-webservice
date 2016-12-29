@@ -25,8 +25,34 @@ import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
+ * This servlet allows one to access a video from its Register's URI.
  *
- * @author richou
+ * The HTTP request @b must
+ * <ul>
+ * <li>Be a GET request <em>(this might be a bug)</em>;</li>
+ * <li>Contain a field named <code>uri</code> containing the film's register's
+ * URI.</li>
+ * </ul>
+ *
+ * The HTTP response will have a <code>video/mp4</code> MIME type, and will
+ * have:
+ * <ul>
+ * <li>A <code>200 OK</code> HTTP status code and contain the video if it has
+ * been found;</li>
+ * <li>A <code>404 Not Found</code> HTTP status code if the video has not been
+ * found in the triple store. This is probably due to an invalid URI;</li>
+ * <li>A <code>400 Bad Request</code> HTTP statud code if the <code>uri</code>
+ * parameter is missing from the request.</li>
+ * </ul>
+ *
+ * <p>
+ * <em>Note</em>: This implementation is considered <strong>bad</strong> as of
+ * now: the web client will have to download the full video before being able to
+ * play it. A way better way to do this is to stream the video. Revamping this
+ * servlet might be done in the future.
+ * </p>
+ *
+ * @author Richard Degenne
  */
 public class VideoServlet extends HttpServlet {
 
@@ -49,7 +75,7 @@ public class VideoServlet extends HttpServlet {
 
         FileInputStream file = getFile(uri);
         if (file == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
@@ -112,6 +138,17 @@ public class VideoServlet extends HttpServlet {
         return "Retrieve a video from its AXIS-CSRM URI.";
     }// </editor-fold>
 
+    /**
+     * Gets a {@link FileInputStream} for the video of the given URI.
+     *
+     * This method looks up in the triple store for a Film register with the
+     * given URI and opens a {@link FileInputStream} to the associated video
+     * file.
+     *
+     * @param uri A {@link String} to the requested film's register.
+     * @return A {@link FileInputStream} to the requested video file, or
+     * <code>null</code> if the file could not be found.
+     */
     private FileInputStream getFile(String uri) {
         String NS = TDBManager.DATAMODEL_NS;
         Dataset dataset = TDBManager.getInstance().getDataset();
