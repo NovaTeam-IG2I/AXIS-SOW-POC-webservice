@@ -39,6 +39,11 @@ public class Technical {
     private String id = "";
 
     /**
+     * The duration of the video in minutes.
+     */
+    private String duration = "";
+
+    /**
      * The file name.
      */
     private String fileName = "";
@@ -54,28 +59,23 @@ public class Technical {
     private String hyperlink = "";
 
     /**
-     * The owner or entity name who has the rights on the file.
-     */
-    private String rights = "";
-
-    /**
-     * The duration of the video in minutes.
-     */
-    private String duration = "";
-
-    /**
      * The import date of the file.
      */
     private String importDate = "";
 
+    /**
+     * The owner or entity name who has the rights on the file.
+     */
+    private String rights = "";
+
     // All property names relative to the framework
     public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
+    public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
     public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
     public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
     public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
-    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
-    public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
     public static String IMPORT_DATE_PROPERTY = Reg.DATAMODEL_URI + "date";
+    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
 
     /**
      * The type object value.
