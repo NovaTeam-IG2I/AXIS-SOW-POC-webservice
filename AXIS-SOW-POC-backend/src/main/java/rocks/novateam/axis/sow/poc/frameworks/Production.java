@@ -1,6 +1,16 @@
 package rocks.novateam.axis.sow.poc.frameworks;
 
 import java.io.IOException;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.util.FileManager;
+import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 /**
  * This class holds all informations about the production framework.
@@ -14,6 +24,12 @@ import java.io.IOException;
  * @author Alex Canales
  */
 public class Production {
+
+    /**
+     * Holds the model, should be deleted when it will be possible to get the
+     * model correctly. Do not use this field directly, use getModel function.
+     */
+    private Model model = null;
 
     // ---- Begin framework field definition
     /**
@@ -158,6 +174,28 @@ public class Production {
     }
 
     /**
+     * Fills the model with fake data: for test purpose, can be deleted.
+     */
+    private void fillModelWithFakeData(String id) {
+        String director = "Ava DuVernay";
+        String duration = "128";
+        String productor = " Cloud Eight Films";
+        String release = "2015-01-09";
+        String theme = "Historical drama";
+        String title = "Selma";
+
+        Model model = getModel();
+        Resource resource = model.createResource(id);
+        resource.addProperty(model.createProperty(TYPE_PROPERTY), TYPE_OBJECT);
+        resource.addProperty(model.createProperty(DIRECTOR_PROPERTY), director);
+        resource.addProperty(model.createProperty(DURATION_PROPERTY), duration);
+        resource.addProperty(model.createProperty(PRODUCTOR_PROPERTY), productor);
+        resource.addProperty(model.createProperty(RELEASE_PROPERTY), release);
+        resource.addProperty(model.createProperty(THEME_PROPERTY), theme);
+        resource.addProperty(model.createProperty(TITLE_PROPERTY), title);
+    }
+
+    /**
      * This class holds all informations about the production framework. Data
      * are automatically loaded from the TDB. If no data are not found, the
      * framework holds empty information.
@@ -168,7 +206,67 @@ public class Production {
     public Production(String id) {
         if(id == null)
             return;
-        fillObjectWithFakeData();
+        fillModelWithFakeData(id);
+        retrieveData(id);
+    }
+
+    /**
+     * Returns the model used. It should be replaced when good CRUD methods will
+     * be implemented.
+     *
+     * @return The model used.
+     */
+    private Model getModel() {
+        if(model == null) {
+            model = FileManager.get().loadModel(
+                Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
+            );
+        }
+        return model;
+    }
+    /**
+     * Retrieves all the production framework data.
+     *
+     * @param id The entity id the production is associated with.
+     */
+    private void retrieveData(String id)
+    {
+        String DIRECTOR_SELECT = "director";
+        String DURATION_SELECT = "duration";
+        String PRODUCTOR_SELECT = "productor";
+        String RELEASE_SELECT = "release";
+        String THEME_SELECT = "theme";
+        String TITLE_SELECT = "title";
+
+        String queryString = Reg.PREFIX + "SELECT " +
+                "?" + DIRECTOR_SELECT + " ?" + DURATION_SELECT + " " +
+                "?" + PRODUCTOR_SELECT + " ?" + RELEASE_SELECT + " " +
+                "?" + THEME_SELECT + " ?" + TITLE_SELECT + " " +
+                "WHERE \n{\n" +
+                "<" + id + "> <" + DIRECTOR_PROPERTY + "> ?" + DIRECTOR_SELECT + ".\n" +
+                "<" + id + "> <" + DURATION_PROPERTY + "> ?" + DURATION_SELECT + ".\n" +
+                "<" + id + "> <" + PRODUCTOR_PROPERTY + "> ?" + PRODUCTOR_SELECT + ".\n" +
+                "<" + id + "> <" + RELEASE_PROPERTY + "> ?" + RELEASE_SELECT + ".\n" +
+                "<" + id + "> <" + THEME_PROPERTY + "> ?" + THEME_SELECT + ".\n" +
+                "<" + id + "> <" + TITLE_PROPERTY + "> ?" + TITLE_SELECT + ".\n" +
+                "}";
+
+        Query query = QueryFactory.create(queryString);
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, getModel())) {
+            ResultSet results = qexec.execSelect();
+            while ( results.hasNext() ) {
+                QuerySolution solution = results.nextSolution();
+
+                // Should maybe use Literal
+                director = solution.getLiteral(DIRECTOR_SELECT).toString();
+                duration = solution.getLiteral(DURATION_SELECT).toString();
+                productor = solution.getLiteral(PRODUCTOR_SELECT).toString();
+                release = solution.getLiteral(RELEASE_SELECT).toString();
+                theme = solution.getLiteral(THEME_SELECT).toString();
+                title = solution.getLiteral(TITLE_SELECT).toString();
+            }
+        }
+        this.id = id;
     }
 
     /**
