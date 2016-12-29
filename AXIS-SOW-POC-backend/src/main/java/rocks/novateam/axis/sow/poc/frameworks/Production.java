@@ -82,8 +82,8 @@ public class Production {
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>rdf:type</code></li>
-     * <li><strong>DOMAIN</strong>: <code>cidoc:E71_Man-Made_Thing</code> (subclass of <code>axis:Register</code>)</li>
-     * <li><strong>RANGE</strong>: <code>cidoc:E35_Title</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>DOMAIN</strong>: None specified</li>
+     * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
     public static String TYPE_PROPERTY = Reg.RDF_URI + "type";

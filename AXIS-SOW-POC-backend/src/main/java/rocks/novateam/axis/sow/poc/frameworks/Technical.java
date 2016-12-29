@@ -68,14 +68,84 @@ public class Technical {
      */
     private String rights = "";
 
-    // All property names relative to the framework
+    // ---- Begin framework ontology property and value defintion
+    /**
+     * The type property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>rdf:type</code></li>
+     * <li><strong>DOMAIN</strong>: None specified</li>
+     * <li><strong>RANGE</strong>: None specified</li>
+     * </ul>
+     */
     public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
+
+    /**
+     * The duration property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P43_has_dimension</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E70_Thing</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>RANGE</strong>: <code>cidoc:E54_Dimensions</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
     public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
+
+    /**
+     * The file name property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:fileName</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:MediaEmbodiment</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:string</code></li>
+     * </ul>
+     */
     public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
+
+    /**
+     * The file name property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:fileSize</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:MediaEmbodiment</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:float</code></li>
+     * </ul>
+     */
     public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
+
+    /**
+     * The hyperlink property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:hyperlink</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:Location</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:string</code></li>
+     * </ul>
+     */
     public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
+
+    /**
+     * The import date property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:date</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:EventAnnotation</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:date</code></li>
+     * </ul>
+     */
     public static String IMPORT_DATE_PROPERTY = Reg.DATAMODEL_URI + "date";
+
+    /**
+     * The import date property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P75i_is_possessed_by</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E30_Right</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>RANGE</strong>: <code>axis:Agent</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
     public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
+    // ---- End framework ontology property and value defintion
 
     /**
      * The type object value.
