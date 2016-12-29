@@ -1,8 +1,6 @@
 package rocks.novateam.axis.sow.poc.frameworks;
 
 import java.io.IOException;
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 
 /**
  * This class holds all informations about the production framework.
@@ -17,6 +15,7 @@ import javax.json.JsonObjectBuilder;
  */
 public class Production {
 
+    // ---- Begin framework field definition
     /**
      * The entity id of which the framework refers to.
      */
@@ -45,7 +44,7 @@ public class Production {
     /**
      * The work nationality.
      */
-    private String nationality = "";
+    // private String nationality = "";  // No reference in the ontology
 
     /**
      * The work director's name.
@@ -56,17 +55,95 @@ public class Production {
      * The work productor's name, can be a society.
      */
     private String productor = "";
+    // ---- End framework field definition
 
-    // All property names relative to the framework
-    // TODO: define the properties
+    // ---- Begin framework ontology property and value defintion
+    /**
+     * The type object value.
+     */
+    public static String TYPE_OBJECT = Reg.DATAMODEL_URI + "AudiovisualWork";
+
+    /**
+     * The type property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>rdf:type</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E71_Man-Made_Thing</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>RANGE</strong>: <code>cidoc:E35_Title</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
     public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
-    public static String TITLE_PROPERTY = "";
-    public static String THEME_PROPERTY = "";
-    public static String RELEASE_PROPERTY = "";
-    public static String DURATION_PROPERTY = "";
-    public static String NATIONALITY_PROPERTY = "";
-    public static String DIRECTOR_PROPERTY = "";
-    public static String PRODUCTOR_PROPERTY = "";
+
+    /**
+     * The director property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P94_has_created</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E65_Creation</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>cidoc:E28_Conceptual_Object</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
+    public static String DIRECTOR_PROPERTY = Reg.CIDOC_URI + "E65_Creation";
+
+    /**
+     * The duration property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>ma:duration</code></li>
+     * <li><strong>DOMAIN</strong>: <code>ma:MediaResource and (not(ma:Image)</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:Decimal</code></li>
+     * </ul>
+     */
+    public static String DURATION_PROPERTY = Reg.MA_URI + "duration";
+
+    /**
+     * The productor property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P108_has_produced</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E12_Production</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>cidoc:E24_Physical_Man-Made_Thing</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
+    public static String PRODUCTOR_PROPERTY = Reg.CIDOC_URI + "P108_has_produced";
+
+    /**
+     * The release date property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>ma:releaseDate</code> (subproperty of <code>ma:date</code>)</li>
+     * <li><strong>DOMAIN</strong>: <code>ma:MediaResource</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: None specified</li>
+     * </ul>
+     */
+    public static String RELEASE_PROPERTY = Reg.MA_URI + "releaseDate";
+
+    /**
+     * The theme property URI. Note we consider a genre as a thema.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>ma:hasGenre</code></li>
+     * <li><strong>DOMAIN</strong>: <code>ma:MediaResource</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: None specified</li>
+     * </ul>
+     */
+    public static String THEME_PROPERTY = Reg.MA_URI + "hasGenre";
+
+    /**
+     * The title property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P102_has_title</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E71_Man-Made_Thing</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>RANGE</strong>: <code>cidoc:E35_Title</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
+    public static String TITLE_PROPERTY = Reg.CIDOC_URI + "P102_has_title";
+
+    // No reference to the nationality was found in the ontology
+    // public static String NATIONALITY_PROPERTY = "";
+
+    // ---- End framework ontology property and value defintion
 
     /**
      * Fills the object with fake data: for test purpose, can be deleted.
@@ -77,7 +154,7 @@ public class Production {
         theme = "Historical drama";
         release = "2015-01-09";
         duration = "128";
-        nationality = "United States";
+        // nationality = "United States";
         director = "Ava DuVernay";
         productor = " Cloud Eight Films";
     }
@@ -102,13 +179,15 @@ public class Production {
      * @return The information in JSON.
      */
     public String exportJSONFormat() {
+        // Not using a JsonObjectBuilder because of build error problems
+        // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
         json += "\"id\" : \"" + id + "\",\n";
         json += "\"title\" : \"" + title + "\",\n";
         json += "\"theme\" : \"" + theme + "\",\n";
         json += "\"release\" : \"" + release + "\",\n";
         json += "\"duration\" : \"" + duration + "\",\n";
-        json += "\"nationality\" : \"" + nationality + "\",\n";
+        // json += "\"nationality\" : \"" + nationality + "\",\n";
         json += "\"director\" : \"" + director + "\",\n";
         json += "\"productor\" : \"" + productor + "\"\n";
         json += "}";
