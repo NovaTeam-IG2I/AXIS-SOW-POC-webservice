@@ -38,21 +38,30 @@ public class RegisterManager {
     }
 
     /**
-     * TODO: AFP + search existence + put name given in labal and camelCase in ont
+     * TODO: AFP + search existence + put name given in label and camelCase in ont
      * @param name
      * @param className
      * @param properties 
      */
+    //get ont class afp + create ind, isDeclaredby()
     public void addRegisterInstance(String name, String className, ArrayList<String> properties){
         int cpt = 0;
+        String label=name;
+        name = org.apache.commons.lang3.text.WordUtils.capitalizeFully(name);
+        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        name = name.replace(" ","");
+        
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
+
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        Individual afp = ont.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         OntClass class_ = ont.getOntClass(NS+className);
         ExtendedIterator<OntProperty> exItr;        
         exItr = class_.listDeclaredProperties();
         Individual ind = class_.createIndividual(NS+name);
+        ind.setLabel(label,label);
         while (exItr.hasNext()) {
           OntProperty prop = exItr.next();
           if(prop.isDatatypeProperty()){
@@ -61,8 +70,11 @@ public class RegisterManager {
             cpt++;
           }
         }
-        ds.commit(); 
+
+        ind.addProperty(ont.getProperty(NS + "isDeclaredBy"), afp);
+        ds.commit();
     }
+    
     /**
      * Add a predicate to the ontology. Put its name in camelCase 
      * before the insertion.
