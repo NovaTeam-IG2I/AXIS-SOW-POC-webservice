@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rocks.novateam.axis.sow.poc.backend.ontology;
+package rocks.novateam.axis.sow.poc.backend.helpers;
 
 import java.util.ArrayList;
 

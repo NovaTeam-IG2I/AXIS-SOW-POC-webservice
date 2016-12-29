@@ -5,6 +5,7 @@
  */
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
+import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -18,11 +19,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.StmtIterator;
 
 import org.apache.jena.util.iterator.ExtendedIterator;
 
-import rocks.novateam.axis.sow.poc.tools.CamelCaseConverter;
+import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
 
 /**
  *
@@ -101,10 +101,11 @@ public class RegisterManager {
     public ArrayList getProperties(){
         ArrayList properties = new ArrayList();
         Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
+        ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        
+        ds.end();
+
         ExtendedIterator<DatatypeProperty> exItr;        
         exItr = ont.listDatatypeProperties();      
         while (exItr.hasNext()) {
@@ -112,7 +113,6 @@ public class RegisterManager {
           System.out.println("Datatype prop: "+ prop.getLocalName());
           properties.add(prop.getLocalName());
         }
-        ds.commit();
         return properties;
     }
     
@@ -122,9 +122,11 @@ public class RegisterManager {
         Category cat = new Category();
         Category cat2 = new Category();
         Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
+        ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        ds.end();
+
         OntClass classRegister = ont.getOntClass(NS+"Register");
         System.out.println(classRegister);
         ExtendedIterator<OntClass> exItr;
@@ -151,7 +153,6 @@ public class RegisterManager {
           cats.toString();
         }
         
-        ds.commit();
         return cats;
     }
     
