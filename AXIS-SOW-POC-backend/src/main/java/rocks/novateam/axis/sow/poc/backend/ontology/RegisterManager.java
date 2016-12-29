@@ -22,6 +22,8 @@ import org.apache.jena.rdf.model.StmtIterator;
 
 import org.apache.jena.util.iterator.ExtendedIterator;
 
+import rocks.novateam.axis.sow.poc.tools.CamelCaseConverter;
+
 /**
  *
  * @author Mélody
@@ -55,11 +57,11 @@ public class RegisterManager {
           OntProperty prop = exItr.next();
           if(prop.isDatatypeProperty()){
             System.out.println("Datatype prop: "+ prop.getLocalName());
-            ind.addProperty(prop, properties.get(cpt));
+            ind.addProperty(prop, properties.get(cpt));  
             cpt++;
           }
         }
-        ds.commit();
+        ds.commit(); 
     }
     /**
      * Add a predicate to the ontology. Put its name in camelCase 
@@ -68,9 +70,7 @@ public class RegisterManager {
      */
     public void addPredicate(String name){
         //put the string in camelCase
-        name = org.apache.commons.lang3.text.WordUtils.capitalizeFully(name);
-        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
-        name = name.replace(" ","");
+        name = CamelCaseConverter.convertToCamelCase(name);
         System.out.println(name);
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
