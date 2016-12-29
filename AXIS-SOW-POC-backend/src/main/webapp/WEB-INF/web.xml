@@ -9,6 +9,18 @@
         <servlet-name>importServlet</servlet-name>
         <url-pattern>/import</url-pattern>
     </servlet-mapping>
+
+    <!-- Production servlet handling -->
+    <servlet>
+        <servlet-name>ProductionServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ProductionServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ProductionServlet</servlet-name>
+        <url-pattern>/production</url-pattern>
+    </servlet-mapping>
+    <!-- End production servlet handling -->
     
     <session-config>
         <session-timeout>
