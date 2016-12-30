@@ -147,7 +147,7 @@ public class TDBManager {
         TDBManager tdbm = TDBManager.getInstance();
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
-        tdbm.setUp();
+        // tdbm.setUp();
         
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
@@ -160,6 +160,6 @@ public class TDBManager {
         }
         
         // Uncomment the following line to export the ontology to a given file
-        // tdbm.exportOwl(new FileOutputStream("../resources/ontologies/export.owl"));
+        tdbm.exportOwl(new FileOutputStream("../resources/ontologies/export.owl"));
     }
 }
