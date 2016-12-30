@@ -44,8 +44,8 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * The HTTP response will have a <code>application/json</code> MIME type, and
  * may contain:
  * <ul>
- * <li><code>{'status': 'ok', 'filename': <em>filename</em>}</code> if the
- * request succeeded ;</li>
+ * <li><code>{'status': 'ok', 'uri': <em>uri</em>}</code> if the
+ * request succeeded, where <code>uri</code> is the Film register's URI;</li>
  * <li><code>{'status': 'ko', 'message': <em>message</em>}</code> if the request
  * failed.</li>
  * </ul>
@@ -94,10 +94,10 @@ public class ImportServlet extends HttpServlet {
 
             // Create semantic entites in the TDB
             String urn = getUniqueName((title == null) ? fileName : title);
-            persist(urn, file.getAbsolutePath());
+            Individual film = persist(urn, file.getAbsolutePath());
 
             json.add("status", "ok")
-                    .add("filename", fileName);
+                    .add("uri", film.getURI());
         } catch (FileNotFoundException e) {
             json.add("status", "ko")
                     .add("message", e.getMessage());
@@ -189,8 +189,10 @@ public class ImportServlet extends HttpServlet {
      * 
      * @param name     The URN to give to the new entities
      * @param filePath The absolute path to the video file
+     * 
+     * @return         The Film register {@link Individual}
      */
-    private void persist(String name, String filePath) {
+    private Individual persist(String name, String filePath) {
         Dataset dataset = TDBManager.getInstance().getDataset();
         String NS = TDBManager.DATAMODEL_NS;
 
@@ -208,8 +210,9 @@ public class ImportServlet extends HttpServlet {
         Individual location = model.getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
         location.addProperty(model.getDatatypeProperty(NS + "hyperlink"), filePath);
         embodiment.addProperty(model.getProperty(NS + "hasLocation"), location);
-
         dataset.commit();
+        
+        return film;
     }
 
     /**
