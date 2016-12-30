@@ -93,7 +93,8 @@ public class ImportServlet extends HttpServlet {
             IOUtils.copy(fileContent, fileOutputStream);
 
             // Create semantic entites in the TDB
-            persist((title == null) ? fileName : title, file.getAbsolutePath());
+            String urn = getUniqueName((title == null) ? fileName : title);
+            persist(urn, file.getAbsolutePath());
 
             json.add("status", "ok")
                     .add("filename", fileName);
@@ -179,19 +180,52 @@ public class ImportServlet extends HttpServlet {
 
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-        
+
         Individual film = model.getOntClass(NS + "Film").createIndividual(NS + name);
         Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         film.addProperty(model.getProperty(NS + "isDeclaredBy"), afp);
-        Individual document = model.getOntClass(NS+"VideoDocument").createIndividual(NS+name+"_Document");
+        Individual document = model.getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
         document.addLiteral(model.getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
-        film.addProperty(model.getProperty(NS+"hasExpression"), document);
-        Individual embodiment = model.getOntClass(NS+"VideoEmbodiment").createIndividual(NS+name+"_Embodiment");
-        document.addProperty(model.getProperty(NS+"hasManifestation"), embodiment);
-        Individual location = model.getOntClass(NS+"Location").createIndividual(NS+name+"_Location");
-        location.addProperty(model.getDatatypeProperty(NS+"hyperlink"), filePath);
-        embodiment.addProperty(model.getProperty(NS+"hasLocation"), location);
-        
+        film.addProperty(model.getProperty(NS + "hasExpression"), document);
+        Individual embodiment = model.getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
+        document.addProperty(model.getProperty(NS + "hasManifestation"), embodiment);
+        Individual location = model.getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
+        location.addProperty(model.getDatatypeProperty(NS + "hyperlink"), filePath);
+        embodiment.addProperty(model.getProperty(NS + "hasLocation"), location);
+
         dataset.commit();
+    }
+
+    /**
+     * Finds a unique URN in the model for the given name.
+     *
+     * This method will look up the given <code>name</code> in the triple store
+     * and finds a suitable URN to avoid duplicates by adding a numerical suffix
+     * if needed.
+     *
+     * @param name The wanted URN
+     * @return A unique URN that doesn't already exist in the triple store
+     */
+    private String getUniqueName(String name) {
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        String NS = TDBManager.DATAMODEL_NS;
+
+        dataset.begin(ReadWrite.READ);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+        dataset.end();
+
+        // If name is already unique, return it as is.
+        Individual film = model.getIndividual(NS + name);
+        if (film == null) {
+            return name;
+        }
+
+        // Else, increment a numerical suffix until it becomes unique.
+        int i = 1;
+        while (film != null) {
+            film = model.getIndividual(NS + name + i);
+            i++;
+        }
+        return name + i;
     }
 }
