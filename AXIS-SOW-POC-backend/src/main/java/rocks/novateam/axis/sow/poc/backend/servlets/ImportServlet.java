@@ -173,7 +173,23 @@ public class ImportServlet extends HttpServlet {
         }
         return fileNumber + FILE_EXTENSION; // WARNING: Hardcoded file extension here.
     }
-
+    
+    /**
+     * Creates all the necessary AXIS-CSRM individuals in the triple store.
+     * 
+     * This method creates the following individuals:
+     * <ul>
+     * <li>A <code>Film</code>;</li>
+     * <li>An <code>AFP</code> (AXIS FootPrint) for the Film;</li>
+     * <li>A <code>VideoDocument</code> for the Film;</li>
+     * <li>A <code>VideoEmbodiment</code> for the Document;</li>
+     * <li>A <code>Location</code> for the Embodiment.</li>
+     * 
+     * The absolute path to the video file is stored as an <code>hyperlink</code> property on the Location individual.
+     * 
+     * @param name     The URN to give to the new entities
+     * @param filePath The absolute path to the video file
+     */
     private void persist(String name, String filePath) {
         Dataset dataset = TDBManager.getInstance().getDataset();
         String NS = TDBManager.DATAMODEL_NS;
