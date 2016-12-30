@@ -44,8 +44,8 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * The HTTP response will have a <code>application/json</code> MIME type, and
  * may contain:
  * <ul>
- * <li><code>{'status': 'ok', 'filename': <em>filename</em>}</code> if the
- * request succeeded ;</li>
+ * <li><code>{'status': 'ok', 'uri': <em>uri</em>}</code> if the
+ * request succeeded, where <code>uri</code> is the Film register's URI;</li>
  * <li><code>{'status': 'ko', 'message': <em>message</em>}</code> if the request
  * failed.</li>
  * </ul>
@@ -93,10 +93,11 @@ public class ImportServlet extends HttpServlet {
             IOUtils.copy(fileContent, fileOutputStream);
 
             // Create semantic entites in the TDB
-            persist((title == null) ? fileName : title, file.getAbsolutePath());
+            String urn = getUniqueName((title == null) ? fileName : title);
+            Individual film = persist(urn, file.getAbsolutePath());
 
             json.add("status", "ok")
-                    .add("filename", fileName);
+                    .add("uri", film.getURI());
         } catch (FileNotFoundException e) {
             json.add("status", "ko")
                     .add("message", e.getMessage());
@@ -172,26 +173,78 @@ public class ImportServlet extends HttpServlet {
         }
         return fileNumber + FILE_EXTENSION; // WARNING: Hardcoded file extension here.
     }
-
-    private void persist(String name, String filePath) {
+    
+    /**
+     * Creates all the necessary AXIS-CSRM individuals in the triple store.
+     * 
+     * This method creates the following individuals:
+     * <ul>
+     * <li>A <code>Film</code>;</li>
+     * <li>An <code>AFP</code> (AXIS FootPrint) for the Film;</li>
+     * <li>A <code>VideoDocument</code> for the Film;</li>
+     * <li>A <code>VideoEmbodiment</code> for the Document;</li>
+     * <li>A <code>Location</code> for the Embodiment.</li>
+     * 
+     * The absolute path to the video file is stored as an <code>hyperlink</code> property on the Location individual.
+     * 
+     * @param name     The URN to give to the new entities
+     * @param filePath The absolute path to the video file
+     * 
+     * @return         The Film register {@link Individual}
+     */
+    private Individual persist(String name, String filePath) {
         Dataset dataset = TDBManager.getInstance().getDataset();
         String NS = TDBManager.DATAMODEL_NS;
 
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-        
+
         Individual film = model.getOntClass(NS + "Film").createIndividual(NS + name);
         Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         film.addProperty(model.getProperty(NS + "isDeclaredBy"), afp);
-        Individual document = model.getOntClass(NS+"VideoDocument").createIndividual(NS+name+"_Document");
+        Individual document = model.getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
         document.addLiteral(model.getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
-        film.addProperty(model.getProperty(NS+"hasExpression"), document);
-        Individual embodiment = model.getOntClass(NS+"VideoEmbodiment").createIndividual(NS+name+"_Embodiment");
-        document.addProperty(model.getProperty(NS+"hasManifestation"), embodiment);
-        Individual location = model.getOntClass(NS+"Location").createIndividual(NS+name+"_Location");
-        location.addProperty(model.getDatatypeProperty(NS+"hyperlink"), filePath);
-        embodiment.addProperty(model.getProperty(NS+"hasLocation"), location);
-        
+        film.addProperty(model.getProperty(NS + "hasExpression"), document);
+        Individual embodiment = model.getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
+        document.addProperty(model.getProperty(NS + "hasManifestation"), embodiment);
+        Individual location = model.getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
+        location.addProperty(model.getDatatypeProperty(NS + "hyperlink"), filePath);
+        embodiment.addProperty(model.getProperty(NS + "hasLocation"), location);
         dataset.commit();
+        
+        return film;
+    }
+
+    /**
+     * Finds a unique URN in the model for the given name.
+     *
+     * This method will look up the given <code>name</code> in the triple store
+     * and finds a suitable URN to avoid duplicates by adding a numerical suffix
+     * if needed.
+     *
+     * @param name The wanted URN
+     * @return A unique URN that doesn't already exist in the triple store
+     */
+    private String getUniqueName(String name) {
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        String NS = TDBManager.DATAMODEL_NS;
+
+        dataset.begin(ReadWrite.READ);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+        dataset.end();
+
+        // If name is already unique, return it as is.
+        Individual film = model.getIndividual(NS + name);
+        if (film == null) {
+            return name;
+        }
+
+        // Else, increment a numerical suffix until it becomes unique.
+        int i = 1;
+        while (film != null) {
+            film = model.getIndividual(NS + name + i);
+            i++;
+        }
+        return name + i;
     }
 }
