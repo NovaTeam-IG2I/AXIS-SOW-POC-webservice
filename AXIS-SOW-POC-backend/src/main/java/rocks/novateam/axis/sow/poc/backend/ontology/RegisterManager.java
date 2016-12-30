@@ -98,20 +98,22 @@ public class RegisterManager {
      * Add their name to an array called properties and return it
      * @return properties
      */
-    public ArrayList getProperties(){
+    public ArrayList getProperties(String className){
         ArrayList properties = new ArrayList();
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
         ds.end();
-
-        ExtendedIterator<DatatypeProperty> exItr;        
-        exItr = ont.listDatatypeProperties();      
+        OntClass class_ = ont.getOntClass(NS+className);
+        ExtendedIterator<OntProperty> exItr;        
+        exItr = class_.listDeclaredProperties();      
         while (exItr.hasNext()) {
-          DatatypeProperty prop = exItr.next();
-          System.out.println("Datatype prop: "+ prop.getLocalName());
-          properties.add(prop.getLocalName());
+          OntProperty prop = exItr.next();
+          if(prop.isDatatypeProperty()){
+            System.out.println("Datatype prop: "+ prop.getLocalName());
+            properties.add(prop.getLocalName());
+          }
         }
         return properties;
     }
