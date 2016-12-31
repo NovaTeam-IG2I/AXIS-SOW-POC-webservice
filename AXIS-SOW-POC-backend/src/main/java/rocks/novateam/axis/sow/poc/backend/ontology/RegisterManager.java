@@ -249,9 +249,17 @@ public class RegisterManager {
     
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
+        //System.out.println("Executing: rm.getProperties(\"PhysicalPerson\");");
         //rm.getProperties("PhysicalPerson");
+        //System.out.println("\nExecuting: rm.getProperties(\"AXE\");");
+        //rm.getProperties("AXE");
         //rm.getCategories();
-        rm.getRegisterCategories();
+        //System.out.println("\nExecuting: rm.getRegisterCategories();");
+        //rm.getRegisterCategories();
+        //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
+        //rm.getCategoriesRecusively("AXE");
+        System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
+        rm.getCategoriesRecusively("Document");
         /*ArrayList<String> al = new ArrayList();
         al.add("p1");
         al.add("p2");
