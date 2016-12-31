@@ -149,7 +149,7 @@ public class RegisterManager {
                   cat2.setLabel(subClass.getLocalName());
                   cats2.add(cat2);
               }
-              cat.setSubClass(cats2);
+              cat.setSubCategories(cats2);
           }
           cats.add(cat);
           cats.toString();
@@ -203,7 +203,7 @@ public class RegisterManager {
             {
                 OntClass currentLoopOntClass = iter.next();
                 System.out.println("Processing class: " + currentLoopOntClass.getLocalName());
-                c.addSubClasses(getCategoriesRecusively(new ArrayList<Category>(), currentLoopOntClass));
+                c.addSubCategories(getCategoriesRecusively(new ArrayList<Category>(), currentLoopOntClass));
             }
         }
         categories.add(c);

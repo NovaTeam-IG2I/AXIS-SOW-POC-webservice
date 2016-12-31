@@ -12,12 +12,12 @@ import java.util.ArrayList;
  * @author Mélody
  */
 public class Category {
-    public String label;
-    public ArrayList<Category> subClass;
+    private String label;
+    private ArrayList<Category> subCategories;
 
     public Category() {
         this.label = "";
-        this.subClass = new ArrayList<>();
+        this.subCategories = new ArrayList<>();
     }
     
     public Category(String label) {
@@ -27,51 +27,51 @@ public class Category {
 
     public Category(ArrayList<Category> subClass) {
         this();
-        this.subClass = subClass;
+        this.subCategories = subClass;
     }
 
     public Category(String label, ArrayList<Category> subClass) {
         this.label = label;
-        this.subClass = subClass;
+        this.subCategories = subClass;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public ArrayList<Category> getSubClass() {
-        return subClass;
+    public ArrayList<Category> getSubCategories() {
+        return subCategories;
     }
 
     public void setLabel(String label) {
         this.label = label;
     }
 
-    public void setSubClass(ArrayList<Category> subClass) {
-        this.subClass = subClass;
+    public void setSubCategories(ArrayList<Category> subCategories) {
+        this.subCategories = subCategories;
     }
     
-    public void addSubClass(String label){
+    public void addSubCategory(String label){
         Category cat = new Category(label);
-        this.subClass.add(cat);
+        this.subCategories.add(cat);
     }
     
-    public void addSubClass(Category c){
-        this.subClass.add(c);
+    public void addSubCategory(Category c){
+        this.subCategories.add(c);
     }
 
-    public void addSubClasses(ArrayList<Category> alc){
-        this.subClass.addAll(alc);
+    public void addSubCategories(ArrayList<Category> alc){
+        this.subCategories.addAll(alc);
     }
 
     @Override
     public String toString() {
-        return "Category{" + "label=" + label + ", subClass=" + subClass + '}';
+        return "Category{" + "label=" + label + ", subClass=" + subCategories + '}';
     }
     
     public String toTree() {
         String tree = "";
-        if (this.subClass.isEmpty()) {
+        if (this.subCategories.isEmpty()) {
             return this.label;
         } else {
             return recursiveTree(tree, this, 0);
@@ -86,8 +86,8 @@ public class Category {
         }
         s += c.label + "\n";
 
-        if (c.subClass != null && !c.subClass.isEmpty()){
-            for (Category subCat : c.getSubClass()) {
+        if (c.subCategories != null && !c.subCategories.isEmpty()){
+            for (Category subCat : c.getSubCategories()) {
                 s = recursiveTree(s, subCat, (1 + level));
             }
         }
