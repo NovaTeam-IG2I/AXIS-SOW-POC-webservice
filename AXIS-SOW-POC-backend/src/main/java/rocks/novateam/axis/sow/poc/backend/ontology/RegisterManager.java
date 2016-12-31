@@ -180,7 +180,7 @@ public class RegisterManager {
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
         ds.end();
-        OntClass mOntClass = ont.getOntClass(/*NS+*/className);
+        OntClass mOntClass = ont.getOntClass(NS+className);
         if(mOntClass == null) throw new NullPointerException("\nError on getting \""+NS+className+"\" OntClass.");
         System.out.println("Processing class: " + mOntClass.getLocalName());
         return getCategoriesRecusively(categories, mOntClass);
@@ -249,7 +249,7 @@ public class RegisterManager {
     
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
-        //rm.getProperties();
+        //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
         rm.getRegisterCategories();
         /*ArrayList<String> al = new ArrayList();
