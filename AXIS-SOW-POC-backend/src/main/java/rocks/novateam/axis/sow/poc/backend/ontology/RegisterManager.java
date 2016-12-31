@@ -203,7 +203,7 @@ public class RegisterManager {
             {
                 OntClass currentLoopOntClass = iter.next();
                 System.out.println("Processing class: " + currentLoopOntClass.getLocalName());
-                c.setSubClass(getCategoriesRecusively(new ArrayList<Category>(), currentLoopOntClass));
+                c.addSubClasses(getCategoriesRecusively(new ArrayList<Category>(), currentLoopOntClass));
             }
         }
         categories.add(c);
@@ -259,7 +259,8 @@ public class RegisterManager {
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
         //rm.getCategoriesRecusively("AXE");
         System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
-        rm.getCategoriesRecusively("Document");
+        ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
+        for(Category c : arc) System.out.println(c.toTree());
         /*ArrayList<String> al = new ArrayList();
         al.add("p1");
         al.add("p2");
