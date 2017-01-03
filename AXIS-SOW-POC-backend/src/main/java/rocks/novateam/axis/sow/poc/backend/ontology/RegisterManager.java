@@ -220,10 +220,13 @@ public class RegisterManager {
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
         Resource resource = ont.getIndividual(NS+name);
+        //remove afp
+        resource.removeProperties();
         // remove statements where resource is subject
         ont.removeAll(resource, null, (RDFNode) null);
         // remove statements where resource is object
         ont.removeAll(null, null, resource);
+        
         ds.commit();
     }
     
@@ -245,6 +248,22 @@ public class RegisterManager {
         ds.commit();
     }
     
+    public ArrayList<String> getAllIndividuals(){
+        ArrayList<String> individuals = new ArrayList();
+        Dataset ds = tdbm.getDataset();
+        ds.begin(ReadWrite.READ);
+        Model model = ds.getDefaultModel();
+        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        ExtendedIterator<Individual> i = ont.listIndividuals();
+        while(i.hasNext())
+        {
+            Individual ind = i.next();
+            System.out.println("Processing individual: " + ind.getLocalName() + " of category : "+ind.getOntClass().getLocalName());
+            individuals.add(ind.getLocalName());
+        }
+        return individuals;
+    }
+    
     
     
     public static void main(String[] args) {
@@ -259,11 +278,11 @@ public class RegisterManager {
         //rm.getRegisterCategories();
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
         //rm.getCategoriesRecusively("AXE");
-        System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
-        ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
-        for(Category c : arc) System.out.println(c.toTree());
-
-        rm.getProperties("PhysicalPerson");
+        //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
+        //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
+        //for(Category c : arc) System.out.println(c.toTree());
+        rm.getAllIndividuals();
+        //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
         //rm.getCategoriesRecusively();
         /*ArrayList<String> al = new ArrayList();
