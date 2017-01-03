@@ -43,7 +43,6 @@ public class RegisterManager {
      * @param className
      * @param properties 
      */
-    //get ont class afp + create ind, isDeclaredby()
     public void addRegisterInstance(String name, String className, ArrayList<String> properties){
         int cpt = 0;
         String label=name;
@@ -58,18 +57,24 @@ public class RegisterManager {
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
         Individual afp = ont.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         OntClass class_ = ont.getOntClass(NS+className);
-        ExtendedIterator<OntProperty> exItr;        
-        exItr = class_.listDeclaredProperties();
         Individual ind = class_.createIndividual(NS+name);
         ind.setLabel(label,label);
-        while (exItr.hasNext()) {
-          OntProperty prop = exItr.next();
-          if(prop.isDatatypeProperty()){
-            System.out.println("Datatype prop: "+ prop.getLocalName());
-            ind.addProperty(prop, properties.get(cpt));  
-            cpt++;
-          }
-        }
+
+        ExtendedIterator<OntProperty> exItr;      
+        exItr = class_.listDeclaredProperties();
+       // System.out.println(exItr.);
+        //if(exItr.hasNext()){
+            while (exItr.hasNext()) {
+              OntProperty prop = exItr.next();
+              if(prop.isDatatypeProperty()){
+                System.out.println("Datatype prop: "+ prop.getLocalName());
+                if(cpt<properties.size()){
+                    ind.addProperty(prop, properties.get(cpt));
+                }
+                cpt++;
+              }
+            }
+        //}
 
         ind.addProperty(ont.getProperty(NS + "isDeclaredBy"), afp);
         ds.commit();
@@ -281,6 +286,8 @@ public class RegisterManager {
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
         //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
         //for(Category c : arc) System.out.println(c.toTree());
+        ArrayList<String> al = new ArrayList();
+        rm.addRegisterInstance("TEEEEEEEEST", "PhysicalPerson",al);
         rm.getAllIndividuals();
         //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
