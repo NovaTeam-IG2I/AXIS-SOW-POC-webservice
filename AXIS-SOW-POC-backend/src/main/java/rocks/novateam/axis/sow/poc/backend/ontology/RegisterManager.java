@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.query.Dataset;
@@ -27,6 +26,7 @@ import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
 /**
  *
  * @author Mélody
+ * @author Olivier Sailly
  */
 public class RegisterManager {
     private static final String NS = TDBManager.DATAMODEL_URL+"#";
@@ -179,6 +179,16 @@ public class RegisterManager {
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        ont.setStrictMode(false);
+        /*
+            Note :
+
+                setStrictMode() is set to false to solve the problem with the ConversionException with classes as
+                ~/interoperabilitymodel/ontology/0.4#AXE
+
+                As stated in http://stackoverflow.com/a/17447438/7358724 , we have to call setStrictMode(false) on our OntModel,
+                in order to be able to view every resource as a class, by switching off strict checking.
+        */
         ds.end();
         OntClass mOntClass = ont.getOntClass(NS+className);
         if(mOntClass == null) throw new NullPointerException("\nError on getting \""+NS+className+"\" OntClass.");
@@ -268,20 +278,20 @@ public class RegisterManager {
     
     public static void main(String[] args) {
         RegisterManager rm = new RegisterManager();
-
         //System.out.println("Executing: rm.getProperties(\"PhysicalPerson\");");
         //rm.getProperties("PhysicalPerson");
         //System.out.println("\nExecuting: rm.getProperties(\"AXE\");");
         //rm.getProperties("AXE");
         //rm.getCategories();
-        //System.out.println("\nExecuting: rm.getRegisterCategories();");
-        //rm.getRegisterCategories();
+        System.out.println("\nExecuting: rm.getRegisterCategories();");
+        ArrayList<Category> arc = rm.getRegisterCategories();
+        for(Category c : arc) System.out.println(c.toTree());
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
         //rm.getCategoriesRecusively("AXE");
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
         //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
         //for(Category c : arc) System.out.println(c.toTree());
-        rm.getAllIndividuals();
+        //rm.getAllIndividuals();
         //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
         //rm.getCategoriesRecusively();
