@@ -7,6 +7,8 @@ package rocks.novateam.axis.sow.poc.backend.ontology;
 
 import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -44,7 +46,7 @@ public class RegisterManager {
      * @param className
      * @param properties 
      */
-    public void addRegisterInstance(String name, String className, ArrayList<String> properties){
+    public void addRegisterInstance(String name, String className, Map<String,String> properties){
         int cpt = 0;
         String label=name;
         name = CamelCaseConverter.convertToCamelCase(name);
@@ -64,8 +66,8 @@ public class RegisterManager {
         Individual afp = ont.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         OntClass class_ = ont.getOntClass(NS+className);
         Individual ind = class_.createIndividual(NS+name);
-        ind.setLabel(label,"EN");
-
+        ind.addLabel(label,"EN");
+/*
         ExtendedIterator<OntProperty> exItr;      
         exItr = class_.listDeclaredProperties();
         while (exItr.hasNext()) {
@@ -77,6 +79,12 @@ public class RegisterManager {
             }
             cpt++;
           }
+        }
+*/
+
+        for (Map.Entry<String,String> property : properties.entrySet()) {
+            OntProperty prprt = ont.getOntProperty(NS+property.getKey());
+            ind.addProperty(prprt, property.getValue());
         }
 
         ind.addProperty(ont.getProperty(NS + "isDeclaredBy"), afp);
@@ -244,6 +252,8 @@ public class RegisterManager {
         return individuals;
     }
     
+    ///getPropertiesOfIndividual
+    
     
     
     public static void main(String[] args) {
@@ -261,10 +271,14 @@ public class RegisterManager {
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
         //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
         //for(Category c : arc) System.out.println(c.toTree());
-        ArrayList<String> al = new ArrayList();
-        rm.addRegisterInstance("TEEEEEEEEST2", "PhysicalPerson",al);
+        Map<String,String> map = new HashMap<>();
+        map.put("prop1", "valueprop1");
+        map.put("prop2", "valueprop2");
+        rm.deleteInstance("testAvecMap");
+        rm.addRegisterInstance("TEst avec Map", "PhysicalPerson",map);
+        
         //rm.getAllIndividuals();
-        rm.deleteInstance("TEEEEEEEEST2");
+        //rm.deleteInstance("TEEEEEEEEST2");
         rm.getAllIndividuals();
         //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
