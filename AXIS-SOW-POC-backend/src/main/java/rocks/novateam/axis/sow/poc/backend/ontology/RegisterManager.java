@@ -12,6 +12,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -46,19 +47,24 @@ public class RegisterManager {
     public void addRegisterInstance(String name, String className, ArrayList<String> properties){
         int cpt = 0;
         String label=name;
-        name = org.apache.commons.lang3.text.WordUtils.capitalizeFully(name);
-        name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
-        name = name.replace(" ","");
+        name = CamelCaseConverter.convertToCamelCase(name);
         
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
-
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        Individual thisInd = ont.getIndividual(NS+name);
+        //if this instance already exist
+        if(thisInd != null){
+            System.out.println("This ind already exists");
+            ds.commit();
+            return;
+        }
+        
         Individual afp = ont.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         OntClass class_ = ont.getOntClass(NS+className);
         Individual ind = class_.createIndividual(NS+name);
-        ind.setLabel(label,label);
+        ind.setLabel(label,"EN");
 
         ExtendedIterator<OntProperty> exItr;      
         exItr = class_.listDeclaredProperties();
@@ -227,18 +233,15 @@ public class RegisterManager {
      * @param name 
      */
     public void deleteInstance(String name){
+        name = CamelCaseConverter.convertToCamelCase(name);
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        Resource resource = ont.getIndividual(NS+name);
-        //remove afp
-        resource.removeProperties();
-        // remove statements where resource is subject
-        ont.removeAll(resource, null, (RDFNode) null);
-        // remove statements where resource is object
-        ont.removeAll(null, null, resource);
-        
+        OntResource resource = ont.getOntResource(NS+name);
+        OntResource resourceAFP = ont.getOntResource(NS+name+"_AFP");
+        resource.remove();
+        resourceAFP.remove();
         ds.commit();
     }
     
@@ -273,6 +276,7 @@ public class RegisterManager {
             System.out.println("Processing individual: " + ind.getLocalName() + " of category : "+ind.getOntClass().getLocalName());
             individuals.add(ind.getLocalName());
         }
+        ds.commit();
         return individuals;
     }
     
@@ -285,18 +289,19 @@ public class RegisterManager {
         //System.out.println("\nExecuting: rm.getProperties(\"AXE\");");
         //rm.getProperties("AXE");
         //rm.getCategories();
-        System.out.println("\nExecuting: rm.getRegisterCategories();");
+        /*System.out.println("\nExecuting: rm.getRegisterCategories();");
         ArrayList<Category> arc = rm.getRegisterCategories();
-        for(Category c : arc) System.out.println(c.toTree());
+        for(Category c : arc) System.out.println(c.toTree());*/
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
-        //rm.getCategoriesRecusively("AXE");
+        //rm.getCategoriesRecusively("PhysicalPerson");
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
         //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
         //for(Category c : arc) System.out.println(c.toTree());
         ArrayList<String> al = new ArrayList();
-        rm.addRegisterInstance("TEEEEEEEEST", "PhysicalPerson",al);
-        rm.getAllIndividuals();
+        rm.addRegisterInstance("TEEEEEEEEST2", "PhysicalPerson",al);
         //rm.getAllIndividuals();
+        rm.deleteInstance("TEEEEEEEEST2");
+        rm.getAllIndividuals();
         //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
         //rm.getCategoriesRecusively();
