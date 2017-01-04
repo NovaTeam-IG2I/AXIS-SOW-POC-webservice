@@ -238,10 +238,15 @@ public class RegisterManager {
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
         OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        try {
         OntResource resource = ont.getOntResource(NS+name);
         OntResource resourceAFP = ont.getOntResource(NS+name+"_AFP");
         resource.remove();
         resourceAFP.remove();
+        }
+        catch (Exception e){
+            System.out.println(e.fillInStackTrace());
+        }
         ds.commit();
     }
     
@@ -252,6 +257,9 @@ public class RegisterManager {
      * @param predicateName 
      */
     public void addPredicateToRegisters(String subjectName, String objectName, String predicateName){
+        subjectName = CamelCaseConverter.convertToCamelCase(subjectName);
+        objectName = CamelCaseConverter.convertToCamelCase(objectName);
+        predicateName = CamelCaseConverter.convertToCamelCase(predicateName);
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
