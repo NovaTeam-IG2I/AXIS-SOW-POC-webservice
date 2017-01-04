@@ -193,7 +193,6 @@ public class RegisterManager {
      * @param name 
      */
     public void deleteInstance(String name){
-        name = CamelCaseConverter.convertToCamelCase(name);
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
@@ -217,9 +216,6 @@ public class RegisterManager {
      * @param predicateName 
      */
     public void addPredicateToRegisters(String subjectName, String objectName, String predicateName){
-        subjectName = CamelCaseConverter.convertToCamelCase(subjectName);
-        objectName = CamelCaseConverter.convertToCamelCase(objectName);
-        predicateName = CamelCaseConverter.convertToCamelCase(predicateName);
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.WRITE);
         Model model = ds.getDefaultModel();
