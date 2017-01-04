@@ -30,7 +30,7 @@ import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
  * @author Olivier Sailly
  */
 public class RegisterManager {
-    private final class neededEnvironnement {
+    private final class NeededEnvironment {
         private Dataset mDataset;
         private Model mModel;
         private OntModel mOntModel;
@@ -43,7 +43,7 @@ public class RegisterManager {
          *
          * @param rw Tells whether to begin writing or reading
          */
-        public neededEnvironnement(ReadWrite rw) {
+        public NeededEnvironment(ReadWrite rw) {
             this.mReadWrite = rw;
             this.mDataset = tdbm.getDataset();
             this.mDataset.begin(this.mReadWrite);
@@ -55,6 +55,7 @@ public class RegisterManager {
          * Constructor of the class neededEnvironnement.
          * This public method calls the default constructor.
          * It is able to set the OntModel's StrictMode.
+         *
          * Note :
          *
          *        setStrictMode() is set to false to solve the problem with the ConversionException with classes as
@@ -66,7 +67,7 @@ public class RegisterManager {
          * @param rw Tells whether to begin writing or reading
          * @param ontModelStrictMode Tells whether to set StrictMode to true or false
          */
-        public neededEnvironnement(ReadWrite rw, boolean ontModelStrictMode) {
+        public NeededEnvironment(ReadWrite rw, boolean ontModelStrictMode) {
             this(rw);
             this.mOntModel.setStrictMode(ontModelStrictMode);
         }
@@ -132,21 +133,17 @@ public class RegisterManager {
         int cpt = 0;
         String label=name;
         name = CamelCaseConverter.convertToCamelCase(name);
-        
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        Individual thisInd = ont.getIndividual(NS+name);
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+        Individual thisInd = nEnv.getOntModel().getIndividual(NS+name);
         //if this instance already exist
         if(thisInd != null){
             System.out.println("This ind already exists");
-            ds.commit();
+            nEnv.finish();
             return;
         }
         
-        Individual afp = ont.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
-        OntClass class_ = ont.getOntClass(NS+className);
+        Individual afp = nEnv.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+        OntClass class_ = nEnv.getOntModel().getOntClass(NS+className);
         Individual ind = class_.createIndividual(NS+name);
         ind.addLabel(label,"EN");
 /*
@@ -165,12 +162,12 @@ public class RegisterManager {
 */
 
         for (Map.Entry<String,String> property : properties.entrySet()) {
-            OntProperty prprt = ont.getOntProperty(NS+property.getKey());
+            OntProperty prprt = nEnv.getOntModel().getOntProperty(NS+property.getKey());
             ind.addProperty(prprt, property.getValue());
         }
 
-        ind.addProperty(ont.getProperty(NS + "isDeclaredBy"), afp);
-        ds.commit();
+        ind.addProperty(nEnv.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
+        nEnv.finish();
     }
     
     /**
@@ -182,28 +179,24 @@ public class RegisterManager {
         //put the string in camelCase
         name = CamelCaseConverter.convertToCamelCase(name);
         System.out.println(name);
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        ont.createOntProperty(name);
-        ds.commit();
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+        nEnv.getOntModel().createOntProperty(name);
+        nEnv.finish();
     }
     
     
     /**
      * Get all the datatypeProperties from the ontModel
      * Add their name to an array called properties and return it
+     * @param className
      * @return properties
      */
     public ArrayList getProperties(String className){
         ArrayList properties = new ArrayList();
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.READ);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        ds.end();
-        OntClass class_ = ont.getOntClass(NS+className);
+
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        nEnv.finish();
+        OntClass class_ = nEnv.getOntModel().getOntClass(NS+className);
         ExtendedIterator<OntProperty> exItr;        
         exItr = class_.listDeclaredProperties();      
         while (exItr.hasNext()) {
@@ -233,9 +226,9 @@ public class RegisterManager {
      */
     public ArrayList<Category> getCategoriesRecusively(String className) throws NullPointerException { // before the first loop, we have to create our variables
         ArrayList<Category> categories = new ArrayList<>();
-        neededEnvironnement nEnv = new neededEnvironnement(ReadWrite.READ, false);
-        OntClass mOntClass = nEnv.getOntModel().getOntClass(NS+className);
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ, false);
         nEnv.finish();
+        OntClass mOntClass = nEnv.getOntModel().getOntClass(NS+className);
         if(mOntClass == null) throw new NullPointerException("\nError on getting \""+NS+className+"\" OntClass.");
         System.out.println("Processing class: " + mOntClass.getLocalName());
         return getCategoriesRecusively(categories, mOntClass);
@@ -270,20 +263,17 @@ public class RegisterManager {
      * @param name 
      */
     public void deleteInstance(String name){
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         try {
-        OntResource resource = ont.getOntResource(NS+name);
-        OntResource resourceAFP = ont.getOntResource(NS+name+"_AFP");
+        OntResource resource = nEnv.getOntModel().getOntResource(NS+name);
+        OntResource resourceAFP = nEnv.getOntModel().getOntResource(NS+name+"_AFP");
         resource.remove();
         resourceAFP.remove();
         }
         catch (Exception e){
             System.out.println(e.fillInStackTrace());
         }
-        ds.commit();
+        nEnv.finish();
     }
     
     /**
@@ -293,31 +283,25 @@ public class RegisterManager {
      * @param predicateName 
      */
     public void addPredicateToRegisters(String subjectName, String objectName, String predicateName){
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.WRITE);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        Resource subject = ont.getIndividual(NS+subjectName);
-        Resource object = ont.getIndividual(NS+objectName);
-        OntProperty predicate = ont.getOntProperty(NS+predicateName);
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+        Resource subject = nEnv.getOntModel().getIndividual(NS+subjectName);
+        Resource object = nEnv.getOntModel().getIndividual(NS+objectName);
+        OntProperty predicate = nEnv.getOntModel().getOntProperty(NS+predicateName);
         subject.addProperty(predicate, object);
-        ds.commit();
+        nEnv.finish();
     }
     
     public ArrayList<String> getAllIndividuals(){
         ArrayList<String> individuals = new ArrayList();
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.READ);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        ExtendedIterator<Individual> i = ont.listIndividuals();
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        nEnv.finish();
+        ExtendedIterator<Individual> i = nEnv.getOntModel().listIndividuals();
         while(i.hasNext())
         {
             Individual ind = i.next();
             System.out.println("Processing individual: " + ind.getLocalName() + " of category : "+ind.getOntClass().getLocalName());
             individuals.add(ind.getLocalName());
         }
-        ds.commit();
         return individuals;
     }
     
