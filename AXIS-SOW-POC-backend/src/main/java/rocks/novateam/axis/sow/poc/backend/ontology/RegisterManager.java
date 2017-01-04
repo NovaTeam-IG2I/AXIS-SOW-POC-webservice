@@ -17,7 +17,6 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 import org.apache.jena.util.iterator.ExtendedIterator;
@@ -30,6 +29,83 @@ import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
  * @author Olivier Sailly
  */
 public class RegisterManager {
+    private final class neededEnvironnement {
+        private Dataset mDataset;
+        private Model mModel;
+        private OntModel mOntModel;
+        private ReadWrite mReadWrite;
+
+        /**
+         * Constructor of the class neededEnvironnement.
+         * This public method sets the dataset, model, and ontmodel by default.
+         * It uses the ReadWrite entry to know what to do.
+         *
+         * @param rw Tells whether to begin writing or reading
+         */
+        public neededEnvironnement(ReadWrite rw) {
+            this.mReadWrite = rw;
+            this.mDataset = tdbm.getDataset();
+            this.mDataset.begin(this.mReadWrite);
+            this.mModel = mDataset.getDefaultModel();
+            this.mOntModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, mModel);
+        }
+
+        /**
+         * Constructor of the class neededEnvironnement.
+         * This public method calls the default constructor.
+         * It is able to set the OntModel's StrictMode.
+         *
+         * @param rw Tells whether to begin writing or reading
+         * @param ontModelStrictMode Tells whether to set StrictMode to true or false
+         */
+        public neededEnvironnement(ReadWrite rw, boolean ontModelStrictMode) {
+            this(rw);
+            this.mOntModel.setStrictMode(ontModelStrictMode);
+        }
+
+        /**
+         * This public method should be used to finish any process.
+         * The method knows whether to finish a READ or a WRITE, otherwise, it aborts everything.
+         */
+        public void finish(){
+            switch(this.mReadWrite){
+                case READ:
+                    this.mDataset.end();
+                break;
+                case WRITE:
+                    this.mDataset.commit();
+                break;
+                default:
+                    this.mDataset.abort();
+                break;
+            }
+        }
+
+        public Dataset getDataset() {
+            return mDataset;
+        }
+
+        public void setDataset(Dataset ds) {
+            this.mDataset = ds;
+        }
+
+        public Model getModel() {
+            return mModel;
+        }
+
+        public void setModel(Model mModel) {
+            this.mModel = mModel;
+        }
+
+        public OntModel getOntModel() {
+            return mOntModel;
+        }
+
+        public void setOntModel(OntModel mOntModel) {
+            this.mOntModel = mOntModel;
+        }
+    }
+
     private static final String NS = TDBManager.DATAMODEL_URL+"#";
     
     private TDBManager tdbm;
@@ -143,22 +219,9 @@ public class RegisterManager {
      */
     public ArrayList<Category> getCategoriesRecusively(String className) throws NullPointerException { // before the first loop, we have to create our variables
         ArrayList<Category> categories = new ArrayList<>();
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.READ);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        ont.setStrictMode(false);
-        /*
-            Note :
-
-                setStrictMode() is set to false to solve the problem with the ConversionException with classes as
-                ~/interoperabilitymodel/ontology/0.4#AXE
-
-                As stated in http://stackoverflow.com/a/17447438/7358724 , we have to call setStrictMode(false) on our OntModel,
-                in order to be able to view every resource as a class, by switching off strict checking.
-        */
-        ds.end();
-        OntClass mOntClass = ont.getOntClass(NS+className);
+        neededEnvironnement nEnv = new neededEnvironnement(ReadWrite.READ, false);
+        OntClass mOntClass = nEnv.getOntModel().getOntClass(NS+className);
+        nEnv.finish();
         if(mOntClass == null) throw new NullPointerException("\nError on getting \""+NS+className+"\" OntClass.");
         System.out.println("Processing class: " + mOntClass.getLocalName());
         return getCategoriesRecusively(categories, mOntClass);
@@ -257,19 +320,19 @@ public class RegisterManager {
         //System.out.println("\nExecuting: rm.getProperties(\"AXE\");");
         //rm.getProperties("AXE");
         //rm.getCategories();
-        /*System.out.println("\nExecuting: rm.getRegisterCategories();");
+        System.out.println("\nExecuting: rm.getRegisterCategories();");
         ArrayList<Category> arc = rm.getRegisterCategories();
-        for(Category c : arc) System.out.println(c.toTree());*/
+        for(Category c : arc) System.out.println(c.toTree());
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
         //rm.getCategoriesRecusively("PhysicalPerson");
         //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
         //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
         //for(Category c : arc) System.out.println(c.toTree());
-        ArrayList<String> al = new ArrayList();
-        rm.addRegisterInstance("TEEEEEEEEST2", "PhysicalPerson",al);
+        //ArrayList<String> al = new ArrayList();
+        /*rm.addRegisterInstance("TEEEEEEEEST2", "PhysicalPerson",al);
         //rm.getAllIndividuals();
         rm.deleteInstance("TEEEEEEEEST2");
-        rm.getAllIndividuals();
+        rm.getAllIndividuals();*/
         //rm.getProperties("PhysicalPerson");
         //rm.getCategories();
         //rm.getCategoriesRecusively();
