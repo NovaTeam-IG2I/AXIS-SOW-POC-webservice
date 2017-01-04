@@ -7,7 +7,6 @@ package rocks.novateam.axis.sow.poc.backend.ontology;
 
 import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -56,6 +55,13 @@ public class RegisterManager {
          * Constructor of the class neededEnvironnement.
          * This public method calls the default constructor.
          * It is able to set the OntModel's StrictMode.
+         * Note :
+         *
+         *        setStrictMode() is set to false to solve the problem with the ConversionException with classes as
+         *        ~/interoperabilitymodel/ontology/0.4#AXE
+         *
+         *        As stated in http://stackoverflow.com/a/17447438/7358724 , we have to call setStrictMode(false) on our OntModel,
+         *        in order to be able to view every resource as a class, by switching off strict checking.
          *
          * @param rw Tells whether to begin writing or reading
          * @param ontModelStrictMode Tells whether to set StrictMode to true or false
