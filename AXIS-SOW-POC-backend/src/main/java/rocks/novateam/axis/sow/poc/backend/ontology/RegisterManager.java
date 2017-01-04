@@ -125,46 +125,6 @@ public class RegisterManager {
         }
         return properties;
     }
-    
-    public ArrayList<Category> getCategories(){
-        ArrayList<Category> cats = new ArrayList();
-        ArrayList<Category> cats2 = new ArrayList();
-        Category cat = new Category();
-        Category cat2 = new Category();
-        Dataset ds = tdbm.getDataset();
-        ds.begin(ReadWrite.READ);
-        Model model = ds.getDefaultModel();
-        OntModel ont = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, model);
-        ds.end();
-
-        OntClass classRegister = ont.getOntClass(NS+"Register");
-        System.out.println(classRegister);
-        ExtendedIterator<OntClass> exItr;
-        ExtendedIterator<OntClass> exItr2;
-        if(classRegister.hasSubClass()){
-            System.out.println("subclass!!!!");
-        }
-        exItr = classRegister.listSubClasses();
-        System.out.println(exItr);
-        for (exItr = classRegister.listSubClasses(); exItr.hasNext();) {
-            System.out.println("blblbl");
-          OntClass class_ = exItr.next();
-          cat.setLabel(class_.getLocalName());
-          if(class_.hasSubClass()){
-              exItr2 = class_.listSubClasses();
-              while(exItr2.hasNext()){
-                  OntClass subClass= exItr2.next();
-                  cat2.setLabel(subClass.getLocalName());
-                  cats2.add(cat2);
-              }
-              cat.setSubCategories(cats2);
-          }
-          cats.add(cat);
-          cats.toString();
-        }
-        
-        return cats;
-    }
 
     /**
      * Get recursively all categories from the Register class.
