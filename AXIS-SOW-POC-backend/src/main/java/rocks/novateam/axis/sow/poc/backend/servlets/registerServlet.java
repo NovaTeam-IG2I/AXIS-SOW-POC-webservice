@@ -178,8 +178,7 @@ public class registerServlet extends HttpServlet {
     }
 
     private boolean processAddPredicate(String name){
-        return false;
-        //this.mRegisterManager.addPredicate(name);
+        return this.mRegisterManager.addPredicate(name);
     }
 
     private boolean processAddPredicateToRegisters(String subjectName, String objectName, String predicateName){
@@ -188,8 +187,7 @@ public class registerServlet extends HttpServlet {
     }
 
     private boolean processDeleteInstance(String name){
-        return false;
-        //this.mRegisterManager.deleteInstance(name);
+        return this.mRegisterManager.deleteInstance(name);
     }
 
     private String calledMethodFromURI(String uri){
