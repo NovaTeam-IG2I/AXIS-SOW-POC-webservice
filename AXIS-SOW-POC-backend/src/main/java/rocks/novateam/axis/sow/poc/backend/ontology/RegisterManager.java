@@ -163,7 +163,7 @@ public class RegisterManager {
 */
 
         for (Map.Entry<String,String> property : properties.entrySet()) {
-            OntProperty prprt = nEnv.getOntModel().getOntProperty(NS+property.getKey());
+            OntProperty prprt = nEnv.getOntModel().createAnnotationProperty(NS+property.getKey()); // We want to create, not to GET !!!
             ind.addProperty(prprt, property.getValue());
         }
 
@@ -234,7 +234,6 @@ public class RegisterManager {
         nEnv.finish();
         OntClass mOntClass = nEnv.getOntModel().getOntClass(NS+className);
         if(mOntClass == null) throw new NullPointerException("\nError on getting \""+NS+className+"\" OntClass.");
-        System.out.println("Processing class: " + mOntClass.getLocalName());
         return getCategoriesRecusively(categories, mOntClass);
     }
 
@@ -254,7 +253,6 @@ public class RegisterManager {
             while(iter.hasNext())
             {
                 OntClass currentLoopOntClass = iter.next();
-                System.out.println("Processing class: " + currentLoopOntClass.getLocalName());
                 c.addSubCategories(getCategoriesRecusively(new ArrayList<Category>(), currentLoopOntClass));
             }
         }
@@ -341,56 +339,10 @@ public class RegisterManager {
         while(i.hasNext())
         {
             Individual ind = i.next();
-            System.out.println("Processing individual: " + ind.getLocalName() + " of category : "+ind.getOntClass().getLocalName());
             individuals.add(ind.getLocalName());
         }
         return individuals;
     }
     
     ///getPropertiesOfIndividual
-    
-    
-    
-    public static void main(String[] args) {
-        RegisterManager rm = new RegisterManager();
-        //System.out.println("Executing: rm.getProperties(\"PhysicalPerson\");");
-        //rm.getProperties("PhysicalPerson");
-        //System.out.println("\nExecuting: rm.getProperties(\"AXE\");");
-        //rm.getProperties("AXE");
-        //rm.getCategories();
-        System.out.println("\nExecuting: rm.getRegisterCategories();");
-        ArrayList<Category> arc = rm.getRegisterCategories();
-        for(Category c : arc) System.out.println(c.toTree());
-        //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"AXE\");");
-        //rm.getCategoriesRecusively("PhysicalPerson");
-        //System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
-        //ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
-        //for(Category c : arc) System.out.println(c.toTree());
-        /*Map<String,String> map = new HashMap<>();
-        map.put("prop1", "valueprop1");
-        map.put("prop2", "valueprop2");
-        rm.deleteInstance("testAvecMap");
-        rm.addRegisterInstance("TEst avec Map", "PhysicalPerson",map);
-        
-        //rm.getAllIndividuals();
-        //rm.deleteInstance("TEEEEEEEEST2");
-        rm.getAllIndividuals();*/
-        //rm.getProperties("PhysicalPerson");
-        //rm.getCategories();
-        //rm.getCategoriesRecusively();
-        /*ArrayList<String> al = new ArrayList();
-        al.add("p1");
-        al.add("p2");
-        al.add("p2");
-        al.add("p2");
-        al.add("p2");
-        al.add("p2");
-        al.add("p2");
-        al.add("p2");
-        rm.addRegisterInstance("InstanceNameTest","MoralPerson",al);*/
-        //rm.addPredicate("aaah dzgeb dee_fbj");
-        //rm.addRegisterInstance("Martin Luther King");
-        //rm.addSubRegisterInstance("Test");
-        //rm.deleteInstance("Test");
-    }
 }
