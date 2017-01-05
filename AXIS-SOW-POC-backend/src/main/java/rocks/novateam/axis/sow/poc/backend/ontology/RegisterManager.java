@@ -175,14 +175,16 @@ public class RegisterManager {
      * Add a predicate to the ontology. Put its name in camelCase 
      * before the insertion.
      * @param name 
+     * @return
      */
-    public void addPredicate(String name){
+    public boolean addPredicate(String name){
         //put the string in camelCase
         name = CamelCaseConverter.convertToCamelCase(name);
         System.out.println(name);
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         nEnv.getOntModel().createOntProperty(name);
         nEnv.finish();
+        return this.predicateExists(name);
     }
     
     
@@ -223,6 +225,7 @@ public class RegisterManager {
      * This public method is used to instantiate variables, before looping, and to return the result.
      *
      * @param className Name of the class you want to retrieve categories from
+     * 
      * @return A list of categories
      */
     public ArrayList<Category> getCategoriesRecusively(String className) throws NullPointerException { // before the first loop, we have to create our variables
@@ -280,10 +283,25 @@ public class RegisterManager {
             return InstanceExistenceState.NO_AFP_FOUND; //ressource does not exists, but its AFP still exists
         }
     }
+
+    /**
+     * Checks if a given predicate exists.
+     * This public method can be use to check whether an predicate exists or not.
+     *
+     * @param ccName The predicate name to look up
+     *
+     * @return true if it exists, false otherwise
+     */
+    public boolean predicateExists(String ccName){
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        nEnv.finish();
+        return (nEnv.getOntModel().getOntProperty(NS+ccName)!=null);
+    }
     
     /**
      * Delete an instance by name
      * @param name 
+     * @return
      */
     public boolean deleteInstance(String name){
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
