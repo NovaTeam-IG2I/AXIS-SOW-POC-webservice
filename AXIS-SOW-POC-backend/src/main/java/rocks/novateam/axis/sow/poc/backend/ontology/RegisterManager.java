@@ -23,6 +23,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
+import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
 
 /**
  *
@@ -257,25 +258,48 @@ public class RegisterManager {
         categories.add(c);
         return categories;
     }
+
+    /**
+     * Checks the existence state of a given instance.
+     * This public method can be use to check whether an instance exists or not, or if there is an instance without AFP or an AFP withou instance
+     *
+     * @param name The instance name to look up
+     *
+     * @return An InstanceExistenceState enum
+     */
+    public InstanceExistenceState instanceExists(String name) {
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        nEnv.finish();
+        OntResource resource = nEnv.getOntModel().getOntResource(NS+name);
+        OntResource resourceAFP = nEnv.getOntModel().getOntResource(NS+name+"_AFP");
+        if(resource != null && resourceAFP != null){
+            return InstanceExistenceState.EXISTS;
+        } else {
+            if(resource == null && resourceAFP == null) return InstanceExistenceState.DOES_NOT_EXIST;
+            if(resource != null) return InstanceExistenceState.NO_INSTANCE_FOUND; //ressource exists but has no AFP
+            return InstanceExistenceState.NO_AFP_FOUND; //ressource does not exists, but its AFP still exists
+        }
+    }
     
     /**
      * Delete an instance by name
      * @param name 
      */
-    public void deleteInstance(String name){
+    public boolean deleteInstance(String name){
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         try {
-        OntResource resource = nEnv.getOntModel().getOntResource(NS+name);
-        OntResource resourceAFP = nEnv.getOntModel().getOntResource(NS+name+"_AFP");
-        resource.remove();
-        resourceAFP.remove();
-        }
-        catch (Exception e){
+            OntResource resource = nEnv.getOntModel().getOntResource(NS+name);
+            OntResource resourceAFP = nEnv.getOntModel().getOntResource(NS+name+"_AFP");
+            resource.remove();
+            resourceAFP.remove();
+        } catch (Exception e){
             System.out.println(e.fillInStackTrace());
+        } finally {
+            nEnv.finish();
         }
-        nEnv.finish();
+        return (this.instanceExists(name) == InstanceExistenceState.DOES_NOT_EXIST);
     }
-    
+
     /**
      * Create a statement with given registers
      * @param subjectName
