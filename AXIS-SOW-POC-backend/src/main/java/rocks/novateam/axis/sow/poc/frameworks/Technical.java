@@ -39,6 +39,11 @@ public class Technical {
     private String id = "";
 
     /**
+     * The duration of the video in minutes.
+     */
+    private String duration = "";
+
+    /**
      * The file name.
      */
     private String fileName = "";
@@ -54,28 +59,93 @@ public class Technical {
     private String hyperlink = "";
 
     /**
-     * The owner or entity name who has the rights on the file.
-     */
-    private String rights = "";
-
-    /**
-     * The duration of the video in minutes.
-     */
-    private String duration = "";
-
-    /**
      * The import date of the file.
      */
     private String importDate = "";
 
-    // All property names relative to the framework
+    /**
+     * The owner or entity name who has the rights on the file.
+     */
+    private String rights = "";
+
+    // ---- Begin framework ontology property and value defintion
+    /**
+     * The type property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>rdf:type</code></li>
+     * <li><strong>DOMAIN</strong>: None specified</li>
+     * <li><strong>RANGE</strong>: None specified</li>
+     * </ul>
+     */
     public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
-    public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
-    public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
-    public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
-    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
+
+    /**
+     * The duration property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P43_has_dimension</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E70_Thing</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>RANGE</strong>: <code>cidoc:E54_Dimensions</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
     public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
+
+    /**
+     * The file name property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:fileName</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:MediaEmbodiment</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:string</code></li>
+     * </ul>
+     */
+    public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
+
+    /**
+     * The file name property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:fileSize</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:MediaEmbodiment</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:float</code></li>
+     * </ul>
+     */
+    public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
+
+    /**
+     * The hyperlink property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:hyperlink</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:Location</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:string</code></li>
+     * </ul>
+     */
+    public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
+
+    /**
+     * The import date property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>axis:date</code></li>
+     * <li><strong>DOMAIN</strong>: <code>axis:EventAnnotation</code> (subclass of <code>axis:Register</code> and <code>axis:Document</code>)</li>
+     * <li><strong>RANGE</strong>: <code>xsd:date</code></li>
+     * </ul>
+     */
     public static String IMPORT_DATE_PROPERTY = Reg.DATAMODEL_URI + "date";
+
+    /**
+     * The import date property URI.
+     *
+     * <ul>
+     * <li><strong>ABOUT</strong>: <code>cidoc:P75i_is_possessed_by</code></li>
+     * <li><strong>DOMAIN</strong>: <code>cidoc:E30_Right</code> (subclass of <code>axis:Register</code>)</li>
+     * <li><strong>RANGE</strong>: <code>axis:Agent</code> (subclass of <code>axis:Register</code>)</li>
+     * </ul>
+     */
+    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
+    // ---- End framework ontology property and value defintion
 
     /**
      * The type object value.
@@ -119,11 +189,15 @@ public class Technical {
 
     /**
      * This class holds all informations about the technical framework. Data are
-     * automatically loaded from the TDB.
+     * automatically loaded from the TDB. If no data are not found, the
+     * framework holds empty information.
      *
-     * @param id The entity id of which the framework refers to.
+     * @param id The entity id of which the framework refers to. If null, the
+     * data holds empty information.
      */
     public Technical(String id) {
+        if(id == null)
+            return;
         fillModelWithFakeData(id);
         retrieveData(id);
     }
@@ -136,6 +210,8 @@ public class Technical {
      */
     private Model getModel() {
         if(model == null) {
+            if(FileManager.get() == null)
+                System.out.println("Return null from FileManger.get()");
             model = FileManager.get().loadModel(
                 Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
             );
@@ -183,7 +259,6 @@ public class Technical {
                 rights = solution.getLiteral(RIGHTS_SELECT).toString();
                 duration = solution.getLiteral(DURATION_SELECT).toString();
                 importDate = solution.getLiteral(IMPORT_DATE_SELECT).toString();
-
             }
         }
         this.id = id;
@@ -195,6 +270,8 @@ public class Technical {
      * @return The information in JSON.
      */
     public String exportJSONFormat() {
+        // Not using a JsonObjectBuilder because of build error problems
+        // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
         json += "\"id\" : \"" + id + "\",\n";
         json += "\"fileName\" : \"" + fileName + "\",\n";

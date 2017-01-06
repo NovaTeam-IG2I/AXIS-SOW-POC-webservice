@@ -26,7 +26,6 @@
         <url-pattern>/list</url-pattern>
     </servlet-mapping>
 
-
     <!-- Production servlet handling -->
     <servlet>
         <servlet-name>ProductionServlet</servlet-name>
@@ -38,6 +37,18 @@
         <url-pattern>/production</url-pattern>
     </servlet-mapping>
     <!-- End production servlet handling -->
+
+    <!-- Technical servlet handling -->
+    <servlet>
+        <servlet-name>TechnicalServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.TechnicalServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>TechnicalServlet</servlet-name>
+        <url-pattern>/technical</url-pattern>
+    </servlet-mapping>
+    <!-- End technical servlet handling -->
 
     <session-config>
         <session-timeout>
