@@ -189,11 +189,15 @@ public class Technical {
 
     /**
      * This class holds all informations about the technical framework. Data are
-     * automatically loaded from the TDB.
+     * automatically loaded from the TDB. If no data are not found, the
+     * framework holds empty information.
      *
-     * @param id The entity id of which the framework refers to.
+     * @param id The entity id of which the framework refers to. If null, the
+     * data holds empty information.
      */
     public Technical(String id) {
+        if(id == null)
+            return;
         fillModelWithFakeData(id);
         retrieveData(id);
     }
@@ -206,6 +210,8 @@ public class Technical {
      */
     private Model getModel() {
         if(model == null) {
+            if(FileManager.get() == null)
+                System.out.println("Return null from FileManger.get()");
             model = FileManager.get().loadModel(
                 Configuration.getInstance().getDatamodelFile(), null, "TURTLE"
             );
@@ -253,7 +259,6 @@ public class Technical {
                 rights = solution.getLiteral(RIGHTS_SELECT).toString();
                 duration = solution.getLiteral(DURATION_SELECT).toString();
                 importDate = solution.getLiteral(IMPORT_DATE_SELECT).toString();
-
             }
         }
         this.id = id;
@@ -265,6 +270,8 @@ public class Technical {
      * @return The information in JSON.
      */
     public String exportJSONFormat() {
+        // Not using a JsonObjectBuilder because of build error problems
+        // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
         json += "\"id\" : \"" + id + "\",\n";
         json += "\"fileName\" : \"" + fileName + "\",\n";
