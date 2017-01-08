@@ -130,37 +130,23 @@ public class RegisterManager {
      * @param className
      * @param properties 
      */
-    public void addRegisterInstance(String name, String className, Map<String,String> properties){
+    public boolean addRegisterInstance(String name, String className, Map<String,String> properties){
         int cpt = 0;
         String label=name;
         name = CamelCaseConverter.convertToCamelCase(name);
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         Individual thisInd = nEnv.getOntModel().getIndividual(NS+name);
         //if this instance already exist
-        if(thisInd != null){
+        if(instanceExists(name)==InstanceExistenceState.EXISTS){
             System.out.println("This ind already exists");
             nEnv.finish();
-            return;
+            return true;
         }
         
         Individual afp = nEnv.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         OntClass class_ = nEnv.getOntModel().getOntClass(NS+className);
         Individual ind = class_.createIndividual(NS+name);
         ind.addLabel(label,"EN");
-/*
-        ExtendedIterator<OntProperty> exItr;      
-        exItr = class_.listDeclaredProperties();
-        while (exItr.hasNext()) {
-          OntProperty prop = exItr.next();
-          if(prop.isDatatypeProperty()){
-            System.out.println("Datatype prop: "+ prop.getLocalName());
-            if(cpt<properties.size()){
-                ind.addProperty(prop, properties.get(cpt));
-            }
-            cpt++;
-          }
-        }
-*/
 
         for (Map.Entry<String,String> property : properties.entrySet()) {
             OntProperty prprt = nEnv.getOntModel().createAnnotationProperty(NS+property.getKey()); // We want to create, not to GET !!!
@@ -169,6 +155,13 @@ public class RegisterManager {
 
         ind.addProperty(nEnv.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
         nEnv.finish();
+        //test if it has been created
+        if(instanceExists(name)==InstanceExistenceState.EXISTS){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
     /**
