@@ -8,6 +8,18 @@
         <servlet-name>VideoServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.VideoServlet</servlet-class>
     </servlet>
+
+    <!-- Structure servlet handling -->
+    <servlet>
+        <servlet-name>StructureServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.StructureServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StructureServlet</servlet-name>
+        <url-pattern>/structure</url-pattern>
+    </servlet-mapping>
+    <!-- End structure servlet handling -->
+
     <servlet-mapping>
         <servlet-name>VideoServlet</servlet-name>
         <url-pattern>/video</url-pattern>
