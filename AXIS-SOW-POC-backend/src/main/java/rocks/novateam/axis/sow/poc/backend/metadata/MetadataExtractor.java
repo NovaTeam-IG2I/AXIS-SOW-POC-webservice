@@ -36,28 +36,32 @@ public class MetadataExtractor {
     private static File extractXMP(File inputFile) {
         IOStream streams = null;
         List<String> args = new ArrayList<>();
-        String outputFilePath = null;
 
         if (!inputFile.isFile()) {
             throw new Error("Error with the file");
         }
 
-        outputFilePath = modifyExtension(inputFile, ".xmp");
+        String outputFilePath = modifyExtension(inputFile, ".xmp");
+        File outputFile = new File(outputFilePath);
+
+        // TODO delete/overwrite if xmp already exists
+        if (new File(outputFilePath).isFile()) {
+            outputFile.delete();
+        }
 
         args.add(EXIF_TOOL_PATH);
         args.add(inputFile.getAbsolutePath());
         args.add("-out"); // Set output inputFile or directory name
-        args.add(outputFilePath);
+        args.add(outputFile.getAbsolutePath());
         args.add("-xmp");
         args.add("-b");
         args.add("-xmlFormat"); // Use RDF/XML output format
         args.add("-quiet"); // Quiet processing
-        // TODO : overwrite the xmp output file
 
         streams = startProcess(args);
         streams.close();
 
-        return new File(outputFilePath);
+        return outputFile;
     }
 
     /**
