@@ -116,7 +116,7 @@ public class RegisterManager {
         }
     }
 
-    private static final String NS = TDBManager.DATAMODEL_URL+"#";
+    private static final String NS = TDBManager.DATAMODEL_NS;
 
 
     private TDBManager tdbm;
