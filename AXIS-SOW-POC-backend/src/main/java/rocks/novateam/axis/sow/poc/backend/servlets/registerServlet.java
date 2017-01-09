@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +24,7 @@ import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
  *
  * @author Olivier Sailly
  */
-@WebServlet(name = "registerServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*","/register/test/*"})
+@WebServlet(name = "registerServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*"})
 public class registerServlet extends HttpServlet {
     private final RegisterManager mRegisterManager;
     private final Gson mGson;
