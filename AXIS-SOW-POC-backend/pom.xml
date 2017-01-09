@@ -13,7 +13,7 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <repositories>
         <repository>
             <id>jena</id>
@@ -21,7 +21,7 @@
             <url>https://repository.apache.org/content/repositories/releases/</url>
         </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
@@ -29,14 +29,14 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>apache-jena-libs</artifactId>
             <type>pom</type>
             <version>3.1.0</version>
         </dependency>
-    
+
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>

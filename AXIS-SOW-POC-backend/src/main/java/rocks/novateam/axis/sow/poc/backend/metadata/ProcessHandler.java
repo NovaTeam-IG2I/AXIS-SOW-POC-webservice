@@ -1,4 +1,4 @@
-package rocks.novateam.axis.sow.poc.backend.servlets.metadata;
+package rocks.novateam.axis.sow.poc.backend.metadata;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,6 +14,7 @@ public class ProcessHandler {
 
         try {
             proc = new ProcessBuilder(args).start();
+            proc.waitFor(); // Wait until the process is completed
         } catch (Exception e) {
             String message = "Unable to start external process";
             System.out.println(message);
