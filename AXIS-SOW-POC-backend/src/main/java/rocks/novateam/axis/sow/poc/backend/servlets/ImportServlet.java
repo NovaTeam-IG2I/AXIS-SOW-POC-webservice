@@ -165,8 +165,14 @@ public class ImportServlet extends HttpServlet {
      * @see Configuration#uploadFolder()
      */
     private String getNextFileName() {
-        System.out.println("Upload folder: " + Configuration.getInstance().getUploadFolder());
         File folder = new File(Configuration.getInstance().getUploadFolder());
+        System.out.println("Upload folder: " + folder.getAbsolutePath());
+        if(!folder.exists()) {
+            System.out.println("Upload folder does not exist. Creating it right now...");
+            folder.mkdir();
+            System.out.println("Done.");
+        }
+        
         File[] files = folder.listFiles();
         int fileNumber = 1; // File names start from 1.
 
