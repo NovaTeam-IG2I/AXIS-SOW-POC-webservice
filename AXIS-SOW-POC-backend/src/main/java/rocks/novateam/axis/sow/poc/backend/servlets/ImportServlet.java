@@ -98,7 +98,8 @@ public class ImportServlet extends HttpServlet {
             Individual film = persist(urn, file.getAbsolutePath());
 
             // Extract and store metadata
-            MetadataExtractor.extractAndStoreMetadata(file);
+            // This is commented out because it causes the system to crash
+            // MetadataExtractor.extractAndStoreMetadata(file);
 
             json.add("status", "ok")
                     .add("uri", film.getURI());
