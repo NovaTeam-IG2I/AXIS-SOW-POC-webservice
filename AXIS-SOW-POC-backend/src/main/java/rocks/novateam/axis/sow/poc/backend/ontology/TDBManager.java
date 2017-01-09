@@ -1,17 +1,18 @@
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
+import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 /**
  * A <code>TDBManager</code> is a singleton object through which one can access
@@ -36,14 +37,6 @@ import org.apache.jena.tdb.TDBFactory;
  */
 public class TDBManager {
 
-    // Please note that these files names should not be hardcoded.
-    private static final String TDB_FOLDER = "D:\\Users\\Melody\\ProjetPRP\\tdb";
-    private static final String DATAMODEL_FILE = "D:\\Users\\Melody\\ProjetPRP\\AXIS-SOW-POC-backend\\resources\\ontologies\\datamodel.owl";
-    private static final String FUNCTIONALMADEL_FILE = "D:\\Users\\Melody\\ProjetPRP\\AXIS-SOW-POC-backend\\resources\\ontologies\\functionalmodel.owl";
-    private static final String INTEROPERABILITY_FILE = "D:\\Users\\Melody\\ProjetPRP\\AXIS-SOW-POC-backend\\resources\\ontologies\\interoperabilitymodel.owl";
-    
-    public static final String DATAMODEL_URL = "http://titan.be/axis-csrm/datamodel/ontology/0.4";
-    
     /**
      * This nested class contains the TDB models' name as static Strings.
      */
@@ -60,12 +53,14 @@ public class TDBManager {
         public static final String FUNCTIONALMODEL_NAME = "FunctionalModel";
     }
 
+    public static String DATAMODEL_NS = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
+
     private static TDBManager INSTANCE;
 
     /**
      * Once the {@link TDBManager} is connected to a database, interaction must
      * be done through this {@link org.apache.jena.query.Dataset}.
-     * 
+     *
      * @see TDBManager#getDataset()
      * @see org.apache.jena.query.Dataset
      */
@@ -73,7 +68,10 @@ public class TDBManager {
 
     /**
      * Constructs a new {@link TDBManager} by connecting to the given TDB
-     * folder.
+     * folder. If the TDB doesn't contain the right models, sets them up.
+     *
+     * <strong>Warning</strong>: Make sure the OWL files are at the place,
+     * according to your deployment server's working directory.
      *
      * This constructor is private. Use {@link TDBManager#getInstance()}
      * instead.
@@ -81,7 +79,16 @@ public class TDBManager {
      * @see TDBManager#getInstance()
      */
     private TDBManager() {
-        dataset = TDBFactory.createDataset(TDB_FOLDER);
+        dataset = TDBFactory.createDataset(Configuration.getInstance().getTdbFolder());
+        System.out.println("Created a TDB dataset at: "+new File(Configuration.getInstance().getTdbFolder()).getAbsolutePath());
+
+        // If the TDB has never been set up, do it.
+        if (!dataset.containsNamedModel(Models.FUNCTIONALMODEL_NAME)
+                || !dataset.containsNamedModel(Models.INTEROPERABILITYMODEL_NAME)) {
+            System.out.println("The dataset has never been setup. Doing it right now...");
+            setUp();
+            System.out.println("Done.");
+        }
     }
 
     /**
@@ -109,16 +116,17 @@ public class TDBManager {
      * @see INTEROPERABILITY_FILE
      * @see FUNCTIONALMADEL_FILE
      */
-    public void setUp() {
+    public final void setUp() {
         dataset.begin(ReadWrite.WRITE);
         Model dataModel = dataset.getDefaultModel();
         Model interoperabilityModel = dataset.getNamedModel(Models.INTEROPERABILITYMODEL_NAME);
         Model functionalModel = dataset.getNamedModel(Models.FUNCTIONALMODEL_NAME);
+        Configuration config = Configuration.getInstance();
 
         try {
-            dataModel.read(new FileInputStream(DATAMODEL_FILE), null, null);
-            interoperabilityModel.read(new FileInputStream(INTEROPERABILITY_FILE), null, null);
-            functionalModel.read(new FileInputStream(FUNCTIONALMADEL_FILE), null, null);
+            dataModel.read(new FileInputStream(config.getDatamodelFile()), null, null);
+            interoperabilityModel.read(new FileInputStream(config.getInteroperabilityModelFile()), null, null);
+            functionalModel.read(new FileInputStream(config.getFunctionalModelFile()), null, null);
             dataset.commit();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TDBManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -138,19 +146,31 @@ public class TDBManager {
         return dataset;
     }
 
-    public static void main(String[] args) {
+    private void exportOwl(OutputStream out) {
+        dataset.begin(ReadWrite.READ);
+        // Get model inside the transaction
+        Model model = dataset.getDefaultModel();
+        dataset.end();
+
+        model.write(out);
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
         TDBManager tdbm = TDBManager.getInstance();
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
-        //tdbm.setUp();
+        // tdbm.setUp();
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();
         ds.end();
-        
+
         // Prints out every statement the TDB contains.
-        for(StmtIterator i = model.listStatements() ; i.hasNext() ;) {
+        for (StmtIterator i = model.listStatements(); i.hasNext();) {
             System.out.println(i.nextStatement().toString());
         }
+
+        // Uncomment the following line to export the ontology to a given file
+        tdbm.exportOwl(new FileOutputStream("../resources/ontologies/export.owl"));
     }
 }
