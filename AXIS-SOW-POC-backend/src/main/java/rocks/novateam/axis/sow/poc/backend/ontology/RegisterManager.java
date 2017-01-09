@@ -313,15 +313,35 @@ public class RegisterManager {
      * Create a statement with given registers
      * @param subjectName
      * @param objectName
-     * @param predicateName 
+     * @param predicateName
+     * @return boolean
      */
-    public void addPredicateToRegisters(String subjectName, String objectName, String predicateName){
+    public boolean addPredicateToRegisters(String subjectName, String objectName, String predicateName){
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         Resource subject = nEnv.getOntModel().getIndividual(NS+subjectName);
         Resource object = nEnv.getOntModel().getIndividual(NS+objectName);
-        OntProperty predicate = nEnv.getOntModel().getOntProperty(NS+predicateName);
-        subject.addProperty(predicate, object);
+        if(predicateExists(predicateName)){
+            OntProperty predicate = nEnv.getOntModel().getOntProperty(NS+predicateName);
+            subject.addProperty(predicate, object);
+            nEnv.finish();
+        }
+        else{ //predicate doesn't exist
+            nEnv.finish();
+            return false;
+        }
+        if(statementExists(subjectName, predicateName, objectName))
+            return true;
+        return false;
+    }
+    
+    public boolean statementExists(String subjectName, String predicateName, String objectName){
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
         nEnv.finish();
+        //if subject has predicate in his properties and is linked to the object
+        if (nEnv.getOntModel().getOntProperty(NS+subjectName).hasProperty(nEnv.getOntModel().getOntProperty(NS+predicateName),NS+objectName)) {
+            return true;
+        }
+        return false;
     }
     
     public ArrayList<String> getAllIndividuals(){
