@@ -5,6 +5,8 @@
  */
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,9 +19,17 @@ import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
  */
 public class RegisterManagerTest {
     private final RegisterManager rm;
+    private final Gson mGson;
+    private final TypeToken<ArrayList<Category>> mCategoriesListType;
+    private final TypeToken<ArrayList<String>> mStringListType;
+    private final TypeToken<Map<String,String>> mStringStringMapType;
 
     public RegisterManagerTest(){
-        rm = new RegisterManager();
+        this.rm = new RegisterManager();
+        this.mGson = new Gson();
+        this.mCategoriesListType = new TypeToken<ArrayList<Category>>(){};
+        this.mStringListType = new TypeToken<ArrayList<String>>(){};
+        this.mStringStringMapType = new TypeToken<Map<String,String>>(){};
     }
 
     public void runAllTests(){
@@ -32,13 +42,14 @@ public class RegisterManagerTest {
 
         testAddRegisterInstance();
         testInstanceExists();
-        testDeleteInstance();
-        testInstanceExists();
         
-        /*
         testAddPredicate();
         testPredicateExists();
-        */
+        
+        testAddPredicateToRegisters();
+
+        testDeleteInstance();
+        testInstanceExists();
     }
 
     public void testGetRegisterCategories() {
@@ -73,35 +84,43 @@ public class RegisterManagerTest {
         Map<String,String> map = new HashMap<>();
         map.put("prop1", "valueprop1");
         map.put("prop2", "valueprop2");
+        System.out.println("\nMap<String,String> map = new HashMap<>();\nmap.put(\"prop1\", \"valueprop1\");\nmap.put(\"prop2\", \"valueprop2\");");
+        System.out.println("mGson.toJson(map, mStringStringMapType.getType()) :\n"+mGson.toJson(map, mStringStringMapType.getType()));
         System.out.println("\nExecuting: rm.addRegisterInstance(\"TEst avec Map\", \"PhysicalPerson\",map);");
-        rm.addRegisterInstance("TEst avec Map", "PhysicalPerson",map);
-        System.out.println("Done.");
+        boolean b = rm.addRegisterInstance("TEst avec Map", "PhysicalPerson",map);
+        boolean c = rm.addRegisterInstance("TEst avec Map2", "PhysicalPerson",map);
+        System.out.println("Done.\nrm.addRegisterInstance(\"TEst avec Map\", \"PhysicalPerson\",map); returned "+(b==true?"true; 2: ":"false;")+(c==true?"true":"false"));
+    }
+    
+    public void testAddPredicate() {
+        System.out.println("\nExecuting: rm.addPredicate(\"i am a test\");");
+        boolean b = rm.addPredicate("i am a test");
+        System.out.println("Done.\nrm.addPredicate(\"i am a test\"); returned "+(b==true?"true":"false"));
+    }
+
+    public void testPredicateExists(){
+        System.out.println("\nExecuting: rm.predicateExists(\"iAmATest\");");
+        boolean b = rm.predicateExists("iAmATest");
+        System.out.println("Done.\nrm.predicateExists(\"iAmATest\"); returned "+(b==true?"true":"false"));
+    }
+    
+    public void testAddPredicateToRegisters() {
+        System.out.println("\nExecuting: rm.addPredicateToRegisters(\"testAvecMap\", \"testAvecMap2\", \"iAmATest\");");
+        boolean b = rm.addPredicateToRegisters("testAvecMap", "testAvecMap2", "iAmATest");
+        System.out.println("Done.\nrm.addPredicateToRegisters(\"testAvecMap\", \"testAvecMap2\", \"iAmATest\"); returned "+(b==true?"true":"false"));
     }
 
     public void testDeleteInstance() {
         System.out.println("\nExecuting: rm.deleteInstance(\"testAvecMap\");");
         boolean b = rm.deleteInstance("testAvecMap");
-        System.out.println("Done.\nrm.deleteInstance(\"testAvecMap\"); returned "+(b==true?"true":"false"));
+        boolean c = rm.deleteInstance("testAvecMap2");
+        System.out.println("Done.\nrm.deleteInstance(\"testAvecMap\"); returned "+(b==true?"true; 2: ":"false;")+(c==true?"true":"false"));
     }
 
     public void testInstanceExists(){
         System.out.println("\nExecuting: rm.instanceExists(\"testAvecMap\");");
         InstanceExistenceState ies = rm.instanceExists("testAvecMap");
         System.out.println("Done.\nrm.instanceExists(\"testAvecMap\"); returned "+ies.toString());
-    }
-    
-    public void testAddPredicate() {
-        throw new UnknownError("Predicate not created");
-        /*System.out.println("\nExecuting: rm.addPredicate(\"i am a test\");");
-        boolean b = rm.addPredicate("i am a test");
-        System.out.println("Done.\nrm.addPredicate(\"i am a test\"); returned "+(b==true?"true":"false"));*/
-    }
-    
-    public void testPredicateExists(){
-        throw new UnknownError("Nothing to test");
-        /*System.out.println("\nExecuting: rm.predicateExists(\"\");");
-        boolean b = rm.predicateExists("");
-        System.out.println("Done.\nrm.predicateExists(\"\"); returned "+(b==true?"true":"false"));*/
     }
 
     public static void main(String[] args) {

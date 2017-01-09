@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +25,7 @@ import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
  *
  * @author Olivier Sailly
  */
-@WebServlet(name = "registerServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*"})
+@WebServlet(name = "registerServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*","/register/test/*"})
 public class registerServlet extends HttpServlet {
     private final RegisterManager mRegisterManager;
     private final Gson mGson;
@@ -101,7 +102,7 @@ public class registerServlet extends HttpServlet {
                                     response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                                 }
                             break;
-                            case "existingPredicateToRegister":
+                            case "existingpredicatetoregister":
                                 if(!request.getParameterMap().isEmpty()){
                                     try {
                                         boolean result = this.processAddPredicateToRegisters(request.getParameter("subjectname"),request.getParameter("objectname"),request.getParameter("predicatename"));
@@ -172,9 +173,8 @@ public class registerServlet extends HttpServlet {
     }
 
     private boolean processAddRegisterInstance(String name, String className, String jsonProperties){
-        return false;
-        /*Map<String,String> mProperties = this.mGson.fromJson(jsonProperties, this.mStringStringMapType.getType());
-        this.mRegisterManager.addRegisterInstance(name, className, mProperties);*/
+        Map<String,String> mProperties = this.mGson.fromJson(jsonProperties, this.mStringStringMapType.getType());
+        return this.mRegisterManager.addRegisterInstance(name, className, mProperties);
     }
 
     private boolean processAddPredicate(String name){
@@ -182,8 +182,7 @@ public class registerServlet extends HttpServlet {
     }
 
     private boolean processAddPredicateToRegisters(String subjectName, String objectName, String predicateName){
-        return false;
-        //this.mRegisterManager.addPredicateToRegisters(subjectName, objectName, predicateName);
+        return this.mRegisterManager.addPredicateToRegisters(subjectName, objectName, predicateName);
     }
 
     private boolean processDeleteInstance(String name){

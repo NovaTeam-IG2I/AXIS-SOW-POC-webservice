@@ -117,7 +117,8 @@ public class RegisterManager {
     }
 
     private static final String NS = TDBManager.DATAMODEL_URL+"#";
-    
+
+
     private TDBManager tdbm;
     
     public RegisterManager() {
@@ -129,39 +130,31 @@ public class RegisterManager {
      * @param name
      * @param className
      * @param properties 
+     * @return
      */
     public boolean addRegisterInstance(String name, String className, Map<String,String> properties){
         int cpt = 0;
         String label=name;
         name = CamelCaseConverter.convertToCamelCase(name);
+        //if this instance already exist
+        if(instanceExists(name)==InstanceExistenceState.EXISTS) return true; // This ind already exists
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         Individual thisInd = nEnv.getOntModel().getIndividual(NS+name);
-        //if this instance already exist
-        if(instanceExists(name)==InstanceExistenceState.EXISTS){
-            System.out.println("This ind already exists");
+        if(thisInd != null){//if it is impossible to get the individual
             nEnv.finish();
-            return true;
+            return false;
         }
-        
         Individual afp = nEnv.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         OntClass class_ = nEnv.getOntModel().getOntClass(NS+className);
         Individual ind = class_.createIndividual(NS+name);
         ind.addLabel(label,"EN");
-
         for (Map.Entry<String,String> property : properties.entrySet()) {
-            OntProperty prprt = nEnv.getOntModel().createAnnotationProperty(NS+property.getKey()); // We want to create, not to GET !!!
+            OntProperty prprt = nEnv.getOntModel().createOntProperty(NS+property.getKey()); // create an ontProperty
             ind.addProperty(prprt, property.getValue());
         }
-
         ind.addProperty(nEnv.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
         nEnv.finish();
-        //test if it has been created
-        if(instanceExists(name)==InstanceExistenceState.EXISTS){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return (instanceExists(name)==InstanceExistenceState.EXISTS); //test if it has been created
     }
     
     /**
@@ -172,10 +165,9 @@ public class RegisterManager {
      */
     public boolean addPredicate(String name){
         //put the string in camelCase
-        name = CamelCaseConverter.convertToCamelCase(name);
-        System.out.println(name);
+        name = CamelCaseConverter.convertToCamelCase(name); // System.out.println(name);
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
-        nEnv.getOntModel().createOntProperty(name);
+        nEnv.getOntModel().createOntProperty(NS+name);
         nEnv.finish();
         return this.predicateExists(name);
     }
@@ -197,8 +189,7 @@ public class RegisterManager {
         exItr = class_.listDeclaredProperties();      
         while (exItr.hasNext()) {
           OntProperty prop = exItr.next();
-          if(prop.isDatatypeProperty()){
-            System.out.println("Datatype prop: "+ prop.getLocalName());
+          if(prop.isDatatypeProperty()){ // System.out.println("Datatype prop: "+ prop.getLocalName());
             properties.add(prop.getLocalName());
           }
         }
@@ -317,31 +308,24 @@ public class RegisterManager {
      * @return boolean
      */
     public boolean addPredicateToRegisters(String subjectName, String objectName, String predicateName){
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
-        Resource subject = nEnv.getOntModel().getIndividual(NS+subjectName);
-        Resource object = nEnv.getOntModel().getIndividual(NS+objectName);
         if(predicateExists(predicateName)){
+            NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+            Resource subject = nEnv.getOntModel().getIndividual(NS+subjectName);
+            Resource object = nEnv.getOntModel().getIndividual(NS+objectName);
             OntProperty predicate = nEnv.getOntModel().getOntProperty(NS+predicateName);
             subject.addProperty(predicate, object);
             nEnv.finish();
-        }
-        else{ //predicate doesn't exist
-            nEnv.finish();
+        } else { //predicate doesn't exist
             return false;
         }
-        if(statementExists(subjectName, predicateName, objectName))
-            return true;
-        return false;
+        return (statementExists(subjectName, predicateName, objectName));
     }
     
     public boolean statementExists(String subjectName, String predicateName, String objectName){
         NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
         nEnv.finish();
-        //if subject has predicate in his properties and is linked to the object
-        if (nEnv.getOntModel().getOntProperty(NS+subjectName).hasProperty(nEnv.getOntModel().getOntProperty(NS+predicateName),NS+objectName)) {
-            return true;
-        }
-        return false;
+        //if subject has predicate in his properties and is linked to the object, return true
+        return nEnv.getOntModel().getOntResource(NS+subjectName).hasProperty(nEnv.getOntModel().getOntProperty(NS+predicateName),nEnv.getOntModel().getOntResource(NS+objectName));
     }
     
     public ArrayList<String> getAllIndividuals(){
