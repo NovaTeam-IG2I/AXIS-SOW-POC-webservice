@@ -22,6 +22,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
+import rocks.novateam.axis.sow.poc.backend.metadata.MetadataExtractor;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
@@ -89,12 +90,15 @@ public class ImportServlet extends HttpServlet {
             // Copy media to disk
             File file = new File(Configuration.getInstance().getUploadFolder() + fileName);
             file.createNewFile();
-            FileOutputStream fileOutputStream = new FileOutputStream(file, false); // TODO: Have an incremental id for file names.
+            FileOutputStream fileOutputStream = new FileOutputStream(file); // TODO: Have an incremental id for file names.
             IOUtils.copy(fileContent, fileOutputStream);
 
             // Create semantic entites in the TDB
             String urn = getUniqueName((title == null) ? fileName : title);
             Individual film = persist(urn, file.getAbsolutePath());
+
+            // Extract and store metadata
+            MetadataExtractor.extractAndStoreMetadata(file);
 
             json.add("status", "ok")
                     .add("uri", film.getURI());
@@ -173,10 +177,10 @@ public class ImportServlet extends HttpServlet {
         }
         return fileNumber + FILE_EXTENSION; // WARNING: Hardcoded file extension here.
     }
-    
+
     /**
      * Creates all the necessary AXIS-CSRM individuals in the triple store.
-     * 
+     *
      * This method creates the following individuals:
      * <ul>
      * <li>A <code>Film</code>;</li>
@@ -184,12 +188,12 @@ public class ImportServlet extends HttpServlet {
      * <li>A <code>VideoDocument</code> for the Film;</li>
      * <li>A <code>VideoEmbodiment</code> for the Document;</li>
      * <li>A <code>Location</code> for the Embodiment.</li>
-     * 
+     *
      * The absolute path to the video file is stored as an <code>hyperlink</code> property on the Location individual.
-     * 
+     *
      * @param name     The URN to give to the new entities
      * @param filePath The absolute path to the video file
-     * 
+     *
      * @return         The Film register {@link Individual}
      */
     private Individual persist(String name, String filePath) {
@@ -211,7 +215,7 @@ public class ImportServlet extends HttpServlet {
         location.addProperty(model.getDatatypeProperty(NS + "hyperlink"), filePath);
         embodiment.addProperty(model.getProperty(NS + "hasLocation"), location);
         dataset.commit();
-        
+
         return film;
     }
 
