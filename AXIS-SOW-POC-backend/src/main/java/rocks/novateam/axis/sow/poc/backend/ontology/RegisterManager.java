@@ -110,16 +110,12 @@ public class RegisterManager {
      */
     public Map<String, String> getPropertiesValuesOfAnIndividual(String name){
         Map<String, String> properties = new HashMap<>();
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ, false);
         nEnv.finish();
-        
-        ExtendedIterator<OntProperty> exItr;        
-        exItr = nEnv.getOntModel().getOntClass(nEnv.getOntModel().getIndividual(NS+name).getURI()).listDeclaredProperties();
+        ExtendedIterator<OntProperty> exItr = nEnv.getOntModel().getOntClass(nEnv.getOntModel().getIndividual(NS+name).getURI()).listDeclaredProperties();
         while (exItr.hasNext()) {
-          OntProperty prop = exItr.next();
-          if(prop.isDatatypeProperty()){
-            properties.put(prop.getLocalName(), nEnv.getOntModel().getIndividual(NS+name).getPropertyValue(prop).toString());
-          }
+            OntProperty prop = exItr.next();
+            if(nEnv.getOntModel().getIndividual(NS+name).getCardinality(prop)>0) properties.put(prop.getLocalName(), nEnv.getOntModel().getIndividual(NS+name).getPropertyValue(prop).toString());
         }
         return properties;
     }

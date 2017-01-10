@@ -42,6 +42,7 @@ public class RegisterManagerTest {
 
         testAddRegisterInstance();
         testInstanceExists();
+        testGetPropertiesValuesOfAnIndividual();
         
         testAddPredicate();
         testPredicateExists();
@@ -90,6 +91,13 @@ public class RegisterManagerTest {
         boolean b = rm.addRegisterInstance("TEst avec Map", "PhysicalPerson",map);
         boolean c = rm.addRegisterInstance("TEst avec Map2", "PhysicalPerson",map);
         System.out.println("Done.\nrm.addRegisterInstance(\"TEst avec Map\", \"PhysicalPerson\",map); returned "+(b==true?"true; 2: ":"false;")+(c==true?"true":"false"));
+    }
+
+    public void testGetPropertiesValuesOfAnIndividual() {
+        System.out.println("\nExecuting: rm.getPropertiesValuesOfAnIndividual(\"testAvecMap\");");
+        Map<String, String> map = rm.getPropertiesValuesOfAnIndividual("testAvecMap");
+        System.out.println("mGson.toJson(map, mStringStringMapType.getType()) :\n"+mGson.toJson(map, mStringStringMapType.getType()));
+        System.out.println("Done.");
     }
     
     public void testAddPredicate() {
