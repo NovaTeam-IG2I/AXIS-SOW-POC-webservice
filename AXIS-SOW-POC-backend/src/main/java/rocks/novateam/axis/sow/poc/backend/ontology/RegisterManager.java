@@ -7,6 +7,7 @@ package rocks.novateam.axis.sow.poc.backend.ontology;
 
 import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.Individual;
@@ -14,6 +15,7 @@ import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
 import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
@@ -95,6 +97,28 @@ public class RegisterManager {
           OntProperty prop = exItr.next();
           if(prop.isDatatypeProperty()){ // System.out.println("Datatype prop: "+ prop.getLocalName());
             properties.add(prop.getLocalName());
+          }
+        }
+        return properties;
+    }
+    
+    /**
+     * This function give a map with all properties and their values 
+     * of a given individual
+     * @param name of the individual
+     * @return map with property name as keys and property values as values
+     */
+    public Map<String, String> getPropertiesValuesOfAnIndividual(String name){
+        Map<String, String> properties = new HashMap<>();
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        nEnv.finish();
+        
+        ExtendedIterator<OntProperty> exItr;        
+        exItr = nEnv.getOntModel().getOntClass(nEnv.getOntModel().getIndividual(NS+name).getURI()).listDeclaredProperties();
+        while (exItr.hasNext()) {
+          OntProperty prop = exItr.next();
+          if(prop.isDatatypeProperty()){
+            properties.put(prop.getLocalName(), nEnv.getOntModel().getIndividual(NS+name).getPropertyValue(prop).toString());
           }
         }
         return properties;
