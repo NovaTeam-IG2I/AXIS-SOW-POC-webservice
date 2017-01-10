@@ -77,10 +77,10 @@ public class Production {
     /**
      * The type object value.
      */
-    public static String TYPE_OBJECT = R.DATAMODEL_URI + "AudiovisualWork";
+    public static String TYPE_OBJECT = R.DATAMODEL_NS + "AudiovisualWork";
 
     /**
-     * The type property URI.
+     * The type property namespace.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>rdf:type</code></li>
@@ -88,10 +88,10 @@ public class Production {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String TYPE_PROPERTY = R.RDF_URI + "type";
+    public static String TYPE_PROPERTY = R.RDF_NS + "type";
 
     /**
-     * The director property URI.
+     * The director property namespace.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>cidoc:P94_has_created</code></li>
@@ -99,10 +99,10 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>cidoc:E28_Conceptual_Object</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String DIRECTOR_PROPERTY = R.CIDOC_URI + "E65_Creation";
+    public static String DIRECTOR_PROPERTY = R.CIDOC_NS + "E65_Creation";
 
     /**
-     * The duration property URI.
+     * The duration property namespace.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>ma:duration</code></li>
@@ -110,10 +110,10 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>xsd:Decimal</code></li>
      * </ul>
      */
-    public static String DURATION_PROPERTY = R.MA_URI + "duration";
+    public static String DURATION_PROPERTY = R.MA_NS + "duration";
 
     /**
-     * The productor property URI.
+     * The productor property namespace.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>cidoc:P108_has_produced</code></li>
@@ -121,10 +121,10 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>cidoc:E24_Physical_Man-Made_Thing</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String PRODUCTOR_PROPERTY = R.CIDOC_URI + "P108_has_produced";
+    public static String PRODUCTOR_PROPERTY = R.CIDOC_NS + "P108_has_produced";
 
     /**
-     * The release date property URI.
+     * The release date property namespace.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>ma:releaseDate</code> (subproperty of <code>ma:date</code>)</li>
@@ -132,10 +132,10 @@ public class Production {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String RELEASE_PROPERTY = R.MA_URI + "releaseDate";
+    public static String RELEASE_PROPERTY = R.MA_NS + "releaseDate";
 
     /**
-     * The theme property URI. Note we consider a genre as a thema.
+     * The theme property namespace. Note we consider a genre as a thema.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>ma:hasGenre</code></li>
@@ -143,10 +143,10 @@ public class Production {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String THEME_PROPERTY = R.MA_URI + "hasGenre";
+    public static String THEME_PROPERTY = R.MA_NS + "hasGenre";
 
     /**
-     * The title property URI.
+     * The title property namespace.
      *
      * <ul>
      * <li><strong>ABOUT</strong>: <code>cidoc:P102_has_title</code></li>
@@ -154,7 +154,7 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>cidoc:E35_Title</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String TITLE_PROPERTY = R.CIDOC_URI + "P102_has_title";
+    public static String TITLE_PROPERTY = R.CIDOC_NS + "P102_has_title";
 
     // No reference to the nationality was found in the ontology
     // public static String NATIONALITY_PROPERTY = "";
@@ -165,7 +165,7 @@ public class Production {
      * Fills the object with fake data: for test purpose, can be deleted.
      */
     private void fillObjectWithFakeData() {
-        id = R.POC_URI + "Selma";
+        id = R.POC_NS + "Selma";
         title = "Selma";
         theme = "Historical drama";
         release = "2015-01-09";
@@ -293,8 +293,8 @@ public class Production {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmIdURI = R.POC_URI + "Selma";
-        Production production = new Production(filmIdURI);
+        String filmID = R.POC_NS + "Selma";
+        Production production = new Production(filmID);
         System.out.println(production.exportJSONFormat());
     }
 }

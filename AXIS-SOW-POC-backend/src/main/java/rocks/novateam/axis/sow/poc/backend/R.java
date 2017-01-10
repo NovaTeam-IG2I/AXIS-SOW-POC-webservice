@@ -10,47 +10,47 @@ package rocks.novateam.axis.sow.poc.backend;
 public class R {
 
     /**
-     * The proof of concept URI.
+     * The proof of concept namespace.
      */
-    public static final String POC_URI = "http://axis.sow/poc/";
+    public static final String POC_NS = "http://axis.sow/poc/";
 
     /**
-     * The AXIS-CSRM datamodel URI.
+     * The AXIS-CSRM datamodel namespace.
      */
-    public static final String DATAMODEL_URI = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
+    public static final String DATAMODEL_NS = "http://titan.be/axis-csrm/datamodel/ontology/0.4#";
 
     /**
-     * The CIDOC CRM URI.
+     * The CIDOC CRM namespace.
      */
-    public static final String CIDOC_URI = "http://www.cidoc-crm.org/cidoc-crm/";
+    public static final String CIDOC_NS = "http://www.cidoc-crm.org/cidoc-crm/";
 
     /**
-     * The RDF URI.
+     * The RDF namespace.
      */
-    public static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     /**
-     * The RDFS URI.
+     * The RDFS namespace.
      */
-    public static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
+    public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 
     /**
-     * The MA URI.
+     * The MA namespace.
      */
-    public static final String MA_URI = "http://www.w3.org/ns/ma-ont#";
+    public static final String MA_NS = "http://www.w3.org/ns/ma-ont#";
 
     /**
-     * The XSD URI.
+     * The XSD namespace.
      */
-    public static final String XSD_URI = "http://www.w3.org/2001/XMLSchema#";
+    public static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 
 
     /**
      * The prefix used in every SPARQL requests.
      */
-    public static final String PREFIX = "PREFIX rdfs: <" + RDFS_URI + ">\n" +
-            "PREFIX rdf: <" + RDF_URI + ">\n" +
-            "PREFIX datamodel: <" + DATAMODEL_URI + ">\n" +
-            "PREFIX cidoc: <" + CIDOC_URI + ">\n" +
-            "PREFIX poc: <" + POC_URI + ">\n";
+    public static final String PREFIX = "PREFIX rdfs: <" + RDFS_NS + ">\n" +
+            "PREFIX rdf: <" + RDF_NS + ">\n" +
+            "PREFIX datamodel: <" + DATAMODEL_NS + ">\n" +
+            "PREFIX cidoc: <" + CIDOC_NS + ">\n" +
+            "PREFIX poc: <" + POC_NS + ">\n";
 }
