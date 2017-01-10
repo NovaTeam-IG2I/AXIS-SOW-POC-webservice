@@ -16,8 +16,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.util.FileManager;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 
-import rocks.novateam.axis.sow.poc.backend.metadata.ProcessHandler.IOStream;
-import static rocks.novateam.axis.sow.poc.backend.metadata.ProcessHandler.startProcess;
+import rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.IOStream;
+import static rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.startProcess;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 public class MetadataExtractor {
