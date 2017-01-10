@@ -1,4 +1,4 @@
-package rocks.novateam.axis.sow.poc.frameworks;
+package rocks.novateam.axis.sow.poc.backend.frameworks;
 
 import java.io.IOException;
 import org.apache.jena.query.Query;
