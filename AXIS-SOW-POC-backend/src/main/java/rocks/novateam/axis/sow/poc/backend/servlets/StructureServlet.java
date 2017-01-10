@@ -6,7 +6,9 @@
 package rocks.novateam.axis.sow.poc.backend.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -54,6 +56,21 @@ public class StructureServlet extends HttpServlet {
             return;
         }
 
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        try {
+            // Build the response object
+            json.add("status", "ok");
+            json.add("indexedTracks", getIndexedTracks(uri));
+        } catch (NoSuchElementException ex) {
+            json.add("status", "ko")
+                    .add("message", ex.getMessage());
+        }
+        
+        // Send response
+        response.setContentType("application/json");
+        try (PrintWriter out = response.getWriter()) {
+            out.println(json.build().toString());
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -95,7 +112,7 @@ public class StructureServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private JsonArray getIndexedTracks(String uri) {
+    private JsonArray getIndexedTracks(String uri) throws NoSuchElementException {
         String NS = TDBManager.DATAMODEL_NS;
         JsonArrayBuilder indexedTracks = Json.createArrayBuilder();
 
@@ -112,6 +129,10 @@ public class StructureServlet extends HttpServlet {
         OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
 
         Individual film = model.getIndividual(NS + uri);
+        if(film == null) {
+            throw new NoSuchElementException("The requested URI does not exist.");
+        }
+        
         Statement statement;
         Individual object;
         OntClass editingTrackClass = model.getOntClass(NS + "EditingTrack");
@@ -121,6 +142,7 @@ public class StructureServlet extends HttpServlet {
             statement = i.nextStatement();
             object = statement.getObject().as(Individual.class);
 
+            // If it is an EditingTrack, build it and its fragments, and add it to the response.
             if (object.getOntClass() == editingTrackClass) {
                 JsonObjectBuilder indexedTrack = Json.createObjectBuilder();
                 indexedTrack.add("name", object.getLocalName());
