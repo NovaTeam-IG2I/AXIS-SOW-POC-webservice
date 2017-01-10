@@ -105,17 +105,17 @@ public class RegisterManager {
     /**
      * This function give a map with all properties and their values 
      * of a given individual
-     * @param name of the individual
+     * @param uri of the individual's uri
      * @return map with property name as keys and property values as values
      */
-    public Map<String, String> getPropertiesValuesOfAnIndividual(String name){
+    public Map<String, String> getPropertiesValuesOfAnIndividual(String uri){
         Map<String, String> properties = new HashMap<>();
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ, false);
-        nEnv.finish();
-        ExtendedIterator<OntProperty> exItr = nEnv.getOntModel().getOntClass(nEnv.getOntModel().getIndividual(NS+name).getURI()).listDeclaredProperties();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
+        mTDBHelper.finish();
+        ExtendedIterator<OntProperty> exItr = mTDBHelper.getOntModel().getOntClass(mTDBHelper.getOntModel().getIndividual(uri).getURI()).listDeclaredProperties();
         while (exItr.hasNext()) {
             OntProperty prop = exItr.next();
-            if(nEnv.getOntModel().getIndividual(NS+name).getCardinality(prop)>0) properties.put(prop.getLocalName(), nEnv.getOntModel().getIndividual(NS+name).getPropertyValue(prop).toString());
+            if(mTDBHelper.getOntModel().getIndividual(uri).getCardinality(prop)>0) properties.put(prop.getLocalName(), mTDBHelper.getOntModel().getIndividual(uri).getPropertyValue(prop).toString());
         }
         return properties;
     }
