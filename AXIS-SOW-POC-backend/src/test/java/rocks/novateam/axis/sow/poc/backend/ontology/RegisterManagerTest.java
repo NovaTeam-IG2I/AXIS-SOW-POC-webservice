@@ -94,8 +94,8 @@ public class RegisterManagerTest {
     }
 
     public void testGetPropertiesValuesOfAnIndividual() {
-        System.out.println("\nExecuting: rm.getPropertiesValuesOfAnIndividual(\"testAvecMap\");");
-        Map<String, String> map = rm.getPropertiesValuesOfAnIndividual("testAvecMap");
+        System.out.println("\nExecuting: rm.getPropertiesValuesOfAnIndividual(TDBManager.DATAMODEL_NS+\"testAvecMap\");");
+        Map<String, String> map = rm.getPropertiesValuesOfAnIndividual(TDBManager.DATAMODEL_NS+"testAvecMap");
         System.out.println("mGson.toJson(map, mStringStringMapType.getType()) :\n"+mGson.toJson(map, mStringStringMapType.getType()));
         System.out.println("Done.");
     }
