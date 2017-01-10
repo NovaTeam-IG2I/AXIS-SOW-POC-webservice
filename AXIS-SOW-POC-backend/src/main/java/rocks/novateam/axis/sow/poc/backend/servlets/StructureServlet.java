@@ -128,7 +128,7 @@ public class StructureServlet extends HttpServlet {
         ontModelSpec.setReasoner(reasoner);
         OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
 
-        Individual film = model.getIndividual(NS + uri);
+        Individual film = model.getIndividual(uri);
         if(film == null) {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
