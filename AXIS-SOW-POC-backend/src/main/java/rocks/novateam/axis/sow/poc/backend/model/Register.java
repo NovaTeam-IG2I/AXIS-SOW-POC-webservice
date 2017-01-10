@@ -23,4 +23,13 @@ public abstract class Register {
      * @return The JSON.
      */
     public abstract String toJSON();
+
+    /**
+     * Returns a instance the register having this URI with all its data found
+     * in the TDB.
+     *
+     * @param uri The Register URI.
+     * @return The register instance.
+     */
+    public abstract Register getInstance(String uri);
 }
