@@ -16,13 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
-import rocks.novateam.axis.sow.poc.backend.metadata.MetadataExtractor;
+import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
@@ -98,7 +94,8 @@ public class ImportServlet extends HttpServlet {
             Individual film = persist(urn, file.getAbsolutePath());
 
             // Extract and store metadata
-            MetadataExtractor.extractAndStoreMetadata(file);
+            // This is commented out because it causes the system to crash
+            // MetadataExtractor.extractAndStoreMetadata(file);
 
             json.add("status", "ok")
                     .add("uri", film.getURI());
@@ -164,8 +161,14 @@ public class ImportServlet extends HttpServlet {
      * @see Configuration#uploadFolder()
      */
     private String getNextFileName() {
-        System.out.println("Upload folder: " + Configuration.getInstance().getUploadFolder());
         File folder = new File(Configuration.getInstance().getUploadFolder());
+        System.out.println("Upload folder: " + folder.getAbsolutePath());
+        if(!folder.exists()) {
+            System.out.println("Upload folder does not exist. Creating it right now...");
+            folder.mkdir();
+            System.out.println("Done.");
+        }
+        
         File[] files = folder.listFiles();
         int fileNumber = 1; // File names start from 1.
 
@@ -197,24 +200,21 @@ public class ImportServlet extends HttpServlet {
      * @return         The Film register {@link Individual}
      */
     private Individual persist(String name, String filePath) {
-        Dataset dataset = TDBManager.getInstance().getDataset();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
         String NS = TDBManager.DATAMODEL_NS;
 
-        dataset.begin(ReadWrite.WRITE);
-        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-
-        Individual film = model.getOntClass(NS + "Film").createIndividual(NS + name);
-        Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
-        film.addProperty(model.getProperty(NS + "isDeclaredBy"), afp);
-        Individual document = model.getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
-        document.addLiteral(model.getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
-        film.addProperty(model.getProperty(NS + "hasExpression"), document);
-        Individual embodiment = model.getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
-        document.addProperty(model.getProperty(NS + "hasManifestation"), embodiment);
-        Individual location = model.getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
-        location.addProperty(model.getDatatypeProperty(NS + "hyperlink"), filePath);
-        embodiment.addProperty(model.getProperty(NS + "hasLocation"), location);
-        dataset.commit();
+        Individual film = mTDBHelper.getOntModel().getOntClass(NS + "Film").createIndividual(NS + name);
+        Individual afp = mTDBHelper.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+        film.addProperty(mTDBHelper.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
+        Individual document = mTDBHelper.getOntModel().getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
+        document.addLiteral(mTDBHelper.getOntModel().getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
+        film.addProperty(mTDBHelper.getOntModel().getProperty(NS + "hasExpression"), document);
+        Individual embodiment = mTDBHelper.getOntModel().getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
+        document.addProperty(mTDBHelper.getOntModel().getProperty(NS + "hasManifestation"), embodiment);
+        Individual location = mTDBHelper.getOntModel().getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
+        location.addProperty(mTDBHelper.getOntModel().getDatatypeProperty(NS + "hyperlink"), filePath);
+        embodiment.addProperty(mTDBHelper.getOntModel().getProperty(NS + "hasLocation"), location);
+        mTDBHelper.finish();
 
         return film;
     }
@@ -230,15 +230,12 @@ public class ImportServlet extends HttpServlet {
      * @return A unique URN that doesn't already exist in the triple store
      */
     private String getUniqueName(String name) {
-        Dataset dataset = TDBManager.getInstance().getDataset();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
         String NS = TDBManager.DATAMODEL_NS;
-
-        dataset.begin(ReadWrite.READ);
-        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-        dataset.end();
+        mTDBHelper.finish();
 
         // If name is already unique, return it as is.
-        Individual film = model.getIndividual(NS + name);
+        Individual film = mTDBHelper.getOntModel().getIndividual(NS + name);
         if (film == null) {
             return name;
         }
@@ -246,7 +243,7 @@ public class ImportServlet extends HttpServlet {
         // Else, increment a numerical suffix until it becomes unique.
         int i = 1;
         while (film != null) {
-            film = model.getIndividual(NS + name + i);
+            film = mTDBHelper.getOntModel().getIndividual(NS + name + i);
             i++;
         }
         return name + i;
