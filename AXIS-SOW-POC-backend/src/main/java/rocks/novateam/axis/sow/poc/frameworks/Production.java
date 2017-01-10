@@ -10,7 +10,9 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.FileManager;
+
 import rocks.novateam.axis.sow.poc.backend.Configuration;
+import rocks.novateam.axis.sow.poc.backend.R;
 
 /**
  * This class holds all informations about the production framework.
@@ -75,7 +77,7 @@ public class Production {
     /**
      * The type object value.
      */
-    public static String TYPE_OBJECT = Reg.DATAMODEL_URI + "AudiovisualWork";
+    public static String TYPE_OBJECT = R.DATAMODEL_URI + "AudiovisualWork";
 
     /**
      * The type property URI.
@@ -86,7 +88,7 @@ public class Production {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
+    public static String TYPE_PROPERTY = R.RDF_URI + "type";
 
     /**
      * The director property URI.
@@ -97,7 +99,7 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>cidoc:E28_Conceptual_Object</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String DIRECTOR_PROPERTY = Reg.CIDOC_URI + "E65_Creation";
+    public static String DIRECTOR_PROPERTY = R.CIDOC_URI + "E65_Creation";
 
     /**
      * The duration property URI.
@@ -108,7 +110,7 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>xsd:Decimal</code></li>
      * </ul>
      */
-    public static String DURATION_PROPERTY = Reg.MA_URI + "duration";
+    public static String DURATION_PROPERTY = R.MA_URI + "duration";
 
     /**
      * The productor property URI.
@@ -119,7 +121,7 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>cidoc:E24_Physical_Man-Made_Thing</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String PRODUCTOR_PROPERTY = Reg.CIDOC_URI + "P108_has_produced";
+    public static String PRODUCTOR_PROPERTY = R.CIDOC_URI + "P108_has_produced";
 
     /**
      * The release date property URI.
@@ -130,7 +132,7 @@ public class Production {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String RELEASE_PROPERTY = Reg.MA_URI + "releaseDate";
+    public static String RELEASE_PROPERTY = R.MA_URI + "releaseDate";
 
     /**
      * The theme property URI. Note we consider a genre as a thema.
@@ -141,7 +143,7 @@ public class Production {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String THEME_PROPERTY = Reg.MA_URI + "hasGenre";
+    public static String THEME_PROPERTY = R.MA_URI + "hasGenre";
 
     /**
      * The title property URI.
@@ -152,7 +154,7 @@ public class Production {
      * <li><strong>RANGE</strong>: <code>cidoc:E35_Title</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String TITLE_PROPERTY = Reg.CIDOC_URI + "P102_has_title";
+    public static String TITLE_PROPERTY = R.CIDOC_URI + "P102_has_title";
 
     // No reference to the nationality was found in the ontology
     // public static String NATIONALITY_PROPERTY = "";
@@ -163,7 +165,7 @@ public class Production {
      * Fills the object with fake data: for test purpose, can be deleted.
      */
     private void fillObjectWithFakeData() {
-        id = Reg.POC_URI + "Selma";
+        id = R.POC_URI + "Selma";
         title = "Selma";
         theme = "Historical drama";
         release = "2015-01-09";
@@ -238,7 +240,7 @@ public class Production {
         String THEME_SELECT = "theme";
         String TITLE_SELECT = "title";
 
-        String queryString = Reg.PREFIX + "SELECT " +
+        String queryString = R.PREFIX + "SELECT " +
                 "?" + DIRECTOR_SELECT + " ?" + DURATION_SELECT + " " +
                 "?" + PRODUCTOR_SELECT + " ?" + RELEASE_SELECT + " " +
                 "?" + THEME_SELECT + " ?" + TITLE_SELECT + " " +
@@ -291,7 +293,7 @@ public class Production {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmIdURI = Reg.POC_URI + "Selma";
+        String filmIdURI = R.POC_URI + "Selma";
         Production production = new Production(filmIdURI);
         System.out.println(production.exportJSONFormat());
     }

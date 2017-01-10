@@ -1,13 +1,13 @@
-package rocks.novateam.axis.sow.poc.frameworks;
+package rocks.novateam.axis.sow.poc.backend;
 
 /**
- * This class holds all defintions for doing SPARQL requests (URIs and PREFIX).
- * All those definitions should be on the TDB manager part and this class will
- * be removed after this refactoring.
- * 
+ * This class holds all static resources used in the project in various places.
+ *
+ * It can be defintion for doing SPARQL requests or namespaces.
+ *
  * @author Alex Canales
  */
-public class Reg {
+public class R {
 
     /**
      * The proof of concept URI.

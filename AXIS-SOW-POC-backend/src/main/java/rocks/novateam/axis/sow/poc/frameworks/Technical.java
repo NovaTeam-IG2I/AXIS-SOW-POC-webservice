@@ -7,8 +7,9 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+
 import rocks.novateam.axis.sow.poc.backend.Configuration;
-import rocks.novateam.axis.sow.poc.frameworks.Reg;
+import rocks.novateam.axis.sow.poc.backend.R;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -78,7 +79,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: None specified</li>
      * </ul>
      */
-    public static String TYPE_PROPERTY = Reg.RDF_URI + "type";
+    public static String TYPE_PROPERTY = R.RDF_URI + "type";
 
     /**
      * The duration property URI.
@@ -89,7 +90,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>cidoc:E54_Dimensions</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String DURATION_PROPERTY = Reg.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
+    public static String DURATION_PROPERTY = R.CIDOC_URI + "P43_has_dimension";  // NOTE: should have a specific property
 
     /**
      * The file name property URI.
@@ -100,7 +101,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>xsd:string</code></li>
      * </ul>
      */
-    public static String FILE_NAME_PROPERTY = Reg.DATAMODEL_URI + "fileName";
+    public static String FILE_NAME_PROPERTY = R.DATAMODEL_URI + "fileName";
 
     /**
      * The file name property URI.
@@ -111,7 +112,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>xsd:float</code></li>
      * </ul>
      */
-    public static String FILE_SIZE_PROPERTY = Reg.DATAMODEL_URI + "fileSize";
+    public static String FILE_SIZE_PROPERTY = R.DATAMODEL_URI + "fileSize";
 
     /**
      * The hyperlink property URI.
@@ -122,7 +123,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>xsd:string</code></li>
      * </ul>
      */
-    public static String HYPERLINK_PROPERTY = Reg.DATAMODEL_URI + "hyperlink";
+    public static String HYPERLINK_PROPERTY = R.DATAMODEL_URI + "hyperlink";
 
     /**
      * The import date property URI.
@@ -133,7 +134,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>xsd:date</code></li>
      * </ul>
      */
-    public static String IMPORT_DATE_PROPERTY = Reg.DATAMODEL_URI + "date";
+    public static String IMPORT_DATE_PROPERTY = R.DATAMODEL_URI + "date";
 
     /**
      * The import date property URI.
@@ -144,19 +145,19 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>axis:Agent</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String RIGHTS_PROPERTY = Reg.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
+    public static String RIGHTS_PROPERTY = R.DATAMODEL_URI + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
     // ---- End framework ontology property and value defintion
 
     /**
      * The type object value.
      */
-    public static String TYPE_OBJECT = Reg.DATAMODEL_URI + "AudiovisualWork";
+    public static String TYPE_OBJECT = R.DATAMODEL_URI + "AudiovisualWork";
 
     /**
      * Fills the object with fake data: for test purpose, can be deleted.
      */
     private void fillObjectWithFakeData() {
-        id = Reg.POC_URI + "Selma";
+        id = R.POC_URI + "Selma";
         fileName = "Selma.mp4";
         fileSize = "700";
         hyperlink = "http://www.imdb.com/title/tt1020072/";
@@ -233,7 +234,7 @@ public class Technical {
         String DURATION_SELECT = "duration";
         String IMPORT_DATE_SELECT = "importDate";
 
-        String queryString = Reg.PREFIX + "SELECT " +
+        String queryString = R.PREFIX + "SELECT " +
                 "?" + FILE_NAME_SELECT + " ?" + FILE_SIZE_SELECT + " " +
                 "?" + HYPERLINK_SELECT + " ?" + RIGHTS_SELECT + " " +
                 "?" + DURATION_SELECT + " ?" + IMPORT_DATE_SELECT + " " +
@@ -285,7 +286,7 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmIdURI = Reg.POC_URI + "Selma";
+        String filmIdURI = R.POC_URI + "Selma";
         Technical framework = new Technical(filmIdURI);
         System.out.println(framework.exportJSONFormat());
     }
