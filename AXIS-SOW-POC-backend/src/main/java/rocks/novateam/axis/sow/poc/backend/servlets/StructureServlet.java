@@ -12,6 +12,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +53,7 @@ public class StructureServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -98,48 +98,79 @@ public class StructureServlet extends HttpServlet {
     private JsonArray getIndexedTracks(String uri) {
         String NS = TDBManager.DATAMODEL_NS;
         JsonArrayBuilder indexedTracks = Json.createArrayBuilder();
-        
+
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.READ);
         Model base = dataset.getDefaultModel();
         dataset.end();
-        
+
         // Build the inferred model
         Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
         OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
         reasoner.bindSchema(base);
         ontModelSpec.setReasoner(reasoner);
         OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
-        
-        Individual film = model.getIndividual(NS+uri);
+
+        Individual film = model.getIndividual(NS + uri);
         Statement statement;
         Individual object;
-        OntClass editingTrackClass = model.getOntClass(NS+"EditingTrack");
-        
+        OntClass editingTrackClass = model.getOntClass(NS + "EditingTrack");
+
         // For all "used" individuals
-        for(StmtIterator i = film.listProperties(model.getProperty(NS+"uses")) ; i.hasNext() ;) {
+        for (StmtIterator i = film.listProperties(model.getProperty(NS + "uses")); i.hasNext();) {
             statement = i.nextStatement();
             object = statement.getObject().as(Individual.class);
-             
-            if(object.getOntClass() == editingTrackClass) {
+
+            if (object.getOntClass() == editingTrackClass) {
                 JsonObjectBuilder indexedTrack = Json.createObjectBuilder();
                 indexedTrack.add("name", object.getLocalName());
                 indexedTrack.add("uri", object.getURI());
-                indexedTrack.add("segments", getSegments(model, object));
-                
+                indexedTrack.add("fragments", getFragments(model, object));
+
                 indexedTracks.add(indexedTrack.build());
             }
         }
-        
+
         return indexedTracks.build();
     }
 
-    private JsonArray getSegments(OntModel model, Individual editingTrack) {
+    private JsonArray getFragments(OntModel model, Individual editingTrack) {
         String NS = TDBManager.DATAMODEL_NS;
-        JsonArrayBuilder segments = Json.createArrayBuilder();
+        JsonArrayBuilder fragments = Json.createArrayBuilder();
+        Individual esoStructure = editingTrack.getPropertyValue(model.getProperty(NS + "isDefinedByStructure")).as(Individual.class);
+        
+        // Fragments are stored as a linked list in the ontology.
+        // The following instructions iterate over this list.
+        Individual fragment = esoStructure.getPropertyValue(model.getProperty(NS + "starts")).as(Individual.class);
+        fragments.add(buildFragment(model, fragment));
+        while(fragment.hasProperty(model.getProperty(NS+"next"))) {
+            fragment = fragment.getPropertyValue(model.getProperty(NS+"next")).as(Individual.class);
+            fragments.add(buildFragment(model, fragment));
+        }
 
-        Individual esoStructure = editingTrack.getPropertyValue(model.getProperty(NS+"isDefinedByStructure")).as(Individual.class);
-        //TODO: Build segments
-        return segments.build();
+        return fragments.build();
+    }
+
+    private JsonObject buildFragment(OntModel model, Individual fragment) {
+        String NS = TDBManager.DATAMODEL_NS;
+        JsonObjectBuilder fragmentJson = Json.createObjectBuilder();
+
+        if (fragment.hasOntClass(NS + "MediaUnifiedSegment")) {
+            fragmentJson.add("type", "segment");
+            // TODO: Get start and end
+
+        } else if (fragment.hasOntClass(NS + "MediaUnifiedPoint")) {
+            fragmentJson.add("type", "point");
+            // TODO: Get start
+        }
+
+        // Note: As of iteration 3, there may be multiple referenced Registers.
+        Individual register = fragment.getPropertyValue(model.getProperty(NS + "expresses")).as(Individual.class);
+        if (register != null) {
+            fragmentJson.add("name", register.getLocalName());
+            fragmentJson.add("uri", register.getURI());
+        }
+        
+        return fragmentJson.build();
     }
 }
