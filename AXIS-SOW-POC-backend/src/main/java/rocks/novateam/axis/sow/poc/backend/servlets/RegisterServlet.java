@@ -24,15 +24,15 @@ import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
  *
  * @author Olivier Sailly
  */
-@WebServlet(name = "registerServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*"})
-public class registerServlet extends HttpServlet {
+@WebServlet(name = "RegisterServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*"})
+public class RegisterServlet extends HttpServlet {
     private final RegisterManager mRegisterManager;
     private final Gson mGson;
     private final TypeToken<ArrayList<Category>> mCategoriesListType;
     private final TypeToken<ArrayList<String>> mStringListType;
     private final TypeToken<Map<String,String>> mStringStringMapType;
 
-    public registerServlet() {
+    public RegisterServlet() {
         super();
         this.mRegisterManager = new RegisterManager();
         this.mGson = new Gson();

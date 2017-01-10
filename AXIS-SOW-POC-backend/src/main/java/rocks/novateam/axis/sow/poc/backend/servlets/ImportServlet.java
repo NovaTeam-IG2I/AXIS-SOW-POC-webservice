@@ -22,6 +22,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
+import rocks.novateam.axis.sow.poc.backend.helpers.NeededEnvironment;
 import rocks.novateam.axis.sow.poc.backend.metadata.MetadataExtractor;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
@@ -204,24 +205,21 @@ public class ImportServlet extends HttpServlet {
      * @return         The Film register {@link Individual}
      */
     private Individual persist(String name, String filePath) {
-        Dataset dataset = TDBManager.getInstance().getDataset();
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
         String NS = TDBManager.DATAMODEL_NS;
 
-        dataset.begin(ReadWrite.WRITE);
-        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-
-        Individual film = model.getOntClass(NS + "Film").createIndividual(NS + name);
-        Individual afp = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
-        film.addProperty(model.getProperty(NS + "isDeclaredBy"), afp);
-        Individual document = model.getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
-        document.addLiteral(model.getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
-        film.addProperty(model.getProperty(NS + "hasExpression"), document);
-        Individual embodiment = model.getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
-        document.addProperty(model.getProperty(NS + "hasManifestation"), embodiment);
-        Individual location = model.getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
-        location.addProperty(model.getDatatypeProperty(NS + "hyperlink"), filePath);
-        embodiment.addProperty(model.getProperty(NS + "hasLocation"), location);
-        dataset.commit();
+        Individual film = nEnv.getOntModel().getOntClass(NS + "Film").createIndividual(NS + name);
+        Individual afp = nEnv.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+        film.addProperty(nEnv.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
+        Individual document = nEnv.getOntModel().getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
+        document.addLiteral(nEnv.getOntModel().getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
+        film.addProperty(nEnv.getOntModel().getProperty(NS + "hasExpression"), document);
+        Individual embodiment = nEnv.getOntModel().getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
+        document.addProperty(nEnv.getOntModel().getProperty(NS + "hasManifestation"), embodiment);
+        Individual location = nEnv.getOntModel().getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
+        location.addProperty(nEnv.getOntModel().getDatatypeProperty(NS + "hyperlink"), filePath);
+        embodiment.addProperty(nEnv.getOntModel().getProperty(NS + "hasLocation"), location);
+        nEnv.finish();
 
         return film;
     }
@@ -237,15 +235,12 @@ public class ImportServlet extends HttpServlet {
      * @return A unique URN that doesn't already exist in the triple store
      */
     private String getUniqueName(String name) {
-        Dataset dataset = TDBManager.getInstance().getDataset();
+        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
         String NS = TDBManager.DATAMODEL_NS;
-
-        dataset.begin(ReadWrite.READ);
-        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-        dataset.end();
+        nEnv.finish();
 
         // If name is already unique, return it as is.
-        Individual film = model.getIndividual(NS + name);
+        Individual film = nEnv.getOntModel().getIndividual(NS + name);
         if (film == null) {
             return name;
         }
@@ -253,7 +248,7 @@ public class ImportServlet extends HttpServlet {
         // Else, increment a numerical suffix until it becomes unique.
         int i = 1;
         while (film != null) {
-            film = model.getIndividual(NS + name + i);
+            film = nEnv.getOntModel().getIndividual(NS + name + i);
             i++;
         }
         return name + i;
