@@ -14,6 +14,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.util.FileManager;
+import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 import rocks.novateam.axis.sow.poc.backend.metadata.ProcessHandler.IOStream;
 import static rocks.novateam.axis.sow.poc.backend.metadata.ProcessHandler.startProcess;
@@ -21,7 +22,7 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 public class MetadataExtractor {
 
-    private static final String EXIF_TOOL_PATH = "/usr/local/bin/exiftool";
+    private static final String EXIF_TOOL_PATH = Configuration.getInstance().getExiftoolPath();
 
     public static void extractAndStoreMetadata(File inputFile) {
         storeInTDB(extractRDF(extractXMP(inputFile)));
