@@ -42,11 +42,9 @@ public class MetadataExtractor {
             throw new Error("Error with the file");
         }
 
-        String outputFilePath = modifyExtension(inputFile, ".xmp");
-        File outputFile = new File(outputFilePath);
+        File outputFile = new File(modifyExtension(inputFile, ".xmp"));
 
-        // TODO delete/overwrite if xmp already exists
-        if (new File(outputFilePath).isFile()) {
+        if (outputFile.isFile()) {
             outputFile.delete();
         }
 
@@ -108,6 +106,9 @@ public class MetadataExtractor {
             throw new Error("Error with the file");
         }
         File outputFile = new File(modifyExtension(inputFile, ".rdf"));
+        if (outputFile.isFile()) {
+            outputFile.delete();
+        }
         try {
             BufferedReader br = new BufferedReader(new FileReader(inputFile));
             PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
