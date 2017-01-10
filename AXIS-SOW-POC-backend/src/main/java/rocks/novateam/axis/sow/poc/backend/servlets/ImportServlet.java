@@ -16,14 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.helpers.NeededEnvironment;
-import rocks.novateam.axis.sow.poc.backend.metadata.MetadataExtractor;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
