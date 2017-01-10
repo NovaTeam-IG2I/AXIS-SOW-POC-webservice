@@ -108,14 +108,14 @@ public class RegisterManager {
      * @param name of the individual
      * @return map with property name as keys and property values as values
      */
-    public Map<String, String> getPropertiesValuesOfAnIndividual(String name){
+    public Map<String, String> getPropertiesValuesOfAnIndividual(String uri){
         Map<String, String> properties = new HashMap<>();
         TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
         mTDBHelper.finish();
-        ExtendedIterator<OntProperty> exItr = mTDBHelper.getOntModel().getOntClass(mTDBHelper.getOntModel().getIndividual(NS+name).getURI()).listDeclaredProperties();
+        ExtendedIterator<OntProperty> exItr = mTDBHelper.getOntModel().getOntClass(mTDBHelper.getOntModel().getIndividual(uri).getURI()).listDeclaredProperties();
         while (exItr.hasNext()) {
             OntProperty prop = exItr.next();
-            if(mTDBHelper.getOntModel().getIndividual(NS+name).getCardinality(prop)>0) properties.put(prop.getLocalName(), mTDBHelper.getOntModel().getIndividual(NS+name).getPropertyValue(prop).toString());
+            if(mTDBHelper.getOntModel().getIndividual(uri).getCardinality(prop)>0) properties.put(prop.getLocalName(), mTDBHelper.getOntModel().getIndividual(uri).getPropertyValue(prop).toString());
         }
         return properties;
     }
