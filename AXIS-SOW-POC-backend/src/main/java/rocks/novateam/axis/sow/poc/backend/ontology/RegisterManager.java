@@ -105,7 +105,7 @@ public class RegisterManager {
     /**
      * This function give a map with all properties and their values 
      * of a given individual
-     * @param name of the individual
+     * @param uri of the individual's uri
      * @return map with property name as keys and property values as values
      */
     public Map<String, String> getPropertiesValuesOfAnIndividual(String uri){
