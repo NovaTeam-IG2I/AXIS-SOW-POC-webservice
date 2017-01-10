@@ -18,7 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.query.ReadWrite;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
-import rocks.novateam.axis.sow.poc.backend.helpers.NeededEnvironment;
+import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
@@ -200,7 +200,7 @@ public class ImportServlet extends HttpServlet {
      * @return         The Film register {@link Individual}
      */
     private Individual persist(String name, String filePath) {
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+        TDBHelper nEnv = new TDBHelper(ReadWrite.WRITE);
         String NS = TDBManager.DATAMODEL_NS;
 
         Individual film = nEnv.getOntModel().getOntClass(NS + "Film").createIndividual(NS + name);
@@ -230,7 +230,7 @@ public class ImportServlet extends HttpServlet {
      * @return A unique URN that doesn't already exist in the triple store
      */
     private String getUniqueName(String name) {
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        TDBHelper nEnv = new TDBHelper(ReadWrite.READ);
         String NS = TDBManager.DATAMODEL_NS;
         nEnv.finish();
 
