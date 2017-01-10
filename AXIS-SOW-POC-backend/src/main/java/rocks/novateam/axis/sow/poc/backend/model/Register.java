@@ -1,4 +1,4 @@
-package rocks.novateam.axis.sow.poc.model;
+package rocks.novateam.axis.sow.poc.backend.model;
 
 /**
  * Defines a register structure.
