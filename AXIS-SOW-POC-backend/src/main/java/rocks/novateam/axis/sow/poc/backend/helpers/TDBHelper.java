@@ -17,7 +17,7 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  *
  * @author Olivier Sailly
  */
-public final class NeededEnvironment {
+public final class TDBHelper {
     private TDBManager mTDBManager;
     private Dataset mDataset;
     private Model mModel;
@@ -31,7 +31,7 @@ public final class NeededEnvironment {
      *
      * @param rw Tells whether to begin writing or reading
      */
-    public NeededEnvironment(ReadWrite rw) {
+    public TDBHelper(ReadWrite rw) {
         this.mTDBManager = TDBManager.getInstance();
         this.mReadWrite = rw;
         this.mDataset = mTDBManager.getDataset();
@@ -58,7 +58,7 @@ public final class NeededEnvironment {
      * @param ontModelStrictMode Tells whether to set StrictMode to true or
      * false
      */
-    public NeededEnvironment(ReadWrite rw, boolean ontModelStrictMode) {
+    public TDBHelper(ReadWrite rw, boolean ontModelStrictMode) {
         this(rw);
         this.mOntModel.setStrictMode(ontModelStrictMode);
     }

@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
 import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
-import rocks.novateam.axis.sow.poc.backend.helpers.NeededEnvironment;
+import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 
 /**
  *
@@ -44,22 +44,22 @@ public class RegisterManager {
         name = CamelCaseConverter.convertToCamelCase(name);
         //if this instance already exist
         if(instanceExists(name)==InstanceExistenceState.EXISTS) return true; // This ind already exists
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
-        Individual thisInd = nEnv.getOntModel().getIndividual(NS+name);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
+        Individual thisInd = mTDBHelper.getOntModel().getIndividual(NS+name);
         if(thisInd != null){//if it is impossible to get the individual
-            nEnv.finish();
+            mTDBHelper.finish();
             return false;
         }
-        Individual afp = nEnv.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
-        OntClass class_ = nEnv.getOntModel().getOntClass(NS+className);
+        Individual afp = mTDBHelper.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+        OntClass class_ = mTDBHelper.getOntModel().getOntClass(NS+className);
         Individual ind = class_.createIndividual(NS+name);
         ind.addLabel(label,"EN");
         for (Map.Entry<String,String> property : properties.entrySet()) {
-            OntProperty prprt = nEnv.getOntModel().createOntProperty(NS+property.getKey()); // create an ontProperty
+            OntProperty prprt = mTDBHelper.getOntModel().createOntProperty(NS+property.getKey()); // create an ontProperty
             ind.addProperty(prprt, property.getValue());
         }
-        ind.addProperty(nEnv.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
-        nEnv.finish();
+        ind.addProperty(mTDBHelper.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
+        mTDBHelper.finish();
         return (instanceExists(name)==InstanceExistenceState.EXISTS); //test if it has been created
     }
     
@@ -72,9 +72,9 @@ public class RegisterManager {
     public boolean addPredicate(String name){
         //put the string in camelCase
         name = CamelCaseConverter.convertToCamelCase(name); // System.out.println(name);
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
-        nEnv.getOntModel().createOntProperty(NS+name);
-        nEnv.finish();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
+        mTDBHelper.getOntModel().createOntProperty(NS+name);
+        mTDBHelper.finish();
         return this.predicateExists(name);
     }
     
@@ -88,9 +88,9 @@ public class RegisterManager {
     public ArrayList getProperties(String className){
         ArrayList properties = new ArrayList();
 
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
-        nEnv.finish();
-        OntClass class_ = nEnv.getOntModel().getOntClass(NS+className);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
+        mTDBHelper.finish();
+        OntClass class_ = mTDBHelper.getOntModel().getOntClass(NS+className);
         ExtendedIterator<OntProperty> exItr;        
         exItr = class_.listDeclaredProperties();      
         while (exItr.hasNext()) {
@@ -138,9 +138,9 @@ public class RegisterManager {
      */
     public ArrayList<Category> getCategoriesRecusively(String className) throws NullPointerException { // before the first loop, we have to create our variables
         ArrayList<Category> categories = new ArrayList<>();
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ, false);
-        nEnv.finish();
-        OntClass mOntClass = nEnv.getOntModel().getOntClass(NS+className);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
+        mTDBHelper.finish();
+        OntClass mOntClass = mTDBHelper.getOntModel().getOntClass(NS+className);
         if(mOntClass == null) throw new NullPointerException("\nError on getting \""+NS+className+"\" OntClass.");
         return getCategoriesRecusively(categories, mOntClass);
     }
@@ -177,10 +177,10 @@ public class RegisterManager {
      * @return An InstanceExistenceState enum
      */
     public InstanceExistenceState instanceExists(String name) {
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
-        nEnv.finish();
-        OntResource resource = nEnv.getOntModel().getOntResource(NS+name);
-        OntResource resourceAFP = nEnv.getOntModel().getOntResource(NS+name+"_AFP");
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
+        mTDBHelper.finish();
+        OntResource resource = mTDBHelper.getOntModel().getOntResource(NS+name);
+        OntResource resourceAFP = mTDBHelper.getOntModel().getOntResource(NS+name+"_AFP");
         if(resource != null && resourceAFP != null){
             return InstanceExistenceState.EXISTS;
         } else {
@@ -199,9 +199,9 @@ public class RegisterManager {
      * @return true if it exists, false otherwise
      */
     public boolean predicateExists(String ccName){
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
-        nEnv.finish();
-        return (nEnv.getOntModel().getOntProperty(NS+ccName)!=null);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
+        mTDBHelper.finish();
+        return (mTDBHelper.getOntModel().getOntProperty(NS+ccName)!=null);
     }
     
     /**
@@ -210,16 +210,16 @@ public class RegisterManager {
      * @return
      */
     public boolean deleteInstance(String name){
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
         try {
-            OntResource resource = nEnv.getOntModel().getOntResource(NS+name);
-            OntResource resourceAFP = nEnv.getOntModel().getOntResource(NS+name+"_AFP");
+            OntResource resource = mTDBHelper.getOntModel().getOntResource(NS+name);
+            OntResource resourceAFP = mTDBHelper.getOntModel().getOntResource(NS+name+"_AFP");
             resource.remove();
             resourceAFP.remove();
         } catch (Exception e){
             System.out.println(e.fillInStackTrace());
         } finally {
-            nEnv.finish();
+            mTDBHelper.finish();
         }
         return (this.instanceExists(name) == InstanceExistenceState.DOES_NOT_EXIST);
     }
@@ -233,12 +233,12 @@ public class RegisterManager {
      */
     public boolean addPredicateToRegisters(String subjectName, String objectName, String predicateName){
         if(predicateExists(predicateName)){
-            NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
-            Resource subject = nEnv.getOntModel().getIndividual(NS+subjectName);
-            Resource object = nEnv.getOntModel().getIndividual(NS+objectName);
-            OntProperty predicate = nEnv.getOntModel().getOntProperty(NS+predicateName);
+            TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
+            Resource subject = mTDBHelper.getOntModel().getIndividual(NS+subjectName);
+            Resource object = mTDBHelper.getOntModel().getIndividual(NS+objectName);
+            OntProperty predicate = mTDBHelper.getOntModel().getOntProperty(NS+predicateName);
             subject.addProperty(predicate, object);
-            nEnv.finish();
+            mTDBHelper.finish();
         } else { //predicate doesn't exist
             return false;
         }
@@ -246,17 +246,17 @@ public class RegisterManager {
     }
     
     public boolean statementExists(String subjectName, String predicateName, String objectName){
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
-        nEnv.finish();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
+        mTDBHelper.finish();
         //if subject has predicate in his properties and is linked to the object, return true
-        return nEnv.getOntModel().getOntResource(NS+subjectName).hasProperty(nEnv.getOntModel().getOntProperty(NS+predicateName),nEnv.getOntModel().getOntResource(NS+objectName));
+        return mTDBHelper.getOntModel().getOntResource(NS+subjectName).hasProperty(mTDBHelper.getOntModel().getOntProperty(NS+predicateName),mTDBHelper.getOntModel().getOntResource(NS+objectName));
     }
     
     public ArrayList<String> getAllIndividuals(){
         ArrayList<String> individuals = new ArrayList();
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
-        nEnv.finish();
-        ExtendedIterator<Individual> i = nEnv.getOntModel().listIndividuals();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
+        mTDBHelper.finish();
+        ExtendedIterator<Individual> i = mTDBHelper.getOntModel().listIndividuals();
         while(i.hasNext())
         {
             Individual ind = i.next();

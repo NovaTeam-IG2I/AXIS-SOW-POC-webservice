@@ -18,7 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.query.ReadWrite;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
-import rocks.novateam.axis.sow.poc.backend.helpers.NeededEnvironment;
+import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
@@ -200,21 +200,21 @@ public class ImportServlet extends HttpServlet {
      * @return         The Film register {@link Individual}
      */
     private Individual persist(String name, String filePath) {
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.WRITE);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
         String NS = TDBManager.DATAMODEL_NS;
 
-        Individual film = nEnv.getOntModel().getOntClass(NS + "Film").createIndividual(NS + name);
-        Individual afp = nEnv.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
-        film.addProperty(nEnv.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
-        Individual document = nEnv.getOntModel().getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
-        document.addLiteral(nEnv.getOntModel().getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
-        film.addProperty(nEnv.getOntModel().getProperty(NS + "hasExpression"), document);
-        Individual embodiment = nEnv.getOntModel().getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
-        document.addProperty(nEnv.getOntModel().getProperty(NS + "hasManifestation"), embodiment);
-        Individual location = nEnv.getOntModel().getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
-        location.addProperty(nEnv.getOntModel().getDatatypeProperty(NS + "hyperlink"), filePath);
-        embodiment.addProperty(nEnv.getOntModel().getProperty(NS + "hasLocation"), location);
-        nEnv.finish();
+        Individual film = mTDBHelper.getOntModel().getOntClass(NS + "Film").createIndividual(NS + name);
+        Individual afp = mTDBHelper.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+        film.addProperty(mTDBHelper.getOntModel().getProperty(NS + "isDeclaredBy"), afp);
+        Individual document = mTDBHelper.getOntModel().getOntClass(NS + "VideoDocument").createIndividual(NS + name + "_Document");
+        document.addLiteral(mTDBHelper.getOntModel().getDatatypeProperty("http://www.w3.org/ns/ma-ont#title"), name);
+        film.addProperty(mTDBHelper.getOntModel().getProperty(NS + "hasExpression"), document);
+        Individual embodiment = mTDBHelper.getOntModel().getOntClass(NS + "VideoEmbodiment").createIndividual(NS + name + "_Embodiment");
+        document.addProperty(mTDBHelper.getOntModel().getProperty(NS + "hasManifestation"), embodiment);
+        Individual location = mTDBHelper.getOntModel().getOntClass(NS + "Location").createIndividual(NS + name + "_Location");
+        location.addProperty(mTDBHelper.getOntModel().getDatatypeProperty(NS + "hyperlink"), filePath);
+        embodiment.addProperty(mTDBHelper.getOntModel().getProperty(NS + "hasLocation"), location);
+        mTDBHelper.finish();
 
         return film;
     }
@@ -230,12 +230,12 @@ public class ImportServlet extends HttpServlet {
      * @return A unique URN that doesn't already exist in the triple store
      */
     private String getUniqueName(String name) {
-        NeededEnvironment nEnv = new NeededEnvironment(ReadWrite.READ);
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ);
         String NS = TDBManager.DATAMODEL_NS;
-        nEnv.finish();
+        mTDBHelper.finish();
 
         // If name is already unique, return it as is.
-        Individual film = nEnv.getOntModel().getIndividual(NS + name);
+        Individual film = mTDBHelper.getOntModel().getIndividual(NS + name);
         if (film == null) {
             return name;
         }
@@ -243,7 +243,7 @@ public class ImportServlet extends HttpServlet {
         // Else, increment a numerical suffix until it becomes unique.
         int i = 1;
         while (film != null) {
-            film = nEnv.getOntModel().getIndividual(NS + name + i);
+            film = mTDBHelper.getOntModel().getIndividual(NS + name + i);
             i++;
         }
         return name + i;
