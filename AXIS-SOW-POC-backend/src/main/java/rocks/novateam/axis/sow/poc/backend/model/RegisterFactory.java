@@ -18,7 +18,9 @@ public class RegisterFactory {
     public static Register getInstance(String type, String uri) {
         switch(type) {
             default:
-                return new NullRegister();
+                NullRegister register = new NullRegister();
+                register.uri = uri;
+                return register;
         }
     }
 }
