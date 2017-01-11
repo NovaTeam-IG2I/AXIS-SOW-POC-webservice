@@ -24,6 +24,9 @@ public class Person extends Register {
 
         Map<String, String> values = manager.getPropertiesOfAnIndividual(uri);
 
+        if(values == null)
+            return;
+
         this.label = values.get(R.RDFS_LABEL_PROPERTY);
         System.out.println(label);
     }
