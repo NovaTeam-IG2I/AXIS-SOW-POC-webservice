@@ -53,4 +53,10 @@ public class R {
             "PREFIX datamodel: <" + DATAMODEL_NS + ">\n" +
             "PREFIX cidoc: <" + CIDOC_NS + ">\n" +
             "PREFIX poc: <" + POC_NS + ">\n";
+
+    /**
+     * The rdfs label property.
+     */
+    public static String RDFS_LABEL_PROPERTY = R.RDFS_NS + "label";
+
 }
