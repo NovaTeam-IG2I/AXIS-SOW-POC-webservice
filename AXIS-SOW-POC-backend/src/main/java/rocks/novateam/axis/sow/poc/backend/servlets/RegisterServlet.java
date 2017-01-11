@@ -72,7 +72,7 @@ public class RegisterServlet extends HttpServlet {
                             case "instance":
                                 if(!request.getParameterMap().isEmpty()){
                                     try {
-                                        boolean result = this.processAddRegisterInstance(request.getParameter("name"),request.getParameter("classname"),request.getParameter("properties"));
+                                        boolean result = this.processAddRegisterInstance(request.getParameter("name"),request.getParameter("classuri"),request.getParameter("properties"));
                                         if(result){
                                             response.sendError(HttpServletResponse.SC_CREATED);
                                         } else {
@@ -104,7 +104,7 @@ public class RegisterServlet extends HttpServlet {
                             case "existingpredicatetoregister":
                                 if(!request.getParameterMap().isEmpty()){
                                     try {
-                                        boolean result = this.processAddPredicateToRegisters(request.getParameter("subjectname"),request.getParameter("objectname"),request.getParameter("predicatename"));
+                                        boolean result = this.processAddPredicateToRegisters(request.getParameter("subjecturi"),request.getParameter("objecturi"),request.getParameter("predicateuri"));
                                         if(result){
                                             response.sendError(HttpServletResponse.SC_CREATED);
                                         } else {
@@ -131,7 +131,7 @@ public class RegisterServlet extends HttpServlet {
                             case "instance":
                                 if(!request.getParameterMap().isEmpty()){
                                     try {
-                                        boolean result = this.processDeleteInstance(request.getParameter("name"));
+                                        boolean result = this.processDeleteInstance(request.getParameter("uri"));
                                         if(result){
                                             response.sendError(HttpServletResponse.SC_OK);
                                         } else {
@@ -164,28 +164,28 @@ public class RegisterServlet extends HttpServlet {
     }
 
     private String processGetProperties(String className){
-        return this.mGson.toJson(this.mRegisterManager.getProperties(className), mStringListType.getType());
+        return this.mGson.toJson(this.mRegisterManager.getClassPropertiesLocalNamesByClassName(className), mStringListType.getType());
     }
 
     private String processGetAllIndividuals(){
         return this.mGson.toJson(this.mRegisterManager.getAllIndividuals(), mStringListType.getType());
     }
 
-    private boolean processAddRegisterInstance(String name, String className, String jsonProperties){
+    private boolean processAddRegisterInstance(String name, String classURI, String jsonProperties){
         Map<String,String> mProperties = this.mGson.fromJson(jsonProperties, this.mStringStringMapType.getType());
-        return this.mRegisterManager.addRegisterInstance(name, className, mProperties);
+        return this.mRegisterManager.addRegisterInstance(name, classURI, mProperties);
     }
 
     private boolean processAddPredicate(String name){
         return this.mRegisterManager.addPredicate(name);
     }
 
-    private boolean processAddPredicateToRegisters(String subjectName, String objectName, String predicateName){
-        return this.mRegisterManager.addPredicateToRegisters(subjectName, objectName, predicateName);
+    private boolean processAddPredicateToRegisters(String subjectURI, String objectURI, String predicateURI){
+        return this.mRegisterManager.addPredicateToRegisters(subjectURI, objectURI, predicateURI);
     }
 
-    private boolean processDeleteInstance(String name){
-        return this.mRegisterManager.deleteInstance(name);
+    private boolean processDeleteInstance(String uri){
+        return this.mRegisterManager.deleteInstance(uri);
     }
 
     private String calledMethodFromURI(String uri){
