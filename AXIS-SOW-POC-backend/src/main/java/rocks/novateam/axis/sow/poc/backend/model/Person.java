@@ -1,7 +1,10 @@
 package rocks.novateam.axis.sow.poc.backend.model;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import rocks.novateam.axis.sow.poc.backend.R;
+import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 
 /**
  * Defines a person.
@@ -9,7 +12,7 @@ import rocks.novateam.axis.sow.poc.backend.R;
  * @author Alex Canales
  */
 public class Person extends Register {
-    
+
     /**
      * The person type.
      */
@@ -17,6 +20,12 @@ public class Person extends Register {
 
     public Person(String uri) {
         this.uri = uri;
+        RegisterManager manager = new RegisterManager();
+
+        Map<String, String> values = manager.getPropertiesOfAnIndividual(uri);
+
+        this.label = values.get(R.RDFS_LABEL_PROPERTY);
+        System.out.println(label);
     }
 
     @Override
