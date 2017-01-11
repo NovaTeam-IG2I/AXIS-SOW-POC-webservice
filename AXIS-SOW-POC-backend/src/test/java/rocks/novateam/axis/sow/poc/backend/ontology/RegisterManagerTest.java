@@ -35,22 +35,22 @@ public class RegisterManagerTest {
     public void runAllTests(){
         System.out.println("Running all tests...");
         
-        testGetProperties();
+        testGetClassPropertiesLocalNamesByClassName();
         testGetRegisterCategories();
-        testGetCategoriesRecusively();
-        testGetAllIndividuals();
+        testGetCategoriesRecusivelyByClassName();
+        testGetAllIndividualsLocalNames();
 
-        testAddRegisterInstance();
-        testInstanceExists();
-        testGetPropertiesValuesOfAnIndividual();
+        testAddRegisterInstanceByClassName();
+        testInstanceExistsByInstanceName();
+        testGetPropertiesOfAnIndividualByIndividualName();
         
         testAddPredicate();
-        testPredicateExists();
+        testPredicateExistsByPredicateName();
         
-        testAddPredicateToRegisters();
+        testAddPredicateToRegistersByNames();
 
-        testDeleteInstance();
-        testInstanceExists();
+        testDeleteInstanceByName();
+        testInstanceExistsByInstanceName();
     }
 
     public void testGetRegisterCategories() {
@@ -60,42 +60,42 @@ public class RegisterManagerTest {
         System.out.println("Done.");
     }
 
-    public void testGetCategoriesRecusively() {
-        System.out.println("\nExecuting: rm.getCategoriesRecusively(\"Document\");");
-        ArrayList<Category> arc = rm.getCategoriesRecusively("Document");
+    public void testGetCategoriesRecusivelyByClassName() {
+        System.out.println("\nExecuting: rm.getCategoriesRecusivelyByClassName(\"Document\");");
+        ArrayList<Category> arc = rm.getCategoriesRecusivelyByClassName("Document"); // build the uri, then calls getCategoriesRecusively
         for(Category c : arc) System.out.println(c.toTree());
         System.out.println("Done.");
     }
 
-    public void testGetProperties() {
-        System.out.println("\nExecuting: rm.getProperties(\"PhysicalPerson\");");
-        ArrayList<String> ars = rm.getProperties("PhysicalPerson");
+    public void testGetClassPropertiesLocalNamesByClassName() {//if this method works, other methods to get properties will work
+        System.out.println("\nExecuting: rm.getClassPropertiesLocalNamesByClassName(\"PhysicalPerson\");");
+        ArrayList<String> ars = rm.getClassPropertiesLocalNamesByClassName("PhysicalPerson"); // build the uri, then calls getClassProperties
         for(String s : ars) System.out.println(s);
         System.out.println("Done.");
     }
 
-    public void testGetAllIndividuals() {
-        System.out.println("\nExecuting: rm.getAllIndividuals();");
-        ArrayList<String> ars = rm.getAllIndividuals();
+    public void testGetAllIndividualsLocalNames() {
+        System.out.println("\nExecuting: rm.getAllIndividualsLocalNames();");
+        ArrayList<String> ars = rm.getAllIndividualsLocalNames();
         for(String s : ars) System.out.println(s);
         System.out.println("Done.");
     }
 
-    public void testAddRegisterInstance() {
+    public void testAddRegisterInstanceByClassName() {
         Map<String,String> map = new HashMap<>();
         map.put("prop1", "valueprop1");
         map.put("prop2", "valueprop2");
         System.out.println("\nMap<String,String> map = new HashMap<>();\nmap.put(\"prop1\", \"valueprop1\");\nmap.put(\"prop2\", \"valueprop2\");");
         System.out.println("mGson.toJson(map, mStringStringMapType.getType()) :\n"+mGson.toJson(map, mStringStringMapType.getType()));
         System.out.println("\nExecuting: rm.addRegisterInstance(\"TEst avec Map\", \"PhysicalPerson\",map);");
-        boolean b = rm.addRegisterInstance("TEst avec Map", "PhysicalPerson",map);
-        boolean c = rm.addRegisterInstance("TEst avec Map2", "PhysicalPerson",map);
+        boolean b = rm.addRegisterInstanceByClassName("TEst avec Map", "PhysicalPerson",map);  // build the uri, then calls addRegisterInstance
+        boolean c = rm.addRegisterInstanceByClassName("TEst avec Map2", "PhysicalPerson",map); // build the uri, then calls addRegisterInstance
         System.out.println("Done.\nrm.addRegisterInstance(\"TEst avec Map\", \"PhysicalPerson\",map); returned "+(b==true?"true; 2: ":"false;")+(c==true?"true":"false"));
     }
 
-    public void testGetPropertiesValuesOfAnIndividual() {
-        System.out.println("\nExecuting: rm.getPropertiesValuesOfAnIndividual(TDBManager.DATAMODEL_NS+\"testAvecMap\");");
-        Map<String, String> map = rm.getPropertiesValuesOfAnIndividual(TDBManager.DATAMODEL_NS+"testAvecMap");
+    public void testGetPropertiesOfAnIndividualByIndividualName() {
+        System.out.println("\nExecuting: rm.getPropertiesOfAnIndividualByIndividualName(\"testAvecMap\");");
+        Map<String, String> map = rm.getPropertiesOfAnIndividualByIndividualName("testAvecMap"); // build the uri, then calls getPropertiesValuesOfAnIndividual
         System.out.println("mGson.toJson(map, mStringStringMapType.getType()) :\n"+mGson.toJson(map, mStringStringMapType.getType()));
         System.out.println("Done.");
     }
@@ -106,28 +106,28 @@ public class RegisterManagerTest {
         System.out.println("Done.\nrm.addPredicate(\"i am a test\"); returned "+(b==true?"true":"false"));
     }
 
-    public void testPredicateExists(){
-        System.out.println("\nExecuting: rm.predicateExists(\"iAmATest\");");
-        boolean b = rm.predicateExists("iAmATest");
-        System.out.println("Done.\nrm.predicateExists(\"iAmATest\"); returned "+(b==true?"true":"false"));
+    public void testPredicateExistsByPredicateName(){
+        System.out.println("\nExecuting: rm.predicateExistsByPredicateName(\"iAmATest\");");
+        boolean b = rm.predicateExistsByPredicateName("iAmATest"); // build uri then calls predicateExists
+        System.out.println("Done.\nrm.predicateExistsByPredicateName(\"iAmATest\"); returned "+(b==true?"true":"false"));
     }
     
-    public void testAddPredicateToRegisters() {
-        System.out.println("\nExecuting: rm.addPredicateToRegisters(\"testAvecMap\", \"testAvecMap2\", \"iAmATest\");");
-        boolean b = rm.addPredicateToRegisters("testAvecMap", "testAvecMap2", "iAmATest");
-        System.out.println("Done.\nrm.addPredicateToRegisters(\"testAvecMap\", \"testAvecMap2\", \"iAmATest\"); returned "+(b==true?"true":"false"));
+    public void testAddPredicateToRegistersByNames() {
+        System.out.println("\nExecuting: rm.addPredicateToRegistersByNames(\"testAvecMap\", \"testAvecMap2\", \"iAmATest\");");
+        boolean b = rm.addPredicateToRegistersByNames("testAvecMap", "testAvecMap2", "iAmATest"); // build uri then calls addPredicateToRegistersByNames
+        System.out.println("Done.\nrm.addPredicateToRegistersByNames(\"testAvecMap\", \"testAvecMap2\", \"iAmATest\"); returned "+(b==true?"true":"false"));
     }
 
-    public void testDeleteInstance() {
+    public void testDeleteInstanceByName() {
         System.out.println("\nExecuting: rm.deleteInstance(\"testAvecMap\");");
-        boolean b = rm.deleteInstance("testAvecMap");
-        boolean c = rm.deleteInstance("testAvecMap2");
+        boolean b = rm.deleteInstanceByName("testAvecMap");  // build uri then calls deleteInstance
+        boolean c = rm.deleteInstanceByName("testAvecMap2"); // build uri then calls deleteInstance
         System.out.println("Done.\nrm.deleteInstance(\"testAvecMap\"); returned "+(b==true?"true; 2: ":"false;")+(c==true?"true":"false"));
     }
 
-    public void testInstanceExists(){
-        System.out.println("\nExecuting: rm.instanceExists(\"testAvecMap\");");
-        InstanceExistenceState ies = rm.instanceExists("testAvecMap");
+    public void testInstanceExistsByInstanceName(){
+        System.out.println("\nExecuting: rm.instanceExistsByInstanceName(\"testAvecMap\");");
+        InstanceExistenceState ies = rm.instanceExistsByInstanceName("testAvecMap"); // build uri then calls instanceExists
         System.out.println("Done.\nrm.instanceExists(\"testAvecMap\"); returned "+ies.toString());
     }
 
