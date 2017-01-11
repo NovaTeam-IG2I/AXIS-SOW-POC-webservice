@@ -7,28 +7,25 @@ package rocks.novateam.axis.sow.poc.backend.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
@@ -133,17 +130,14 @@ public class StructureServlet extends HttpServlet {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
         
-        Statement statement;
         Individual object;
-        OntClass editingTrackClass = model.getOntClass(NS + "EditingTrack");
 
         // For all "used" individuals
-        for (StmtIterator i = film.listProperties(model.getProperty(NS + "uses")); i.hasNext();) {
-            statement = i.nextStatement();
-            object = statement.getObject().as(Individual.class);
+        for (NodeIterator i = film.listPropertyValues(model.getProperty(NS + "uses")); i.hasNext();) {
+            object = i.nextNode().as(Individual.class);
 
             // If it is an EditingTrack, build it and its fragments, and add it to the response.
-            if (object.getOntClass() == editingTrackClass) {
+            if (object.getOntClass().getLocalName().equals("EditingTrack")) {
                 JsonObjectBuilder indexedTrack = Json.createObjectBuilder();
                 indexedTrack.add("name", object.getLocalName());
                 indexedTrack.add("uri", object.getURI());
@@ -180,15 +174,16 @@ public class StructureServlet extends HttpServlet {
         if (fragment.hasOntClass(NS + "MediaUnifiedSegment")) {
             fragmentJson.add("type", "segment");
             // TODO: Get start and end
-
+        
         } else if (fragment.hasOntClass(NS + "MediaUnifiedPoint")) {
             fragmentJson.add("type", "point");
             // TODO: Get start
         }
 
         // Note: As of iteration 3, there may be multiple referenced Registers.
-        Individual register = fragment.getPropertyValue(model.getProperty(NS + "expresses")).as(Individual.class);
-        if (register != null) {
+        RDFNode registerNode = fragment.getPropertyValue(model.getProperty(NS + "expresses"));
+        if (registerNode != null) {
+            Individual register = registerNode.as(Individual.class);
             fragmentJson.add("name", register.getLocalName());
             fragmentJson.add("uri", register.getURI());
         }
