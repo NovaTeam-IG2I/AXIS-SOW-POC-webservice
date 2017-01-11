@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import rocks.novateam.axis.sow.poc.frameworks.Technical;
+import rocks.novateam.axis.sow.poc.backend.frameworks.Technical;
 
 /**
  * This servlet handles technical framework return.
