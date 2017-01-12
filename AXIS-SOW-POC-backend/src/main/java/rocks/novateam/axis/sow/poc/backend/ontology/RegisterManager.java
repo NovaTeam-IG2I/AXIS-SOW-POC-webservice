@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ReadWrite;
@@ -366,21 +367,23 @@ public class RegisterManager {
     }
 
     /**
-     * This function give a map with all properties (and their values) of a
+     * This function gives a map with all properties (and their values) of a
      * given individual.
      *
      * @param uri The individual's uri
-     * @return A map with property names as keys and property values as values
+     * @return A map with property URIs as keys and property values as values
      */
     public Map<String, String> getPropertiesOfAnIndividual(String uri) {
         Map<String, String> properties = new HashMap<>();
         TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
         mTDBHelper.finish();
-        ExtendedIterator<OntProperty> exItr = mTDBHelper.getOntModel().getOntClass(mTDBHelper.getOntModel().getIndividual(uri).getURI()).listDeclaredProperties();
+        OntModel model = mTDBHelper.getOntModel();
+        Individual individual = model.getIndividual(uri);
+        ExtendedIterator<OntProperty> exItr = model.getOntClass(individual.getURI()).listDeclaredProperties();
         while (exItr.hasNext()) {
             OntProperty prop = exItr.next();
-            if (mTDBHelper.getOntModel().getIndividual(uri).getCardinality(prop) > 0) {
-                properties.put(prop.getLocalName(), mTDBHelper.getOntModel().getIndividual(uri).getPropertyValue(prop).toString());
+            if (individual.getCardinality(prop) > 0) {
+                properties.put(prop.getURI(), individual.getPropertyValue(prop).toString());
             }
         }
         return properties;
