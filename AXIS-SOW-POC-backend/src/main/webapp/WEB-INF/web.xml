@@ -49,7 +49,19 @@
         <url-pattern>/technical</url-pattern>
     </servlet-mapping>
     <!-- End technical servlet handling -->
-
+    
+    <!-- Export servlet handling -->
+    <servlet>
+        <servlet-name>ExportServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ExportServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>ExportServlet</servlet-name>
+        <url-pattern>/export</url-pattern>
+    </servlet-mapping>
+    <!-- End export servlet handling -->
+    
     <session-config>
         <session-timeout>
             30
