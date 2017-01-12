@@ -1,6 +1,7 @@
 package rocks.novateam.axis.sow.poc.backend.frameworks;
 
 import java.io.IOException;
+import java.util.HashMap;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -14,6 +15,7 @@ import rocks.novateam.axis.sow.poc.backend.R;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.FileManager;
+import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 
 /**
  * This class holds all informations about the technical framework.
@@ -27,6 +29,11 @@ import org.apache.jena.util.FileManager;
  * @author Alex Canales
  */
 public class Technical {
+
+    /**
+     * Fake name used for testing purpose, do not use it. Should be deleted.
+     */
+    public static String FAKE_NAME = "Selma";
 
     /**
      * Holds the model, should be deleted when it will be possible to get the
@@ -177,15 +184,17 @@ public class Technical {
         String duration = "128";
         String importDate = "2016-12-22";
 
-        Model model = getModel();
-        Resource resource = model.createResource(id);
-        resource.addProperty(model.createProperty(TYPE_PROPERTY), TYPE_OBJECT);
-        resource.addProperty(model.createProperty(FILE_NAME_PROPERTY), fileName);
-        resource.addProperty(model.createProperty(FILE_SIZE_PROPERTY), fileSize);
-        resource.addProperty(model.createProperty(HYPERLINK_PROPERTY), hyperlink);
-        resource.addProperty(model.createProperty(RIGHTS_PROPERTY), rights);
-        resource.addProperty(model.createProperty(DURATION_PROPERTY), duration);
-        resource.addProperty(model.createProperty(IMPORT_DATE_PROPERTY), importDate);
+        RegisterManager manager = new RegisterManager();
+        HashMap<String, String> values = new HashMap<>();
+
+        values.put(FILE_NAME_PROPERTY, fileName);
+        values.put(FILE_SIZE_PROPERTY, fileSize);
+        values.put(HYPERLINK_PROPERTY, hyperlink);
+        values.put(RIGHTS_PROPERTY, rights);
+        values.put(DURATION_PROPERTY, duration);
+        values.put(IMPORT_DATE_PROPERTY, importDate);
+
+        manager.addRegisterInstance(FAKE_NAME, TYPE_OBJECT, values);
     }
 
     /**
@@ -286,7 +295,7 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmID = R.POC_NS + "Selma";
+        String filmID = R.POC_NS + FAKE_NAME;
         Technical framework = new Technical(filmID);
         System.out.println(framework.toJSON());
     }
