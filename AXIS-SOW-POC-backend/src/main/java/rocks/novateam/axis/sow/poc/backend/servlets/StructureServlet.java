@@ -160,8 +160,13 @@ public class StructureServlet extends HttpServlet {
         Individual fragment = esoStructure.getPropertyValue(model.getProperty(NS + "starts")).as(Individual.class);
         fragments.add(buildFragment(model, fragment));
         while(fragment.hasProperty(model.getProperty(NS+"next"))) {
-            fragment = fragment.getPropertyValue(model.getProperty(NS+"next")).as(Individual.class);
-            fragments.add(buildFragment(model, fragment));
+            try {
+                fragment = fragment.getPropertyValue(model.getProperty(NS+"next")).as(Individual.class);
+                fragments.add(buildFragment(model, fragment));
+            }
+            catch(NullPointerException ex) {
+                System.out.println("Error building a fragment: "+ex.getLocalizedMessage());
+            }
         }
 
         return fragments.build();
@@ -174,11 +179,16 @@ public class StructureServlet extends HttpServlet {
         if (fragment.hasOntClass(NS + "MediaUnifiedSegment")) {
             fragmentJson.add("type", "segment");
             // TODO: Get start and end
+            int end = fragment.getPropertyValue(model.getProperty(NS+"hasEnd")).asLiteral().getInt();
+            fragmentJson.add("end", end);
         
         } else if (fragment.hasOntClass(NS + "MediaUnifiedPoint")) {
             fragmentJson.add("type", "point");
             // TODO: Get start
         }
+        int start = fragment.getPropertyValue(model.getProperty(NS+"hasStart")).asLiteral().getInt();
+        fragmentJson.add("start", start);
+
 
         // Note: As of iteration 3, there may be multiple referenced Registers.
         RDFNode registerNode = fragment.getPropertyValue(model.getProperty(NS + "expresses"));
