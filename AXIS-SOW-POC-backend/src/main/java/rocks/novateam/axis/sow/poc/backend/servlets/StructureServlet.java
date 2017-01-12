@@ -31,8 +31,20 @@ import org.apache.jena.reasoner.ReasonerRegistry;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
+ * Fetches the structure of a video.
  *
- * @author richou
+ * The HTTP request @b must
+ * <ul>
+ * <li>Be a GET request;</li>
+ * <li>Contain a field named <code>uri</code> containing the film's register's
+ * URI.</li>
+ * </ul>
+ *
+ * The HTTP response will have a <code>application/json</code> MIME type, and
+ * will contain data formatted as per {@link StructureServlet#getIndexedTracks}
+ * and {@link StructureServlet#buildFragment}.
+ *
+ * @author Richard Degenne
  */
 public class StructureServlet extends HttpServlet {
 
@@ -62,7 +74,7 @@ public class StructureServlet extends HttpServlet {
             json.add("status", "ko")
                     .add("message", ex.getMessage());
         }
-        
+
         // Send response
         response.setContentType("application/json");
         try (PrintWriter out = response.getWriter()) {
@@ -109,6 +121,27 @@ public class StructureServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    /**
+     * Get all the <code>IndexedTrack</code>s of a given <code>Film</code>.
+     *
+     * The data is formatted as such:
+     * <pre>
+     * [{
+     *   "name": "Name of the IndexedTrack",
+     *   "uri":  "URI of the IndexedTrack",
+     *   "fragments": [List of fragments]
+     * }]
+     * </pre>
+     *
+     * See {@link StructureServlet#buildFragment} for the fragment's format.
+     *
+     * @param uri The <code>Film</code>'s URI.
+     * @return A {@link JsonArray} containing the requested data
+     * @throws NoSuchElementException When the <code>Film</code> could not be
+     * found.
+     *
+     * @see {StructureServlet#buildFragment}
+     */
     private JsonArray getIndexedTracks(String uri) throws NoSuchElementException {
         String NS = TDBManager.DATAMODEL_NS;
         JsonArrayBuilder indexedTracks = Json.createArrayBuilder();
@@ -126,10 +159,10 @@ public class StructureServlet extends HttpServlet {
         OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
 
         Individual film = model.getIndividual(uri);
-        if(film == null) {
+        if (film == null) {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
-        
+
         Individual object;
 
         // For all "used" individuals
@@ -150,28 +183,56 @@ public class StructureServlet extends HttpServlet {
         return indexedTracks.build();
     }
 
+    /**
+     * Get all the <code>Fragment</code>s for a given <code>IndexedTrack</code>.
+     *
+     * See {@link StructureServlet#buildFragment} for the data's format.
+     *
+     * @param model The {@link OntModel} of the ontology
+     * @param editingTrack The <code>IndexedTrack</code> to look up
+     * @return A {@link JsonArray} containing the requested data
+     *
+     * @see StructureServlet#buildFragment
+     */
     private JsonArray getFragments(OntModel model, Individual editingTrack) {
         String NS = TDBManager.DATAMODEL_NS;
         JsonArrayBuilder fragments = Json.createArrayBuilder();
         Individual esoStructure = editingTrack.getPropertyValue(model.getProperty(NS + "isDefinedByStructure")).as(Individual.class);
-        
+
         // Fragments are stored as a linked list in the ontology.
         // The following instructions iterate over this list.
         Individual fragment = esoStructure.getPropertyValue(model.getProperty(NS + "starts")).as(Individual.class);
         fragments.add(buildFragment(model, fragment));
-        while(fragment.hasProperty(model.getProperty(NS+"next"))) {
+        while (fragment.hasProperty(model.getProperty(NS + "next"))) {
             try {
-                fragment = fragment.getPropertyValue(model.getProperty(NS+"next")).as(Individual.class);
+                fragment = fragment.getPropertyValue(model.getProperty(NS + "next")).as(Individual.class);
                 fragments.add(buildFragment(model, fragment));
-            }
-            catch(NullPointerException ex) {
-                System.out.println("Error building a fragment: "+ex.getLocalizedMessage());
+            } catch (NullPointerException ex) {
+                System.out.println("Error building a fragment: " + ex.getLocalizedMessage());
             }
         }
 
         return fragments.build();
     }
 
+    /**
+     * Get data for a given <code>Fragment</code>.
+     *
+     * The data will be formatted as such:
+     * <pre>
+     * {
+     *   "type":  "segment"|"point",
+     *   "start": <start timestamp>,
+     *   "end": <end timestamp, only for Segments>,
+     *   "name": "Name of the expressed Register",
+     *   "uri": "URI of the expressed Register"
+     * }
+     * </pre>
+     *
+     * @param model The {@link OntModel} of the ontology
+     * @param fragment The <code>Fragment</code> to look up
+     * @return A {@link JsonObject} containing the requested data
+     */
     private JsonObject buildFragment(OntModel model, Individual fragment) {
         String NS = TDBManager.DATAMODEL_NS;
         JsonObjectBuilder fragmentJson = Json.createObjectBuilder();
@@ -179,16 +240,15 @@ public class StructureServlet extends HttpServlet {
         if (fragment.hasOntClass(NS + "MediaUnifiedSegment")) {
             fragmentJson.add("type", "segment");
             // TODO: Get start and end
-            int end = fragment.getPropertyValue(model.getProperty(NS+"hasEnd")).asLiteral().getInt();
+            int end = fragment.getPropertyValue(model.getProperty(NS + "hasEnd")).asLiteral().getInt();
             fragmentJson.add("end", end);
-        
+
         } else if (fragment.hasOntClass(NS + "MediaUnifiedPoint")) {
             fragmentJson.add("type", "point");
             // TODO: Get start
         }
-        int start = fragment.getPropertyValue(model.getProperty(NS+"hasStart")).asLiteral().getInt();
+        int start = fragment.getPropertyValue(model.getProperty(NS + "hasStart")).asLiteral().getInt();
         fragmentJson.add("start", start);
-
 
         // Note: As of iteration 3, there may be multiple referenced Registers.
         RDFNode registerNode = fragment.getPropertyValue(model.getProperty(NS + "expresses"));
@@ -197,7 +257,7 @@ public class StructureServlet extends HttpServlet {
             fragmentJson.add("name", register.getLocalName());
             fragmentJson.add("uri", register.getURI());
         }
-        
+
         return fragmentJson.build();
     }
 }
