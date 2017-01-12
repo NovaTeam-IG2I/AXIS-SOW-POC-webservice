@@ -45,9 +45,9 @@ public class Technical {
     private Model model = null;
 
     /**
-     * The entity id of which the framework refers to.
+     * The entity uri of which the framework refers to.
      */
-    private String id = "";
+    private String uri = "";
 
     /**
      * The duration of the video in minutes.
@@ -167,7 +167,7 @@ public class Technical {
      * Fills the object with fake data: for test purpose, can be deleted.
      */
     private void fillObjectWithFakeData() {
-        id = R.POC_NS + "Selma";
+        uri = R.POC_NS + "Selma";
         fileName = "Selma.mp4";
         fileSize = "700";
         hyperlink = "http://www.imdb.com/title/tt1020072/";
@@ -179,7 +179,7 @@ public class Technical {
     /**
      * Fills the model with fake data: for test purpose, can be deleted.
      */
-    private void fillModelWithFakeData(String id) {
+    private void fillModelWithFakeData(String uri) {
         String fileName = "Selma.mp4";
         String fileSize = "700";
         String hyperlink = "http://www.imdb.com/title/tt1020072/";
@@ -196,6 +196,8 @@ public class Technical {
         values.put(RIGHTS_PROPERTY, rights);
         values.put(DURATION_PROPERTY, duration);
         values.put(IMPORT_DATE_PROPERTY, importDate);
+        System.out.println("Adding values:");
+        System.out.println(values);
 
         boolean result = manager.addRegisterInstance(FAKE_NAME, TYPE_OBJECT, values);
         if(!result)
@@ -207,14 +209,14 @@ public class Technical {
      * automatically loaded from the TDB. If no data are not found, the
      * framework holds empty information.
      *
-     * @param id The entity id of which the framework refers to. If null, the
+     * @param uri The entity uri of which the framework refers to. If null, the
      * data holds empty information.
      */
-    public Technical(String id) {
-        if(id == null)
+    public Technical(String uri) {
+        if(uri == null)
             return;
-        fillModelWithFakeData(id);
-        retrieveData(id);
+        fillModelWithFakeData(uri);
+        retrieveData(uri);
     }
 
     /**
@@ -237,13 +239,12 @@ public class Technical {
     /**
      * Retrieves all the technical framework data.
      *
-     * @param id The entity id the framewok is associated with.
+     * @param uri The entity uri the framewok is associated with.
      */
-    private void retrieveData(String id)
+    private void retrieveData(String uri)
     {
         RegisterManager manager = new RegisterManager();
-        Map<String, String> values = manager.getPropertiesOfAnIndividual(id);
-        System.out.println("id:" + id);
+        Map<String, String> values = manager.getPropertiesOfAnIndividual(uri);
 
         if(values == null) {
             System.out.println("No value found");
@@ -256,46 +257,9 @@ public class Technical {
         rights = values.get(RIGHTS_PROPERTY);
         duration = values.get(DURATION_PROPERTY);
         importDate = values.get(IMPORT_DATE_PROPERTY);
+        this.uri = uri;
 
         System.out.println(values);
-/*
-        String FILE_NAME_SELECT = "fileName";
-        String FILE_SIZE_SELECT = "fileSize";
-        String HYPERLINK_SELECT = "hyperlink";
-        String RIGHTS_SELECT = "rights";
-        String DURATION_SELECT = "duration";
-        String IMPORT_DATE_SELECT = "importDate";
-
-        String queryString = R.PREFIX + "SELECT " +
-                "?" + FILE_NAME_SELECT + " ?" + FILE_SIZE_SELECT + " " +
-                "?" + HYPERLINK_SELECT + " ?" + RIGHTS_SELECT + " " +
-                "?" + DURATION_SELECT + " ?" + IMPORT_DATE_SELECT + " " +
-                "WHERE \n{\n" +
-                "<" + id + "> <" + FILE_NAME_PROPERTY + "> ?" + FILE_NAME_SELECT + ".\n" +
-                "<" + id + "> <" + FILE_SIZE_PROPERTY + "> ?" + FILE_SIZE_SELECT + ".\n" +
-                "<" + id + "> <" + HYPERLINK_PROPERTY + "> ?" + HYPERLINK_SELECT + ".\n" +
-                "<" + id + "> <" + RIGHTS_PROPERTY + "> ?" + RIGHTS_SELECT + ".\n" +
-                "<" + id + "> <" + DURATION_PROPERTY + "> ?" + DURATION_SELECT + ".\n" +
-                "<" + id + "> <" + IMPORT_DATE_PROPERTY + "> ?" + IMPORT_DATE_SELECT + ".\n" +
-                "}";
-
-        Query query = QueryFactory.create(queryString);
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, getModel())) {
-            ResultSet results = qexec.execSelect();
-            while ( results.hasNext() ) {
-                QuerySolution solution = results.nextSolution();
-
-                // Should maybe use Literal
-                fileName = solution.getLiteral(FILE_NAME_SELECT).toString();
-                fileSize = solution.getLiteral(FILE_SIZE_SELECT).toString();
-                hyperlink = solution.getLiteral(HYPERLINK_SELECT).toString();
-                rights = solution.getLiteral(RIGHTS_SELECT).toString();
-                duration = solution.getLiteral(DURATION_SELECT).toString();
-                importDate = solution.getLiteral(IMPORT_DATE_SELECT).toString();
-            }
-        }
-        */
-        this.id = id;
     }
 
     /**
@@ -307,7 +271,7 @@ public class Technical {
         // Not using a JsonObjectBuilder because of build error problems
         // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
-        json += "\"id\" : \"" + id + "\",\n";
+        json += "\"uri\" : \"" + uri + "\",\n";
         json += "\"fileName\" : \"" + fileName + "\",\n";
         json += "\"fileSize\" : " + fileSize + ",\n";
         json += "\"hyperLink\" : \"" + hyperlink + "\",\n";
@@ -319,8 +283,8 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmID = R.DATAMODEL_NS + FAKE_NAME;
-        Technical framework = new Technical(filmID);
+        String filmURI = R.DATAMODEL_NS + FAKE_NAME;
+        Technical framework = new Technical(filmURI);
         System.out.println(framework.toJSON());
     }
 }

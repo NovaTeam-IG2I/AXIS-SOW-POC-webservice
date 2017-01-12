@@ -31,8 +31,8 @@ public class TechnicalServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            String id = request.getParameter("id");
-            Technical technical = new Technical(id);
+            String uri = request.getParameter("uri");
+            Technical technical = new Technical(uri);
             out.println(technical.toJSON());
         }
     }
