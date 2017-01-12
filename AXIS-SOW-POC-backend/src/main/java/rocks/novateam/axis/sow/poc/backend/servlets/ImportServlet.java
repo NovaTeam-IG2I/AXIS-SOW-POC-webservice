@@ -19,6 +19,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.query.ReadWrite;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
+import rocks.novateam.axis.sow.poc.backend.metadata.MetadataHandler;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
@@ -95,7 +96,7 @@ public class ImportServlet extends HttpServlet {
 
             // Extract and store metadata
             // This is commented out because it causes the system to crash
-            // MetadataExtractor.extractAndStoreMetadata(file);
+            // MetadataHandler.extractAndStoreMetadata(file);
 
             json.add("status", "ok")
                     .add("uri", film.getURI());

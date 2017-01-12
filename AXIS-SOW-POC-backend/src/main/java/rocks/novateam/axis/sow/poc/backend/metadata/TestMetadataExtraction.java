@@ -7,7 +7,7 @@ public class TestMetadataExtraction {
     private static final String FILE_PATH = "/Users/Geoffrey/Desktop/video.mp4";
 
     public static void main(String[] args) {
-        MetadataExtractor.extractAndStoreMetadata(new File(FILE_PATH));
+        MetadataHandler.extractAndStoreMetadata(new File(FILE_PATH));
     }
 
 }

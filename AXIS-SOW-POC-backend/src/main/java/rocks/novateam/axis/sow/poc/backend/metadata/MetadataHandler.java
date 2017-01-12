@@ -3,10 +3,12 @@ package rocks.novateam.axis.sow.poc.backend.metadata;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.IOStream;
 import static rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.startProcess;
 
-public class MetadataExtractor {
+public class MetadataHandler {
 
     private static final String EXIF_TOOL_PATH = Configuration.getInstance().getExiftoolPath();
 
@@ -32,7 +34,7 @@ public class MetadataExtractor {
      * @param inputFile
      * @return
      */
-    private static File extractXMP(File inputFile) {
+    public static File extractXMP(File inputFile) {
         IOStream streams = null;
         List<String> args = new ArrayList<>();
 
@@ -75,7 +77,7 @@ public class MetadataExtractor {
      *
      * @param inputFile RDF File
      */
-    private static void read(File inputFile) {
+    public static void read(File inputFile) {
         checkFile(inputFile);
         Model model = ModelFactory.createDefaultModel(); // Create an empty model
         InputStream in = FileManager.get().open(inputFile.getAbsolutePath());
@@ -88,6 +90,19 @@ public class MetadataExtractor {
             model.close();
         }
     }
+    
+    /**
+     * 
+     * @param outputFile
+     * @param model
+     * @return
+     * @throws FileNotFoundException 
+     */
+    public static File write(File outputFile, Model model) throws FileNotFoundException {
+        OutputStream out = new FileOutputStream(outputFile);
+        model.write(out, "RDF/XML-ABBREV");
+        return outputFile.isFile() ? outputFile : null;
+    }
 
     /**
      * Extracts RDF content from a given file to a RDF file
@@ -95,7 +110,7 @@ public class MetadataExtractor {
      * @param inputFile File that contains the metadata
      * @return RDF File containing only RDF content
      */
-    private static File extractRDF(File inputFile) {
+    public static File extractRDF(File inputFile) {
         checkFile(inputFile);
         File outputFile = new File(modifyExtension(inputFile, ".rdf"));
         if (outputFile.isFile()) {
@@ -132,7 +147,7 @@ public class MetadataExtractor {
      *
      * @param inputFile RDF File
      */
-    private static void storeInTDB(File inputFile) {
+    public static void storeInTDB(File inputFile) {
         read(inputFile);
 
 //        Dataset dataset = TDBManager.getInstance().getDataset(); //
