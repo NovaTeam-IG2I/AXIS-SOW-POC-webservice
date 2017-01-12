@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.util.FileManager;
@@ -18,7 +17,6 @@ import rocks.novateam.axis.sow.poc.backend.Configuration;
 
 import rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.IOStream;
 import static rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.startProcess;
-import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 public class MetadataExtractor {
 
@@ -38,9 +36,7 @@ public class MetadataExtractor {
         IOStream streams = null;
         List<String> args = new ArrayList<>();
 
-        if (!inputFile.isFile()) {
-            throw new Error("Error with the file");
-        }
+        checkFile(inputFile);
 
         File outputFile = new File(modifyExtension(inputFile, ".xmp"));
 
@@ -52,15 +48,15 @@ public class MetadataExtractor {
         args.add(inputFile.getAbsolutePath());
         args.add("-out"); // Set output inputFile or directory name
         args.add(outputFile.getAbsolutePath());
-        args.add("-xmp");
-        args.add("-b");
+        args.add("-xmp"); // Extract XMP data
+        args.add("-b"); // Output metadata in binary format
         args.add("-xmlFormat"); // Use RDF/XML output format
         args.add("-quiet"); // Quiet processing
 
         streams = startProcess(args);
         streams.close();
-
-        return outputFile;
+        
+        return outputFile.isFile() ? outputFile : null;
     }
 
     /**
@@ -80,11 +76,9 @@ public class MetadataExtractor {
      * @param inputFile RDF File
      */
     private static void read(File inputFile) {
+        checkFile(inputFile);
         Model model = ModelFactory.createDefaultModel(); // Create an empty model
         InputStream in = FileManager.get().open(inputFile.getAbsolutePath());
-        if (in == null) {
-            throw new IllegalArgumentException("File not found");
-        }
         try {
             model.read(in, ""); // read the RDF/XML file
             model.write(System.out); // write it to standard out
@@ -102,9 +96,7 @@ public class MetadataExtractor {
      * @return RDF File containing only RDF content
      */
     private static File extractRDF(File inputFile) {
-        if (!inputFile.isFile()) {
-            throw new Error("Error with the file");
-        }
+        checkFile(inputFile);
         File outputFile = new File(modifyExtension(inputFile, ".rdf"));
         if (outputFile.isFile()) {
             outputFile.delete();
@@ -156,6 +148,12 @@ public class MetadataExtractor {
 //        dataset.commit();
 //        model.close();
 //        dataset.close();
+    }
+    
+    private static void checkFile(File file){
+        if (file == null || !file.isFile()) {
+            throw new Error("Error with the file");
+        }
     }
 
 }
