@@ -1,7 +1,6 @@
 package rocks.novateam.axis.sow.poc.backend.model;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import rocks.novateam.axis.sow.poc.backend.R;
 import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
