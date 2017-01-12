@@ -13,8 +13,20 @@ import javax.servlet.http.HttpServletResponse;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
+ * Exports the ontology and its contents.
  *
- * @author richou
+ * The HTTP response of this servlet will:
+ * <ul>
+ * <li>Have an <code>application/owl+xml</code> MIME type;</li>
+ * <li>Contain all the information currently stored in the TDB.</li>
+ * </ul>
+ *
+ * <strong>Note</strong>: This solution is inelegant at best and dangerous at
+ * worst: <strong>all</strong> data is going to be exported, including rights,
+ * as well as wrapping and structuring objects, which may be a problem as far as
+ * confidentiality and privacy are concerned.
+ *
+ * @author Richard Degenne
  */
 public class ExportServlet extends HttpServlet {
 
@@ -30,10 +42,10 @@ public class ExportServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         TDBManager tdbm = TDBManager.getInstance();
-        
+
         // May be "rdf+xml", since these are not official MIME types
         response.setContentType("application/owl+xml");
-        
+
         tdbm.exportOwl(response.getOutputStream());
     }
 
@@ -73,7 +85,7 @@ public class ExportServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Exports the ontology and its contents.";
     }// </editor-fold>
 
 }
