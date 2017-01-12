@@ -270,7 +270,7 @@ public class Technical {
      *
      * @return The information in JSON.
      */
-    public String exportJSONFormat() {
+    public String toJSON() {
         // Not using a JsonObjectBuilder because of build error problems
         // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
@@ -288,6 +288,6 @@ public class Technical {
     public static void main(String[] args) throws IOException {
         String filmID = R.POC_NS + "Selma";
         Technical framework = new Technical(filmID);
-        System.out.println(framework.exportJSONFormat());
+        System.out.println(framework.toJSON());
     }
 }

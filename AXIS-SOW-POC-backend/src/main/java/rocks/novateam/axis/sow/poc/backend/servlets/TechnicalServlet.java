@@ -33,7 +33,7 @@ public class TechnicalServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             String id = request.getParameter("id");
             Technical technical = new Technical(id);
-            out.println(technical.exportJSONFormat());
+            out.println(technical.toJSON());
         }
     }
 
