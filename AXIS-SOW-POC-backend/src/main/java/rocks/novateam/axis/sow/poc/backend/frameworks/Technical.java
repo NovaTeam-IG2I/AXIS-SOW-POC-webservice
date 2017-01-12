@@ -2,6 +2,7 @@ package rocks.novateam.axis.sow.poc.backend.frameworks;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -32,8 +33,10 @@ public class Technical {
 
     /**
      * Fake name used for testing purpose, do not use it. Should be deleted.
+     *
+     * The name has to start in lower case since it is converted in camel case.
      */
-    public static String FAKE_NAME = "Selma";
+    public static String FAKE_NAME = "selma";
 
     /**
      * Holds the model, should be deleted when it will be possible to get the
@@ -194,7 +197,9 @@ public class Technical {
         values.put(DURATION_PROPERTY, duration);
         values.put(IMPORT_DATE_PROPERTY, importDate);
 
-        manager.addRegisterInstance(FAKE_NAME, TYPE_OBJECT, values);
+        boolean result = manager.addRegisterInstance(FAKE_NAME, TYPE_OBJECT, values);
+        if(!result)
+            System.out.println("Imposible to add technical framework");
     }
 
     /**
@@ -236,6 +241,24 @@ public class Technical {
      */
     private void retrieveData(String id)
     {
+        RegisterManager manager = new RegisterManager();
+        Map<String, String> values = manager.getPropertiesOfAnIndividual(id);
+        System.out.println("id:" + id);
+
+        if(values == null) {
+            System.out.println("No value found");
+            return;
+        }
+
+        fileName = values.get(FILE_NAME_PROPERTY);
+        fileSize = values.get(FILE_SIZE_PROPERTY);
+        hyperlink = values.get(HYPERLINK_PROPERTY);
+        rights = values.get(RIGHTS_PROPERTY);
+        duration = values.get(DURATION_PROPERTY);
+        importDate = values.get(IMPORT_DATE_PROPERTY);
+
+        System.out.println(values);
+/*
         String FILE_NAME_SELECT = "fileName";
         String FILE_SIZE_SELECT = "fileSize";
         String HYPERLINK_SELECT = "hyperlink";
@@ -271,6 +294,7 @@ public class Technical {
                 importDate = solution.getLiteral(IMPORT_DATE_SELECT).toString();
             }
         }
+        */
         this.id = id;
     }
 
@@ -295,7 +319,7 @@ public class Technical {
     }
 
     public static void main(String[] args) throws IOException {
-        String filmID = R.POC_NS + FAKE_NAME;
+        String filmID = R.DATAMODEL_NS + FAKE_NAME;
         Technical framework = new Technical(filmID);
         System.out.println(framework.toJSON());
     }
