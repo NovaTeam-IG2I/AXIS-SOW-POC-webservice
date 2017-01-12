@@ -68,5 +68,10 @@ public class R {
      * The date property.
      */
     public static String DATE_PROPERTY = "date";
+    
+    /**
+     * The labelproperty.
+     */
+    public static String LABEL_PROPERTY = "label";
 
 }

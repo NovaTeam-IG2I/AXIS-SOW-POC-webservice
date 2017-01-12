@@ -26,7 +26,12 @@ public class Event extends Register{
 
     @Override
     public String toJSON() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String json = "{\n";
+        json += "\"uri\" : \"" + uri + "\",\n";
+        json += "\"label\" : \"" + label + "\"\n";
+        json += "\"date\" : \"" + date + "\"\n";
+        json += "}";
+        return json;
     }
 
     public Register getInstance(String uri) {

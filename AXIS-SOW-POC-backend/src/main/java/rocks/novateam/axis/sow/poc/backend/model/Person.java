@@ -26,7 +26,7 @@ public class Person extends Register {
         if(values == null)
             return;
 
-        this.label = values.get(R.RDFS_LABEL_PROPERTY);
+        this.label = values.get(R.LABEL_PROPERTY);
         System.out.println(label);
     }
 
