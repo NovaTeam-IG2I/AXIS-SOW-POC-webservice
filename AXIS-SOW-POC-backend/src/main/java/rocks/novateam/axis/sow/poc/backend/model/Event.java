@@ -5,8 +5,9 @@
  */
 package rocks.novateam.axis.sow.poc.backend.model;
 
-import java.util.HashMap;
 import java.util.Map;
+import rocks.novateam.axis.sow.poc.backend.R;
+import static rocks.novateam.axis.sow.poc.backend.R.DATE_PROPERTY;
 import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
@@ -16,6 +17,7 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  */
 public class Event extends Register{
     private static final String NS = TDBManager.DATAMODEL_NS;
+    public static final String TYPE = "event";
     
     public String date;
     public String placeOfEvent;
@@ -27,28 +29,37 @@ public class Event extends Register{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
     public Register getInstance(String uri) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * This constructor create an object Event with his date and label
+     * properties from the ontology
+     * @param uri 
+     */
     public Event(String uri) {
         RegisterManager rm = new RegisterManager();
-        Map<String,String> map = new HashMap<>();
-        map = rm.getPropertiesValuesOfAnIndividual(uri);
+        this.uri = uri;
+        this.type = TYPE;
+        Map<String, String> values = rm.getPropertiesOfAnIndividual(uri);
+        System.out.println("Valeurs prop evenement:"+values);
+        if(values == null)
+            return;
 
+        this.label = values.get(R.RDFS_LABEL_PROPERTY);
+        this.date=values.get(DATE_PROPERTY);
+        System.out.println("Label: "+label);
+        System.out.println("Date: "+date);
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" + "date=" + date + ", placeOfEvent=" + placeOfEvent + ", description=" + description + ", type=" + type + '}';
     }
     
-    //public getProperty
-  
-    public static void main(String[] args) {
-        Map<String,String> properties = new HashMap<>();
-        properties.put("prop1","value1");
-        RegisterManager rm = new RegisterManager();
-        //need to be remove, useful just for a test
-        rm.addRegisterInstance("melo", "Event", properties);
-        Event e = new Event(NS+"melo");
-    }
+    
+
     
     
 }

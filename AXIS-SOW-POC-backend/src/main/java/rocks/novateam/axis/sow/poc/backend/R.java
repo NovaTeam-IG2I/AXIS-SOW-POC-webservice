@@ -58,5 +58,15 @@ public class R {
      * The rdfs label property.
      */
     public static String RDFS_LABEL_PROPERTY = R.RDFS_NS + "label";
+    
+    /**
+     * The rdfs date property.
+     */
+    public static String RDFS_DATE_PROPERTY = R.RDFS_NS + "date";
+    
+    /**
+     * The date property.
+     */
+    public static String DATE_PROPERTY = "date";
 
 }

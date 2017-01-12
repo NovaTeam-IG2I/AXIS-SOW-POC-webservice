@@ -5,12 +5,11 @@
  */
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
-import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ReadWrite;
@@ -18,6 +17,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import rocks.novateam.axis.sow.poc.backend.R;
 import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
+import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
 import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 
@@ -379,6 +379,7 @@ public class RegisterManager {
         mTDBHelper.finish();
         Individual mIndividual = mTDBHelper.getOntModel().getIndividual(uri);
         if (mIndividual == null) {
+            System.out.println("This individual doesn't exist");
             return null;
         }
         ExtendedIterator<OntProperty> exItr = mTDBHelper.getOntModel().getOntClass(mIndividual.getOntClass().getURI()).listDeclaredProperties();
