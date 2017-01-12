@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Register Servlet Test Page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Test : addRegisterInstance(name, classURI, mProperties)</h1>
+        <form action="/AXIS-SOW-POC-backend/register/add/instance/" method="POST">
+            <input id="name" type="text" name="name" placeholder="name" value="TEst avec Map" /><br />
+            <input id="classuri" type="text" name="classuri" placeholder="classuri" value="http://titan.be/axis-csrm/datamodel/ontology/0.4#PhysicalPerson" /><br />
+            <textarea id="properties" name="properties" placeholder="properties" >{"prop2":"valueprop2","prop1":"valueprop1"}</textarea><br />
+            <input type="submit" value="Submit" />
+        </form>
+        <h1>Test : addPredicate(name)</h1>
+        <form action="/AXIS-SOW-POC-backend/register/add/predicate/" method="POST">
+            <input id="name" type="text" name="name" placeholder="name" value="i am a test" /><br />
+            <input type="submit" value="Submit" />
+        </form>
+        <h1>Test : addPredicateToRegisters(subjectName, objectName, predicateName)</h1>
+        <form action="/AXIS-SOW-POC-backend/register/add/existingPredicateToRegister/" method="POST">
+            <input id="subjecturi" type="text" name="subjecturi" placeholder="subjecturi" value="http://titan.be/axis-csrm/datamodel/ontology/0.4#testAvecMap" /><br />
+            <input id="objecturi" type="text" name="objecturi" placeholder="objecturi" value="http://titan.be/axis-csrm/datamodel/ontology/0.4#testAvecMap2" /><br />
+            <input id="predicateuri" type="text" name="predicateuri" placeholder="predicateuri" value="http://titan.be/axis-csrm/datamodel/ontology/0.4#iAmATest" /><br />
+            <input type="submit" value="Submit" />
+        </form>
+        <h1>Test : deleteInstance(name)</h1>
+        <form action="/AXIS-SOW-POC-backend/register/remove/instance/" method="POST">
+            <input id="name" type="text" name="name" placeholder="name" value="http://titan.be/axis-csrm/datamodel/ontology/0.4#testAvecMap" /><br />
+            <input type="submit" value="Submit" />
+        </form>
+    </body>
+</html>
