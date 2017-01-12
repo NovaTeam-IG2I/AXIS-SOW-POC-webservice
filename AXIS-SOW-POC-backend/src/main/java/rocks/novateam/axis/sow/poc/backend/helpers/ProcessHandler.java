@@ -11,6 +11,9 @@ public class ProcessHandler {
             throws RuntimeException {
         Process proc = null;
         IOStream streams = null;
+        
+        System.out.println("Will execute the following command : " 
+                + args.toString().replace(",",""));
 
         try {
             proc = new ProcessBuilder(args).start();
