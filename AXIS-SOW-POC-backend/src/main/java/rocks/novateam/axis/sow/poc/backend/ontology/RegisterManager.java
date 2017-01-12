@@ -87,14 +87,14 @@ public class RegisterManager {
     }
 
     /**
-     *
      * Checks if the Instance already exists, then if not, checks if the class
      * exists, and add the new Instance and its AFP. The given name is converted
      * to a camelCase syntax string.
      *
      * @param name The name of the Instance to add
      * @param classURI The URI of its class
-     * @param properties The properties of the Instance to add
+     * @param properties The properties of the Instance to add: keys are
+     * properties URIs and values are objects.
      * @return true if the Instance was added successfully or already exists,
      * false otherwise
      */
@@ -106,19 +106,21 @@ public class RegisterManager {
             return true; // This ind already exists
         }
         TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
-        OntClass mOntClass = mTDBHelper.getOntModel().getOntClass(classURI);
+        OntModel model = mTDBHelper.getOntModel();
+        OntClass mOntClass = model.getOntClass(classURI);
         if (mOntClass == null) {//if the ont class does not exist
             mTDBHelper.finish();
             return false;
         }
-        Individual mAFP = mTDBHelper.getOntModel().getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+
+        Individual mAFP = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
         Individual mIndividual = mOntClass.createIndividual(NS + name);
         mIndividual.addLabel(label, "EN");
         for (Map.Entry<String, String> currentProperty : properties.entrySet()) {
-            OntProperty mOntProperty = mTDBHelper.getOntModel().createOntProperty(NS + currentProperty.getKey()); // create an ontProperty
+            OntProperty mOntProperty = model.createOntProperty(currentProperty.getKey());
             mIndividual.addProperty(mOntProperty, currentProperty.getValue());
         }
-        mIndividual.addProperty(mTDBHelper.getOntModel().getProperty(NS + "isDeclaredBy"), mAFP);
+        mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
         mTDBHelper.finish();
         return (instanceExistsByInstanceName(name) == InstanceExistenceState.EXISTS); //test if it has been created
     }
