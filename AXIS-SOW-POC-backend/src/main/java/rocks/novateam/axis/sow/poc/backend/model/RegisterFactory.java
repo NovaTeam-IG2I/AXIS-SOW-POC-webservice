@@ -19,6 +19,8 @@ public class RegisterFactory {
         switch(type) {
             case Person.TYPE:
                 return new Person(uri);
+            case Event.TYPE:
+                return new Event(uri);
             default:
                 NullRegister register = new NullRegister();
                 register.uri = uri;
