@@ -35,7 +35,7 @@ public class Person extends Register {
     public String toJSON() {
         String json = "{\n";
         json += "\"uri\" : \"" + uri + "\",\n";
-        json += "\"label\" : \"" + label + "\",\n";
+        json += "\"label\" : \"" + label + "\"\n";
         json += "}";
         return json;
     }
