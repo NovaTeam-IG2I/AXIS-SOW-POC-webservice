@@ -12,6 +12,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:j.0="http://www.w3.org/ns/ma-ont#"
      xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:axis-interopera="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4#"
@@ -26,18 +27,18 @@
         <owl:imports rdf:resource="http://titan.be/axis-csrm/interoperabilitymodel/ontology/0.4"/>
         <owl:imports rdf:resource="http://dbpedia.org/ontology/"/>
         <owl:imports rdf:resource="http://www.w3.org/ns/ma-ont"/>
-        <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roger Roberts</dc:contributor>
-        <owl:versionIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></owl:versionIRI>
+        <owl:versionIRI></owl:versionIRI>
         <dc:language xml:lang="en">English</dc:language>
-        <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guy Maréchal</dc:contributor>
-        <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Guillaume Rachez</dc:contributor>
         <dc:description xml:lang="en">This ontology defines the main concepts and properties from the AXIS-CSRM 
     initiative. It introduces the main key concepts Axis Foot Print, Onte, Document, Register 
     and their subclasses such as RegOfItem, Concept, Event, Structure, Profile, 
     LocationOfThing, EmbodimentOfThing. The ontology also 
     defines key equivalences with CIDOC-CRM model concepts. It also import the 
     AXIS-CSRM interoperability model.</dc:description>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2016-10-20</dc:date>
+        <dc:date>2016-10-20</dc:date>
+        <dc:contributor>Roger Roberts</dc:contributor>
+        <dc:contributor>Guillaume Rachez</dc:contributor>
+        <dc:contributor>Guy Maréchal</dc:contributor>
         <rdfs:label xml:lang="en">AXIS-CSRM Data model</rdfs:label>
     </owl:Ontology>
     
@@ -5104,6 +5105,33 @@ The sub-periods into which the period is decomposed form a logical whole - altho
     
 
 
+    <!-- http://titan.be/axis-csrm/datamodel/ontology/0.4#hasEnd -->
+
+    <owl:DatatypeProperty rdf:about="http://titan.be/axis-csrm/datamodel/ontology/0.4#hasEnd">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://titan.be/axis-csrm/datamodel/ontology/0.4#MediaUnifiedSegment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://titan.be/axis-csrm/datamodel/ontology/0.4#hasStart -->
+
+    <owl:DatatypeProperty rdf:about="http://titan.be/axis-csrm/datamodel/ontology/0.4#hasStart">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://titan.be/axis-csrm/datamodel/ontology/0.4#MediaUnifiedPoint"/>
+                    <rdf:Description rdf:about="http://titan.be/axis-csrm/datamodel/ontology/0.4#MediaUnifiedSegment"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://titan.be/axis-csrm/datamodel/ontology/0.4#hyperlink -->
 
     <owl:DatatypeProperty rdf:about="http://titan.be/axis-csrm/datamodel/ontology/0.4#hyperlink">
@@ -7967,7 +7995,7 @@ Note, that the class E9 Move inherits the property P7 took place at (witnessed):
 
     <owl:NamedIndividual rdf:about="http://titan.be/axis-csrm/datamodel/ontology/0.4#StructuredModelingTechnology">
         <rdf:type rdf:resource="http://titan.be/axis-csrm/datamodel/ontology/0.4#TypeOfThing"/>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Structured modeling technology</rdfs:label>
+        <rdfs:label>Structured modeling technology</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -8038,8 +8066,8 @@ Note, that the class E9 Move inherits the property P7 took place at (witnessed):
         <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-01-14</terms:modified>
         <rdfs:label xml:lang="en">Format</rdfs:label>
         <rdfs:comment xml:lang="en">The file format, physical medium, or dimensions of the resource.</rdfs:comment>
-        <terms:hasVersion rdf:resource="http://dublincore.org/usage/terms/history/#format-007"/>
         <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/elements/1.1/"/>
+        <terms:hasVersion rdf:resource="http://dublincore.org/usage/terms/history/#format-007"/>
         <terms:description xml:lang="en">Examples of dimensions include size and duration. Recommended best practice is to use a controlled vocabulary such as the list of Internet Media Types [MIME].</terms:description>
     </rdf:Description>
     <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/identifier">
@@ -8053,8 +8081,8 @@ Note, that the class E9 Move inherits the property P7 took place at (witnessed):
         <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
     </rdf:Description>
     <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/publisher">
-        <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
         <terms:hasVersion rdf:resource="http://dublincore.org/usage/terms/history/#publisher-006"/>
+        <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
         <terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1999-07-02</terms:issued>
         <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-01-14</terms:modified>
         <rdfs:label xml:lang="en">Publisher</rdfs:label>
@@ -8088,8 +8116,8 @@ Note, that the class E9 Move inherits the property P7 took place at (witnessed):
         <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/elements/1.1/"/>
         <rdfs:comment xml:lang="en">A related resource from which the described resource is derived.</rdfs:comment>
         <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-01-14</terms:modified>
-        <terms:description xml:lang="en">The described resource may be derived from the related resource in whole or in part. Recommended best practice is to identify the related resource by means of a string conforming to a formal identification system.</terms:description>
         <terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1999-07-02</terms:issued>
+        <terms:description xml:lang="en">The described resource may be derived from the related resource in whole or in part. Recommended best practice is to identify the related resource by means of a string conforming to a formal identification system.</terms:description>
         <rdfs:label xml:lang="en">Source</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/subject">
@@ -8106,8 +8134,8 @@ Note, that the class E9 Move inherits the property P7 took place at (witnessed):
         <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-01-14</terms:modified>
         <rdfs:comment xml:lang="en">A name given to the resource.</rdfs:comment>
         <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
-        <rdfs:label xml:lang="en">Title</rdfs:label>
         <terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1999-07-02</terms:issued>
+        <rdfs:label xml:lang="en">Title</rdfs:label>
         <terms:hasVersion rdf:resource="http://dublincore.org/usage/terms/history/#title-006"/>
         <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/elements/1.1/"/>
     </rdf:Description>
@@ -8118,12 +8146,12 @@ Note, that the class E9 Move inherits the property P7 took place at (witnessed):
         <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/elements/1.1/"/>
         <terms:description xml:lang="en">Recommended best practice is to use a controlled vocabulary such as the DCMI Type Vocabulary [DCMITYPE]. To describe the file format, physical medium, or dimensions of the resource, use the Format element.</terms:description>
         <terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1999-07-02</terms:issued>
-        <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
         <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-01-14</terms:modified>
+        <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
     </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
 
