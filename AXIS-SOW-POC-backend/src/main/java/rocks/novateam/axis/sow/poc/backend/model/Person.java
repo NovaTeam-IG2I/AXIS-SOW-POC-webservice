@@ -11,7 +11,6 @@ import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
  * @author Alex Canales
  */
 public class Person extends Register {
-
     /**
      * The person type.
      */
@@ -26,7 +25,7 @@ public class Person extends Register {
         if(values == null)
             return;
 
-        this.label = values.get(R.LABEL_PROPERTY);
+        this.label = values.get(R.DATAMODEL_LABEL_PROPERTY);
         System.out.println(label);
     }
 
@@ -40,7 +39,7 @@ public class Person extends Register {
     }
 
     public static void main(String[] args) throws IOException {
-        String personID = R.POC_NS + "MLK";
+        String personID = R.DATAMODEL_NS + "MLK";
         Register person = RegisterFactory.getInstance("person", personID);
         System.out.println(person.toJSON());
     }

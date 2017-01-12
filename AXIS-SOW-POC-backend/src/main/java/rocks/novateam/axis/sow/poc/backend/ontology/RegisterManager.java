@@ -386,7 +386,7 @@ public class RegisterManager {
         while (exItr.hasNext()) {
             OntProperty prop = exItr.next();
             if (mIndividual.getCardinality(prop) > 0) {
-                properties.put(prop.getLocalName(), mTDBHelper.getOntModel().getIndividual(uri).getPropertyValue(prop).toString());
+                properties.put(prop.getURI(), mTDBHelper.getOntModel().getIndividual(uri).getPropertyValue(prop).toString());
             }
         }
         return properties;

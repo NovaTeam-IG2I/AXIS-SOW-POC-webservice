@@ -60,9 +60,19 @@ public class R {
     public static String RDFS_LABEL_PROPERTY = R.RDFS_NS + "label";
     
     /**
+     * The datamodel label property.
+     */
+    public static String DATAMODEL_LABEL_PROPERTY = R.DATAMODEL_NS + "label";
+    
+    /**
      * The rdfs date property.
      */
     public static String RDFS_DATE_PROPERTY = R.RDFS_NS + "date";
+    
+    /**
+     * The datamodel date property.
+     */
+    public static String DATAMODEL_DATE_PROPERTY = R.DATAMODEL_NS + "date";
     
     /**
      * The date property.
