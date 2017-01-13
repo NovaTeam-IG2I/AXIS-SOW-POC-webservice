@@ -1,5 +1,9 @@
 package rocks.novateam.axis.sow.poc.backend;
 
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+
 /**
  * This class holds all static resources used in the project in various places.
  *
@@ -70,5 +74,60 @@ public class R {
     public static final String EXIF_NS = "http://ns.adobe.com/exif/1.0/";
     public static final String CREATORATOM_NS = "http://ns.adobe.com/creatorAtom/1.0/";
     public static final String TMFILMV2_NS = "http://ns.adobe.com/dva/dynamic/TM-Film-v2/1.0/";
+
+    public static class XMP {
+
+        public static final Property CREATEDATE = ResourceFactory.createProperty(XMP_NS + "CreateDate");
+        public static final Property MODIFYDATE = ResourceFactory.createProperty(XMP_NS + "ModifyDate");
+        public static final Property METADATADATE = ResourceFactory.createProperty(XMP_NS + "MetadataDate");
+        public static final Property CREATORTOOL = ResourceFactory.createProperty(XMP_NS + "CreatorTool");
+
+    }
+
+    public static class XMPDM {
+
+        public static final Resource PROJECTREF_TAG = ResourceFactory.createResource(XMPDM_NS + "projectRef");
+        public static final Resource VIDEOFRAMESIZE_TAG = ResourceFactory.createResource(XMPDM_NS + "videoFrameSize");
+        public static final Resource STARTTIMECODE_TAG = ResourceFactory.createResource(XMPDM_NS + "startTimecode");
+        public static final Resource ALTTIMECODE_TAG = ResourceFactory.createResource(XMPDM_NS + "altTimecode");
+        public static final Resource DURATION_TAG = ResourceFactory.createResource(XMPDM_NS + "duration");
+        public static final Resource TRACKS_TAG = ResourceFactory.createResource(XMPDM_NS + "Tracks");
+
+        public static final Property VIDEOFRAMERATE = ResourceFactory.createProperty(XMPDM_NS + "videoFrameRate");
+        public static final Property STARTTIME = ResourceFactory.createProperty(XMPDM_NS + "startTime");
+        public static final Property DURATION = ResourceFactory.createProperty(XMPDM_NS + "duration");
+        public static final Property COMMENT = ResourceFactory.createProperty(XMPDM_NS + "comment");
+        public static final Property NAME = ResourceFactory.createProperty(XMPDM_NS + "name");
+        public static final Property VALUE = ResourceFactory.createProperty(XMPDM_NS + "value");
+        public static final Property SCALE = ResourceFactory.createProperty(XMPDM_NS + "scale");
+        public static final Property STARTTIMESCALE = ResourceFactory.createProperty(XMPDM_NS + "startTimeScale");
+        public static final Property STARTTIMESAMPLESIZE = ResourceFactory.createProperty(XMPDM_NS + "startTimeSampleSize");
+        public static final Property VIDEOFIELDORDER = ResourceFactory.createProperty(XMPDM_NS + "videoFieldOrder");
+        public static final Property VIDEOPIXELASPECTRATIO = ResourceFactory.createProperty(XMPDM_NS + "videoPixelAspectRatio");
+
+    }
+
+    public static class XMPMM {
+
+        public static final Resource HISTORY_TAG = ResourceFactory.createResource(XMPMM_NS + "History");
+        public static final Resource INGREDIENTS_TAG = ResourceFactory.createResource(XMPMM_NS + "Ingredients");
+        public static final Resource DERIVEDFROM_TAG = ResourceFactory.createResource(XMPMM_NS + "DerivedFrom");
+        public static final Resource PANTRY_TAG = ResourceFactory.createResource(XMPMM_NS + "Pantry");
+
+    }
+
+    public static class DC {
+
+        public static final Resource TITLE_TAG = ResourceFactory.createResource(DC_NS + "title");
+        public static final Resource DESCRIPTION_TAG = ResourceFactory.createResource(DC_NS + "description");
+
+    }
+
+    public static class CREATORATOM {
+
+        public static final Resource WindowsAtomTag = ResourceFactory.createResource(CREATORATOM_NS + "windowsAtom");
+        public static final Resource MacAtomTag = ResourceFactory.createResource(CREATORATOM_NS + "macAtom");
+
+    }
 
 }
