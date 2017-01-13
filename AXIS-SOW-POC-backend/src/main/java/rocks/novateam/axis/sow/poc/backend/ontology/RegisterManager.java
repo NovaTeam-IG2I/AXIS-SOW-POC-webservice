@@ -129,7 +129,7 @@ public class RegisterManager {
         }
         mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
         mTDBHelper.finish();
-        
+
         return (instanceExistsByInstanceName(name) == InstanceExistenceState.EXISTS); //test if it has been created
     }
 
@@ -381,8 +381,8 @@ public class RegisterManager {
      * given individual.
      *
      * @param uri The individual's uri
-     * @return A map with property URIs as keys and property values as values
-     * or null if the Individual is not found
+     * @return A map with property URIs as keys and property values as values or
+     * null if the Individual is not found. Only DatatypeProperties are added
      */
     public Map<String, String> getPropertiesOfAnIndividual(String uri) {
         Map<String, String> properties = new HashMap<>();
@@ -396,7 +396,7 @@ public class RegisterManager {
         StmtIterator exItr = individual.listProperties();
         while (exItr.hasNext()) {
             Property predicate = exItr.next().getPredicate();
-            if(predicate.canAs(DatatypeProperty.class)) {
+            if (predicate.canAs(DatatypeProperty.class)) {
                 properties.put(predicate.getURI(), individual.getPropertyValue(predicate).toString());
             }
         }
