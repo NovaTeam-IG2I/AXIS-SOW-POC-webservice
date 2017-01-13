@@ -4,7 +4,7 @@ import java.io.File;
 
 public class TestMetadataHandler {
 
-    private static final String FILE_PATH = "~/Desktop/video.mp4";
+    private static final String FILE_PATH = System.getProperty("user.home") + "/Desktop/video.mp4";
 
     public static void main(String[] args) {
         /**
