@@ -8,6 +8,18 @@
         <servlet-name>VideoServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.VideoServlet</servlet-class>
     </servlet>
+
+    <!-- Structure servlet handling -->
+    <servlet>
+        <servlet-name>StructureServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.StructureServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StructureServlet</servlet-name>
+        <url-pattern>/structure</url-pattern>
+    </servlet-mapping>
+    <!-- End structure servlet handling -->
+
     <servlet-mapping>
         <servlet-name>VideoServlet</servlet-name>
         <url-pattern>/video</url-pattern>
@@ -49,7 +61,19 @@
         <url-pattern>/technical</url-pattern>
     </servlet-mapping>
     <!-- End technical servlet handling -->
-
+    
+    <!-- Export servlet handling -->
+    <servlet>
+        <servlet-name>ExportServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ExportServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>ExportServlet</servlet-name>
+        <url-pattern>/export</url-pattern>
+    </servlet-mapping>
+    <!-- End export servlet handling -->
+    
     <session-config>
         <session-timeout>
             30

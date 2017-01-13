@@ -117,7 +117,8 @@ public class RegisterManager {
         Individual mIndividual = mOntClass.createIndividual(NS + name);
         mIndividual.addLabel(label, "EN");
         for (Map.Entry<String, String> currentProperty : properties.entrySet()) {
-            OntProperty mOntProperty = model.createOntProperty(currentProperty.getKey());
+            OntProperty mOntProperty = model.getOntProperty(currentProperty.getKey());
+            if(mOntProperty==null) mOntProperty = model.createOntProperty(currentProperty.getKey());
             mIndividual.addProperty(mOntProperty, currentProperty.getValue());
         }
         mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
@@ -374,6 +375,7 @@ public class RegisterManager {
      *
      * @param uri The individual's uri
      * @return A map with property URIs as keys and property values as values
+     * or null if the Individual is not found
      */
     public Map<String, String> getPropertiesOfAnIndividual(String uri) {
         Map<String, String> properties = new HashMap<>();
@@ -381,7 +383,10 @@ public class RegisterManager {
         mTDBHelper.finish();
         OntModel model = mTDBHelper.getOntModel();
         Individual individual = model.getIndividual(uri);
-        ExtendedIterator<OntProperty> exItr = model.getOntClass(individual.getURI()).listDeclaredProperties();
+        if (individual == null) {
+            return null;
+        }
+        ExtendedIterator<OntProperty> exItr = model.getOntClass(individual.getOntClass().getURI()).listDeclaredProperties();
         while (exItr.hasNext()) {
             OntProperty prop = exItr.next();
             if (individual.getCardinality(prop) > 0) {
