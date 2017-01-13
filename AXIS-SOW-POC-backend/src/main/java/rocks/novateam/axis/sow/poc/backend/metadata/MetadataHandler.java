@@ -89,7 +89,7 @@ public class MetadataHandler {
         InputStream in = FileManager.get().open(rdfFile.getAbsolutePath());
         try {
             model.read(in, ""); // read the RDF/XML file
-            model.write(System.out); // write it to standard out
+            model.write(System.out, "RDF/XML-ABBREV"); // write it to standard out
         } catch (Exception e) { // throws an error if file doesn't contain only RDF
             throw new Error("Unvalid file content");
         } finally {
@@ -160,7 +160,7 @@ public class MetadataHandler {
         InputStream in = FileManager.get().open(rdfFile.getAbsolutePath());
         try {
             model.read(in, ""); // read the RDF/XML file
-            model.write(System.out); // write it to standard out
+            model.write(System.out, "RDF/XML-ABBREV"); // write it to standard out
         } catch (Exception e) { // throws an error if file doesn't contain only RDF
             throw new Error("Unvalid file content");
         } finally {
