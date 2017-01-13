@@ -117,7 +117,8 @@ public class RegisterManager {
         Individual mIndividual = mOntClass.createIndividual(NS + name);
         mIndividual.addLabel(label, "EN");
         for (Map.Entry<String, String> currentProperty : properties.entrySet()) {
-            OntProperty mOntProperty = model.createOntProperty(currentProperty.getKey());
+            OntProperty mOntProperty = model.getOntProperty(currentProperty.getKey());
+            if(mOntProperty==null) mOntProperty = model.createOntProperty(currentProperty.getKey());
             mIndividual.addProperty(mOntProperty, currentProperty.getValue());
         }
         mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
