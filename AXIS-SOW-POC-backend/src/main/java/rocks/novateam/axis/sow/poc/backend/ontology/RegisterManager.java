@@ -5,20 +5,22 @@
  */
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
-import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import rocks.novateam.axis.sow.poc.backend.R;
 import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
+import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
 import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 
@@ -118,11 +120,15 @@ public class RegisterManager {
         mIndividual.addLabel(label, "EN");
         for (Map.Entry<String, String> currentProperty : properties.entrySet()) {
             OntProperty mOntProperty = model.getOntProperty(currentProperty.getKey());
-            if(mOntProperty==null) mOntProperty = model.createOntProperty(currentProperty.getKey());
-            mIndividual.addProperty(mOntProperty, currentProperty.getValue());
+            if(mOntProperty==null) {
+                mOntProperty = model.createOntProperty(currentProperty.getKey());
+            }
+            Literal value = ResourceFactory.createStringLiteral(currentProperty.getValue());
+            mIndividual.addProperty(mOntProperty, value);
         }
         mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
         mTDBHelper.finish();
+        
         return (instanceExistsByInstanceName(name) == InstanceExistenceState.EXISTS); //test if it has been created
     }
 
@@ -512,5 +518,20 @@ public class RegisterManager {
      */
     public boolean statementExistsByNames(String subjectName, String predicateName, String objectName) {
         return statementExists(NS + subjectName, NS + predicateName, NS + objectName);
+    }
+    
+    
+    public static void main(String[] args) {
+        RegisterManager rm = new RegisterManager();
+        String TYPE_OBJECT = R.DATAMODEL_NS + "PhysicalPerson";  // Remarque: ce n'est pas bon
+        Map<String,String> map = new HashMap<>();
+        map.put("prop1", "valueprop1");
+        map.put("prop2", "valueprop2");
+        map.put(R.DATAMODEL_NS + "fileName", "Selma.mp4");  // Lui n'est pas mis
+        map.put(R.DATAMODEL_NS + "P75i_is_possessed_by", "Pathé");
+        map.put(R.DATAMODEL_NS + "test", "resulttest");
+        rm.addRegisterInstance("selma", TYPE_OBJECT, map);
+        System.out.println("With selma");
+        System.out.println(rm.getPropertiesOfAnIndividualByIndividualName("selma"));
     }
 }
