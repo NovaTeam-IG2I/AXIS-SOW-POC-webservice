@@ -155,7 +155,7 @@ public class Technical {
      * <li><strong>RANGE</strong>: <code>axis:Agent</code> (subclass of <code>axis:Register</code>)</li>
      * </ul>
      */
-    public static String RIGHTS_PROPERTY = R.DATAMODEL_NS + "P75i_is_possessed_by";  // NOTE: AXIS does not have anything specific?
+    public static String RIGHTS_PROPERTY = R.CIDOC_NS + "P75i_is_possessed_by";
     // ---- End framework ontology property and value defintion
 
     /**
