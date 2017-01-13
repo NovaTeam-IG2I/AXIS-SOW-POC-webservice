@@ -389,6 +389,7 @@ public class RegisterManager {
         ExtendedIterator<OntProperty> exItr = model.getOntClass(individual.getOntClass().getURI()).listDeclaredProperties();
         while (exItr.hasNext()) {
             OntProperty prop = exItr.next();
+            // IF WE WANT TO GET EVERYTHING : properties.put(prop.getURI(), ((individual.getPropertyValue(prop)!=null)?individual.getPropertyValue(prop).toString():"null"));
             if (individual.getCardinality(prop) > 0) {
                 properties.put(prop.getURI(), individual.getPropertyValue(prop).toString());
             }
