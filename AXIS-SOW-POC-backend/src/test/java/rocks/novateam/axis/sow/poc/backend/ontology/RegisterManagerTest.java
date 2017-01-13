@@ -185,7 +185,9 @@ public class RegisterManagerTest {
         System.out.println("\nExecuting: rm.getPropertiesOfAnIndividualByIndividualName(\"selma\");");
         Map<String, String> result = rm.getPropertiesOfAnIndividualByIndividualName("selma");
         System.out.println("Done.\nm.getPropertiesOfAnIndividualByIndividualName(\"selma\"); returned result");
-        System.out.println("mGson.toJson(result, mStringStringMapType.getType()) :\n"+mGson.toJson(result, mStringStringMapType.getType()));
+        System.out.println("mGson.toJson(result, mStringStringMapType.getType()) :\n"+
+                mGson.toJson(result, mStringStringMapType.getType()).replaceAll("\",\"", "\",\n\""));
+
     }
 
     public static void main(String[] args) {
