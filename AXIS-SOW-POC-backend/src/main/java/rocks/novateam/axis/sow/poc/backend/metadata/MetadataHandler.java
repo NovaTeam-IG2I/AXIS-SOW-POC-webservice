@@ -23,33 +23,39 @@ import static rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.startPr
 public class MetadataHandler {
 
     private static final String EXIF_TOOL_PATH = Configuration.getInstance().getExiftoolPath();
+    private static final String XMP_FILE_EXTENSION = ".xmp";
+    private static final String RDF_FILE_EXTENSION = ".rdf";
 
     public static void extractAndStoreMetadata(File inputFile) {
-        storeInTDB(extractRDF(extractXMP(inputFile)));
+        try {
+            storeInTDB(extractRDF(extractXMP(inputFile)));
+        } catch (Exception e) { // Should not happen
+            System.out.println("An error occured during the metadata extraction process");
+        }
     }
 
     /**
      * Returns XMP Sidecar file containing all the meta extracted
      *
-     * @param inputFile
-     * @return
+     * @param inputFile any file handled by exiftool
+     * @return XMP File
      */
     public static File extractXMP(File inputFile) {
-        IOStream streams = null;
+        IOStream streams;
         List<String> args = new ArrayList<>();
 
         checkFile(inputFile);
 
-        File outputFile = new File(modifyExtension(inputFile, ".xmp"));
+        File xmpFile = new File(modifyExtension(inputFile, XMP_FILE_EXTENSION));
 
-        if (outputFile.isFile()) {
-            outputFile.delete();
+        if (xmpFile.isFile()) {
+            xmpFile.delete();
         }
 
         args.add(EXIF_TOOL_PATH);
         args.add(inputFile.getAbsolutePath());
         args.add("-out"); // Set output inputFile or directory name
-        args.add(outputFile.getAbsolutePath());
+        args.add(xmpFile.getAbsolutePath());
         args.add("-xmp"); // Extract XMP data
         args.add("-b"); // Output metadata in binary format
         args.add("-xmlFormat"); // Use RDF/XML output format
@@ -57,30 +63,30 @@ public class MetadataHandler {
 
         streams = startProcess(args);
         streams.close();
-        
-        return outputFile.isFile() ? outputFile : null;
+
+        return xmpFile.isFile() ? xmpFile : null;
     }
 
     /**
-     * Replaces the extension of a file
+     * Replaces the str of a f
      *
-     * @param file
-     * @param extension
+     * @param f
+     * @param str
      * @return
      */
-    private static String modifyExtension(File file, String extension) {
-        return file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf('.')).concat(extension);
+    private static String modifyExtension(File f, String str) {
+        return f.getAbsolutePath().substring(0, f.getAbsolutePath().lastIndexOf('.')).concat(str);
     }
 
     /**
      * Reads RDF/XML file using Jena Model
      *
-     * @param inputFile RDF File
+     * @param rdfFile RDF File
      */
-    public static void read(File inputFile) {
-        checkFile(inputFile);
+    public static void read(File rdfFile) {
+        checkFile(rdfFile);
         Model model = ModelFactory.createDefaultModel(); // Create an empty model
-        InputStream in = FileManager.get().open(inputFile.getAbsolutePath());
+        InputStream in = FileManager.get().open(rdfFile.getAbsolutePath());
         try {
             model.read(in, ""); // read the RDF/XML file
             model.write(System.out); // write it to standard out
@@ -90,43 +96,43 @@ public class MetadataHandler {
             model.close();
         }
     }
-    
+
     /**
-     * 
-     * @param outputFile
+     *
+     * @param rdfFile
      * @param model
      * @return
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
-    public static File write(File outputFile, Model model) throws FileNotFoundException {
-        OutputStream out = new FileOutputStream(outputFile);
+    public static File write(File rdfFile, Model model) throws FileNotFoundException {
+        OutputStream out = new FileOutputStream(rdfFile);
         model.write(out, "RDF/XML-ABBREV");
-        return outputFile.isFile() ? outputFile : null;
+        return rdfFile.isFile() ? rdfFile : null;
     }
 
     /**
      * Extracts RDF content from a given file to a RDF file
      *
-     * @param inputFile File that contains the metadata
+     * @param xmpFile File that contains the metadata
      * @return RDF File containing only RDF content
      */
-    public static File extractRDF(File inputFile) {
-        checkFile(inputFile);
-        File outputFile = new File(modifyExtension(inputFile, ".rdf"));
-        if (outputFile.isFile()) {
-            outputFile.delete();
+    public static File extractRDF(File xmpFile) {
+        checkFile(xmpFile);
+        File rdfFile = new File(modifyExtension(xmpFile, RDF_FILE_EXTENSION));
+        if (rdfFile.isFile()) {
+            rdfFile.delete();
         }
         try {
-            BufferedReader br = new BufferedReader(new FileReader(inputFile));
-            PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
+            BufferedReader br = new BufferedReader(new FileReader(xmpFile));
+            PrintWriter pw = new PrintWriter(new FileWriter(rdfFile));
             String line;
-            Boolean inRDF = false;
+            Boolean inRDFTag = false;
             while ((line = br.readLine()) != null) {
                 String trimmedLine = line.trim();
                 if (trimmedLine.startsWith("<rdf:RDF")) {
-                    inRDF = true;
+                    inRDFTag = true;
                 }
-                if (inRDF) {
+                if (inRDFTag) {
                     pw.println(line);
                     pw.flush();
                 }
@@ -139,34 +145,35 @@ public class MetadataHandler {
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
         }
-        return outputFile;
+        return rdfFile;
     }
 
     /**
      * Stores RDF file in TDB
      *
-     * @param inputFile RDF File
+     * @param rdfFile RDF File
      */
-    public static void storeInTDB(File inputFile) {
-        read(inputFile);
-
-//        Dataset dataset = TDBManager.getInstance().getDataset(); //
-//        Model model = dataset.getDefaultModel(); //
-//        // Model model = ModelFactory.createDefaultModel(); // Create an empty model
-//        InputStream in = FileManager.get().open(inputFile.getAbsolutePath());
-//        //if (in == null) {
-//        //    throw new IllegalArgumentException("File not found");
-//        //}
-//        FileManager.get().readModel(model, inputFile.getAbsolutePath());
-//        // model.read(in, ""); // read the RDF/XML file
-//        model.write(System.out); // write it to standard out
-//        dataset.commit();
-//        model.close();
-//        dataset.close();
+    public static void storeInTDB(File rdfFile) {
+        // TODO : READ THE FILE UNTIL TDB IS READY
+        checkFile(rdfFile);
+        Model model = ModelFactory.createDefaultModel(); // Create an empty model
+        InputStream in = FileManager.get().open(rdfFile.getAbsolutePath());
+        try {
+            model.read(in, ""); // read the RDF/XML file
+            model.write(System.out); // write it to standard out
+        } catch (Exception e) { // throws an error if file doesn't contain only RDF
+            throw new Error("Unvalid file content");
+        } finally {
+            model.close();
+        }
     }
-    
-    private static void checkFile(File file){
-        if (file == null || !file.isFile()) {
+
+    /**
+     *
+     * @param f
+     */
+    private static void checkFile(File f) {
+        if (f == null || !f.isFile()) {
             throw new Error("Error with the file");
         }
     }
