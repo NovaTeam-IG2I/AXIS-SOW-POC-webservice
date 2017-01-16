@@ -19,6 +19,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.query.ReadWrite;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
+import rocks.novateam.axis.sow.poc.backend.metadata.MetadataHandler;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
@@ -41,8 +42,8 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * The HTTP response will have a <code>application/json</code> MIME type, and
  * may contain:
  * <ul>
- * <li><code>{'status': 'ok', 'uri': <em>uri</em>}</code> if the
- * request succeeded, where <code>uri</code> is the Film register's URI;</li>
+ * <li><code>{'status': 'ok', 'uri': <em>uri</em>}</code> if the request
+ * succeeded, where <code>uri</code> is the Film register's URI;</li>
  * <li><code>{'status': 'ko', 'message': <em>message</em>}</code> if the request
  * failed.</li>
  * </ul>
@@ -94,8 +95,7 @@ public class ImportServlet extends HttpServlet {
             Individual film = persist(urn, file.getAbsolutePath());
 
             // Extract and store metadata
-            // This is commented out because it causes the system to crash
-            // MetadataExtractor.extractAndStoreMetadata(file);
+            MetadataHandler.extractAndStoreMetadata(file);
 
             json.add("status", "ok")
                     .add("uri", film.getURI());
@@ -163,12 +163,12 @@ public class ImportServlet extends HttpServlet {
     private String getNextFileName() {
         File folder = new File(Configuration.getInstance().getUploadFolder());
         System.out.println("Upload folder: " + folder.getAbsolutePath());
-        if(!folder.exists()) {
+        if (!folder.exists()) {
             System.out.println("Upload folder does not exist. Creating it right now...");
             folder.mkdir();
             System.out.println("Done.");
         }
-        
+
         File[] files = folder.listFiles();
         int fileNumber = 1; // File names start from 1.
 
@@ -192,12 +192,13 @@ public class ImportServlet extends HttpServlet {
      * <li>A <code>VideoEmbodiment</code> for the Document;</li>
      * <li>A <code>Location</code> for the Embodiment.</li>
      *
-     * The absolute path to the video file is stored as an <code>hyperlink</code> property on the Location individual.
+     * The absolute path to the video file is stored as an
+     * <code>hyperlink</code> property on the Location individual.
      *
-     * @param name     The URN to give to the new entities
+     * @param name The URN to give to the new entities
      * @param filePath The absolute path to the video file
      *
-     * @return         The Film register {@link Individual}
+     * @return The Film register {@link Individual}
      */
     private Individual persist(String name, String filePath) {
         TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
