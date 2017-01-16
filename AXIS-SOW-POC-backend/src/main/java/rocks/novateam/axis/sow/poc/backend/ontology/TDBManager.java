@@ -160,7 +160,7 @@ public class TDBManager {
         TDBManager tdbm = TDBManager.getInstance();
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
-        // tdbm.setUp();
+        //tdbm.setUp();
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();

@@ -5,20 +5,26 @@
  */
 package rocks.novateam.axis.sow.poc.backend.ontology;
 
-import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import rocks.novateam.axis.sow.poc.backend.R;
 import rocks.novateam.axis.sow.poc.backend.helpers.CamelCaseConverter;
+import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
 import rocks.novateam.axis.sow.poc.backend.helpers.TDBHelper;
 
@@ -117,12 +123,13 @@ public class RegisterManager {
         Individual mIndividual = mOntClass.createIndividual(NS + name);
         mIndividual.addLabel(label, "EN");
         for (Map.Entry<String, String> currentProperty : properties.entrySet()) {
-            OntProperty mOntProperty = model.getOntProperty(currentProperty.getKey());
-            if(mOntProperty==null) mOntProperty = model.createOntProperty(currentProperty.getKey());
-            mIndividual.addProperty(mOntProperty, currentProperty.getValue());
+            Property property = model.getProperty(currentProperty.getKey());
+            Literal value = ResourceFactory.createStringLiteral(currentProperty.getValue());
+            mIndividual.addLiteral(property, value);
         }
         mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
         mTDBHelper.finish();
+
         return (instanceExistsByInstanceName(name) == InstanceExistenceState.EXISTS); //test if it has been created
     }
 
@@ -374,8 +381,8 @@ public class RegisterManager {
      * given individual.
      *
      * @param uri The individual's uri
-     * @return A map with property URIs as keys and property values as values
-     * or null if the Individual is not found
+     * @return A map with property URIs as keys and property values as values or
+     * null if the Individual is not found. Only DatatypeProperties are added
      */
     public Map<String, String> getPropertiesOfAnIndividual(String uri) {
         Map<String, String> properties = new HashMap<>();
@@ -386,11 +393,11 @@ public class RegisterManager {
         if (individual == null) {
             return null;
         }
-        ExtendedIterator<OntProperty> exItr = model.getOntClass(individual.getOntClass().getURI()).listDeclaredProperties();
+        StmtIterator exItr = individual.listProperties();
         while (exItr.hasNext()) {
-            OntProperty prop = exItr.next();
-            if (individual.getCardinality(prop) > 0) {
-                properties.put(prop.getURI(), individual.getPropertyValue(prop).toString());
+            Property predicate = exItr.next().getPredicate();
+            if (predicate.canAs(DatatypeProperty.class)) {
+                properties.put(predicate.getURI(), individual.getPropertyValue(predicate).toString());
             }
         }
         return properties;
