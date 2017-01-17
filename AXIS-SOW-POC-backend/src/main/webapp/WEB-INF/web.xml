@@ -43,7 +43,6 @@
         <servlet-name>ProductionServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ProductionServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>ProductionServlet</servlet-name>
         <url-pattern>/production</url-pattern>
@@ -55,7 +54,6 @@
         <servlet-name>TechnicalServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.TechnicalServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>TechnicalServlet</servlet-name>
         <url-pattern>/technical</url-pattern>
@@ -67,13 +65,22 @@
         <servlet-name>ExportServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ExportServlet</servlet-class>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>ExportServlet</servlet-name>
         <url-pattern>/export</url-pattern>
     </servlet-mapping>
     <!-- End export servlet handling -->
     
+    <!-- Track servlet handling -->
+    <servlet>
+        <servlet-name>TrackServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.TrackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TrackServlet</servlet-name>
+        <url-pattern>/track</url-pattern>
+    </servlet-mapping>
+    <!-- End track servlet handling -->
     <session-config>
         <session-timeout>
             30

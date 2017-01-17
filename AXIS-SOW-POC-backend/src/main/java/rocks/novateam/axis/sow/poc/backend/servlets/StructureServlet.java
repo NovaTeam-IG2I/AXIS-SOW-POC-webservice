@@ -197,19 +197,26 @@ public class StructureServlet extends HttpServlet {
     private JsonArray getFragments(OntModel model, Individual editingTrack) {
         String NS = TDBManager.DATAMODEL_NS;
         JsonArrayBuilder fragments = Json.createArrayBuilder();
-        Individual esoStructure = editingTrack.getPropertyValue(model.getProperty(NS + "isDefinedByStructure")).as(Individual.class);
 
-        // Fragments are stored as a linked list in the ontology.
-        // The following instructions iterate over this list.
-        Individual fragment = esoStructure.getPropertyValue(model.getProperty(NS + "starts")).as(Individual.class);
-        fragments.add(buildFragment(model, fragment));
-        while (fragment.hasProperty(model.getProperty(NS + "next"))) {
-            try {
-                fragment = fragment.getPropertyValue(model.getProperty(NS + "next")).as(Individual.class);
-                fragments.add(buildFragment(model, fragment));
-            } catch (NullPointerException ex) {
-                System.out.println("Error building a fragment: " + ex.getLocalizedMessage());
+        try {
+            Individual esoStructure = editingTrack.getPropertyValue(model.getProperty(NS + "isDefinedByStructure")).as(Individual.class);
+            
+            // Fragments are stored as a linked list in the ontology.
+            // The following instructions iterate over this list.
+            Individual fragment = esoStructure.getPropertyValue(model.getProperty(NS + "starts")).as(Individual.class);
+            fragments.add(buildFragment(model, fragment));
+            while (fragment.hasProperty(model.getProperty(NS + "next"))) {
+                try {
+                    fragment = fragment.getPropertyValue(model.getProperty(NS + "next")).as(Individual.class);
+                    fragments.add(buildFragment(model, fragment));
+                } catch (NullPointerException ex) {
+                    System.out.println("Error building a fragment: " + ex.getLocalizedMessage());
+                }
             }
+        }
+        catch (NullPointerException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Skipping...");
         }
 
         return fragments.build();
