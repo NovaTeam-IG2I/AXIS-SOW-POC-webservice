@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.NoSuchElementException;
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,14 +20,31 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
+ * Handles track creation.
  *
- * @author richou
+ * The HTTP request must:
+ * <ul>
+ * <li>Contain a <code>uri</code> parameter, containing the URI of the
+ * <code>Film</code> for the new track;</li>
+ * <li>Contain a <code>name</code> parameter, containing the URN of the new
+ * Track.</li>
+ * </ul>
+ *
+ * The HTTP response will have a <code>"application/json</code> MIME type and
+ * will contain:
+ * <ul>
+ * <li><code>{"status": "ok", "uri": uri}</code> if the request succeeded, where
+ * <code>uri</code> is the new track's URI;</li>
+ * <li><code>{"status: "ko", "message": message}</code> if the request
+ * failed.</li>
+ * </ul>
+ *
+ * @author Richard Degenne
  */
 public class TrackServlet extends HttpServlet {
 
@@ -45,31 +61,30 @@ public class TrackServlet extends HttpServlet {
             throws ServletException, IOException {
         String uri = request.getParameter("uri");
         String name = request.getParameter("name");
-        
-        if(uri==null || name==null) {
+
+        if (uri == null || name == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        
+
         JsonObjectBuilder json = Json.createObjectBuilder();
         try {
             Individual indexedTrack = createIndexedTrack(uri, name);
-            
+
             // Build the response object
             json.add("uri", indexedTrack.getURI());
             json.add("status", "ok");
-        }
-        catch(NoSuchElementException | NullPointerException ex) {
+        } catch (NoSuchElementException | NullPointerException ex) {
             json.add("status", "ko")
                     .add("message", ex.getMessage());
         }
-        
+
         // Send response
         response.setContentType("application/json");
-        try(PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             out.println(json.build().toString());
         }
-            
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -108,47 +123,70 @@ public class TrackServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Handles track creation.";
     }// </editor-fold>
 
+    /**
+     * Creates a new <code>EditingTrack</code> in the triple store.
+     *
+     * This method will also create the associated <code>ESOStructure</code> and
+     * link all the different entities.
+     *
+     * @param uri The <code>Film</code>'s URI
+     * @param name The URN to use for the new <code>Track</code>
+     *
+     * @return The created {@link Individual}
+     *
+     * @throws NoSuchElementException When the <code>Film</code> could not be
+     * found.
+     */
     private Individual createIndexedTrack(String uri, String name) throws NoSuchElementException {
         String NS = TDBManager.DATAMODEL_NS;
 
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-        
+
         Individual film = model.getIndividual(uri);
-        if(film == null) {
+        if (film == null) {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
-        
-        String trackUri = NS+getNextName(model, name);
-        OntClass indexedTrackClass = model.getOntClass(NS+"EditingTrack");
+
+        String trackUri = NS + getNextName(model, name);
+        OntClass indexedTrackClass = model.getOntClass(NS + "EditingTrack");
         Individual track = indexedTrackClass.createIndividual(trackUri);
-        Property usesProperty = model.getProperty(NS+"uses");
+        Property usesProperty = model.getProperty(NS + "uses");
         film.addProperty(usesProperty, track);
-        OntClass esoStructureClass = model.getOntClass(NS+"ESOStructure");
-        Individual structure = esoStructureClass.createIndividual(trackUri+"_ESO");
-        Property isDefinedByStructure= model.getProperty(NS + "isDefinedByStructure");
+        OntClass esoStructureClass = model.getOntClass(NS + "ESOStructure");
+        Individual structure = esoStructureClass.createIndividual(trackUri + "_ESO");
+        Property isDefinedByStructure = model.getProperty(NS + "isDefinedByStructure");
         track.addProperty(isDefinedByStructure, structure);
         dataset.commit();
-        
+
         return track;
     }
 
+    /**
+     * Finds a suitable URN for the Track.
+     *
+     * This method will add a numeric suffix to the original URN if necessary.
+     *
+     * @param model The {@link OntModel} to use
+     * @param name The URN to be looked up
+     * @return A unique URN
+     */
     private String getNextName(OntModel model, String name) {
         String NS = TDBManager.DATAMODEL_NS;
-        Individual individual = model.getIndividual(NS+name);
-        if(individual == null) {
+        Individual individual = model.getIndividual(NS + name);
+        if (individual == null) {
             return name;
         }
-        int i=1;
-        while(individual != null) {
-            individual = model.getIndividual(NS+name);
+        int i = 1;
+        while (individual != null) {
+            individual = model.getIndividual(NS + name);
             i++;
         }
-        return name+i;
+        return name + i;
     }
 
 }
