@@ -59,7 +59,7 @@ public class TrackServlet extends HttpServlet {
             json.add("uri", indexedTrack.getURI());
             json.add("status", "ok");
         }
-        catch(NoSuchElementException ex) {
+        catch(NoSuchElementException | NullPointerException ex) {
             json.add("status", "ko")
                     .add("message", ex.getMessage());
         }
@@ -123,10 +123,15 @@ public class TrackServlet extends HttpServlet {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
         
+        String trackUri = NS+getNextName(model, name);
         OntClass indexedTrackClass = model.getOntClass(NS+"EditingTrack");
-        Individual track = indexedTrackClass.createIndividual(NS+getNextName(model, name));
+        Individual track = indexedTrackClass.createIndividual(trackUri);
         Property usesProperty = model.getProperty(NS+"uses");
         film.addProperty(usesProperty, track);
+        OntClass esoStructureClass = model.getOntClass(NS+"ESOStructure");
+        Individual structure = esoStructureClass.createIndividual(trackUri+"_ESO");
+        Property isDefinedByStructure= model.getProperty(NS + "isDefinedByStructure");
+        track.addProperty(isDefinedByStructure, structure);
         dataset.commit();
         
         return track;
