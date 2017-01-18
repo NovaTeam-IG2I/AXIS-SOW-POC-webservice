@@ -205,27 +205,8 @@ public class Production {
         return jsonBuilder.toJson(data, productionDataType.getType());
     }
 
-    /**
-     * Fills the model with fake data: for test purpose, can be deleted.
-     */
-    public static void fillModelWithFakeData(String uri) {
-        RegisterManager manager = new RegisterManager();
-        Map<String,String> map = new HashMap<>();
-        map.put(DIRECTOR_PROPERTY, "Ava DuVernay");
-        map.put(DURATION_PROPERTY, "128");
-        map.put(PRODUCTOR_PROPERTY, "Cloud Eight Films");
-        map.put(RELEASE_PROPERTY, "2015-01-09");
-        map.put(THEME_PROPERTY, "Historical drama");
-        map.put(TITLE_PROPERTY, "Selma");
-
-        boolean ari = manager.addRegisterInstance("selma", TYPE_OBJECT, map);
-
-        System.out.println(ari);
-    }
-
     public static void main(String[] args) throws IOException {
         String filmID = R.DATAMODEL_NS + "selma";
-        Production.fillModelWithFakeData(filmID);
         Production production = new Production(filmID);
         System.out.println(production.exportJSONFormat());
     }
