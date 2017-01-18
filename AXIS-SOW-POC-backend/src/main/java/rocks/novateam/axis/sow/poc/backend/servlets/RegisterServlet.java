@@ -57,7 +57,8 @@ public class RegisterServlet extends HttpServlet {
             ArrayList<String> uriFields = this.getAllFieldsFromURI(request.getRequestURI());
             switch(uriFields.get(0).toLowerCase()){
                 case "categories":
-                    out.print(this.processGetCategories());
+                    if(!request.getParameterMap().isEmpty()) out.print(this.processGetCategories(request.getParameter("classuri")));
+                    else out.print(this.processGetCategories());
                 break;
                 case "individuals":
                     out.print(this.processGetAllIndividuals());
@@ -161,6 +162,10 @@ public class RegisterServlet extends HttpServlet {
 
     private String processGetCategories(){
         return this.mGson.toJson(this.mRegisterManager.getRegisterCategories(), mCategoriesListType.getType());
+    }
+
+    private String processGetCategories(String classURI){
+        return this.mGson.toJson(this.mRegisterManager.getCategoriesRecusively(classURI), mCategoriesListType.getType());
     }
 
     private String processGetProperties(String className){
