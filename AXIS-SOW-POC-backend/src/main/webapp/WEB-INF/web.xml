@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
-        <servlet-name>importServlet</servlet-name>
-        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.importServlet</servlet-class>
+        <servlet-name>ImportServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ImportServlet</servlet-class>
     </servlet>
-    
+    <servlet>
+        <servlet-name>VideoServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.VideoServlet</servlet-class>
+    </servlet>
+
+    <!-- Structure servlet handling -->
+    <servlet>
+        <servlet-name>StructureServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.StructureServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>importServlet</servlet-name>
+        <servlet-name>StructureServlet</servlet-name>
+        <url-pattern>/structure</url-pattern>
+    </servlet-mapping>
+    <!-- End structure servlet handling -->
+
+    <servlet-mapping>
+        <servlet-name>VideoServlet</servlet-name>
+        <url-pattern>/video</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImportServlet</servlet-name>
         <url-pattern>/import</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ListServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListServlet</servlet-name>
+        <url-pattern>/list</url-pattern>
     </servlet-mapping>
 
     <!-- Production servlet handling -->
@@ -15,13 +43,44 @@
         <servlet-name>ProductionServlet</servlet-name>
         <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ProductionServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>ProductionServlet</servlet-name>
         <url-pattern>/production</url-pattern>
     </servlet-mapping>
     <!-- End production servlet handling -->
+
+    <!-- Technical servlet handling -->
+    <servlet>
+        <servlet-name>TechnicalServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.TechnicalServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TechnicalServlet</servlet-name>
+        <url-pattern>/technical</url-pattern>
+    </servlet-mapping>
+    <!-- End technical servlet handling -->
     
+    <!-- Export servlet handling -->
+    <servlet>
+        <servlet-name>ExportServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ExportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ExportServlet</servlet-name>
+        <url-pattern>/export</url-pattern>
+    </servlet-mapping>
+    <!-- End export servlet handling -->
+    
+    <!-- Track servlet handling -->
+    <servlet>
+        <servlet-name>TrackServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.TrackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TrackServlet</servlet-name>
+        <url-pattern>/track</url-pattern>
+    </servlet-mapping>
+    <!-- End track servlet handling -->
     <session-config>
         <session-timeout>
             30

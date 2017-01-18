@@ -6,17 +6,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import rocks.novateam.axis.sow.poc.backend.frameworks.Production;
+import rocks.novateam.axis.sow.poc.backend.frameworks.Technical;
 
 /**
- * This servlet handles production framework return.
+ * This servlet handles technical framework return.
  *
  * The HTTP request must have a field named <code>id</code> which contains the
- * id of the production framework.
+ * id of the technical framework.
  *
  * @author Alex Canales
  */
-public class ProductionServlet extends HttpServlet {
+public class TechnicalServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,9 +31,9 @@ public class ProductionServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            String id = request.getParameter("id");
-            Production production = new Production(id);
-            out.println(production.exportJSONFormat());
+            String uri = request.getParameter("uri");
+            Technical technical = new Technical(uri);
+            out.println(technical.toJSON());
         }
     }
 
@@ -59,7 +59,7 @@ public class ProductionServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "This servlet handles production framework return.";
+        return "This servlet handles technical framework return.";
     }// </editor-fold>
 
 }

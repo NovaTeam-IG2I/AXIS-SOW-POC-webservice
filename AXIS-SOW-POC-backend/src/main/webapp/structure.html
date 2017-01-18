@@ -6,15 +6,14 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>Import Test Page</title>
+        <title>Structure Test Page</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <h1>Import Test Page</h1>
-        <form action="/AXIS-SOW-POC-backend/import" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept="video/mp4" /><br />
-            <input type="text" name="title" placeholder="Media title" /><br />
+        <h1>Structure Test Page</h1>
+        <form action="/AXIS-SOW-POC-backend/structure" method="GET">
+            <input type="text" name="uri" placeholder="Video URI"/><br />
             <input type="submit" value="Submit" />
         </form>
     </body>
