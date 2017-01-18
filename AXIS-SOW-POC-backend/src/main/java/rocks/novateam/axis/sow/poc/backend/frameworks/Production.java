@@ -201,13 +201,13 @@ public class Production {
      *
      * @return The information in JSON.
      */
-    public String exportJSONFormat() {
+    public String toJSON() {
         return jsonBuilder.toJson(data, productionDataType.getType());
     }
 
     public static void main(String[] args) throws IOException {
         String filmID = R.DATAMODEL_NS + "selma";
         Production production = new Production(filmID);
-        System.out.println(production.exportJSONFormat());
+        System.out.println(production.toJSON());
     }
 }

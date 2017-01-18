@@ -31,9 +31,9 @@ public class ProductionServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            String id = request.getParameter("id");
-            Production production = new Production(id);
-            out.println(production.exportJSONFormat());
+            String uri = request.getParameter("uri");
+            Production production = new Production(uri);
+            out.println(production.toJSON());
         }
     }
 
