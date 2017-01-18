@@ -193,19 +193,6 @@ public class RegisterManagerTest {
     public static void main(String[] args) {
         RegisterManagerTest trm = new RegisterManagerTest();
 
-        //trm.runAllTests();
-
-        //trm.testAlexProblem();
-        trm.testAlexCode();
-
-        //trm.testAddPredicate(); - FAILED
-        //trm.testAddRegisterInstance(); - FIXED
-        //trm.testInstanceExists(); - WORKS
-        //trm.testDeleteInstance(); - WORKS
+        trm.runAllTests();
     }
-
-    // OLD DATA
-    // rm.addRegisterInstance("Martin Luther King");
-    // rm.addSubRegisterInstance("Test");
-    // rm.deleteInstance("Test");
 }
