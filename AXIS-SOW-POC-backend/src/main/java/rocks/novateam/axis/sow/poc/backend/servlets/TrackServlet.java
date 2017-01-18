@@ -35,14 +35,17 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * Track.</li>
  * </ul>
  *
- * The HTTP response will have a <code>"application/json</code> MIME type and
+ * The HTTP response will have a <code>"application/json"</code> MIME type and
  * will contain:
  * <ul>
  * <li><code>{"status": "ok", "uri": uri}</code> if the request succeeded, where
- * <code>uri</code> is the new track's URI;</li>
+ * <code>uri</code> is the new Track's URI;</li>
  * <li><code>{"status: "ko", "message": message}</code> if the request
  * failed.</li>
  * </ul>
+ *
+ * If parameters are missing from the request, the HTTP response will have a 400
+ * status code.
  *
  * @author Richard Degenne
  */
