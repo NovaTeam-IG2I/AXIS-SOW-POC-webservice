@@ -1,7 +1,9 @@
 package rocks.novateam.axis.sow.poc.backend.frameworks;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import rocks.novateam.axis.sow.poc.backend.Configuration;
@@ -9,6 +11,8 @@ import rocks.novateam.axis.sow.poc.backend.R;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.FileManager;
+
+import rocks.novateam.axis.sow.poc.backend.helpers.TechnicalData;
 import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 
 /**
@@ -21,15 +25,9 @@ import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
  * owner).
  *
  * @author Alex Canales
+ * @author Olivier Sailly
  */
 public class Technical {
-
-    /**
-     * Fake name used for testing purpose, do not use it. Should be deleted.
-     *
-     * The name has to start in lower case since it is converted in camel case.
-     */
-    public static String FAKE_NAME = "selma";
 
     /**
      * Holds the model, should be deleted when it will be possible to get the
@@ -38,39 +36,19 @@ public class Technical {
     private Model model = null;
 
     /**
-     * The entity uri of which the framework refers to.
+     * Data contained in the Technical Framework.
      */
-    private String uri = "";
+    private TechnicalData data;
 
     /**
-     * The duration of the video in minutes.
+     * Gson :JSON generator and serializer.
      */
-    private String duration = "";
+    private final Gson jsonBuilder;
 
     /**
-     * The file name.
+     * The typeToken to give to Gson.
      */
-    private String fileName = "";
-
-    /**
-     * The file size in Mega Octet.
-     */
-    private String fileSize = "";
-
-    /**
-     * Hyperlink giving more information about the file or content.
-     */
-    private String hyperlink = "";
-
-    /**
-     * The import date of the file.
-     */
-    private String importDate = "";
-
-    /**
-     * The owner or entity name who has the rights on the file.
-     */
-    private String rights = "";
+    private final TypeToken<TechnicalData> technicalDataType;
 
     // ---- Begin framework ontology property and value defintion
     /**
@@ -157,47 +135,6 @@ public class Technical {
     public static String TYPE_OBJECT = R.DATAMODEL_NS + "AudiovisualWork";
 
     /**
-     * Fills the object with fake data: for test purpose, can be deleted.
-     */
-    private void fillObjectWithFakeData() {
-        uri = R.POC_NS + "Selma";
-        fileName = "Selma.mp4";
-        fileSize = "700";
-        hyperlink = "http://www.imdb.com/title/tt1020072/";
-        rights = "Pathé";
-        duration = "128";
-        importDate = "2016-12-22";
-    }
-
-    /**
-     * Fills the model with fake data: for test purpose, can be deleted.
-     */
-    private void fillModelWithFakeData(String uri) {
-        String fileName = "Selma.mp4";
-        String fileSize = "700";
-        String hyperlink = "http://www.imdb.com/title/tt1020072/";
-        String rights = "Pathé";
-        String duration = "128";
-        String importDate = "2016-12-22";
-
-        RegisterManager manager = new RegisterManager();
-        HashMap<String, String> values = new HashMap<>();
-
-        values.put(FILE_NAME_PROPERTY, fileName);
-        values.put(FILE_SIZE_PROPERTY, fileSize);
-        values.put(HYPERLINK_PROPERTY, hyperlink);
-        values.put(RIGHTS_PROPERTY, rights);
-        values.put(DURATION_PROPERTY, duration);
-        values.put(IMPORT_DATE_PROPERTY, importDate);
-        System.out.println("Adding values:");
-        System.out.println(values);
-
-        boolean result = manager.addRegisterInstance(FAKE_NAME, TYPE_OBJECT, values);
-        if(!result)
-            System.out.println("Imposible to add technical framework");
-    }
-
-    /**
      * This class holds all informations about the technical framework. Data are
      * automatically loaded from the TDB. If no data are not found, the
      * framework holds empty information.
@@ -206,9 +143,11 @@ public class Technical {
      * data holds empty information.
      */
     public Technical(String uri) {
+        jsonBuilder = new Gson();
+        technicalDataType = new TypeToken<TechnicalData>(){};
+        data = new TechnicalData();
         if(uri == null||uri.isEmpty())
             return;
-        fillModelWithFakeData(uri);
         retrieveData(uri);
     }
 
@@ -238,20 +177,17 @@ public class Technical {
     {
         RegisterManager manager = new RegisterManager();
         Map<String, String> values = manager.getPropertiesOfAnIndividual(uri);
-
         if(values == null) {
             System.out.println("No value found");
             return;
         }
-
-        fileName = values.get(FILE_NAME_PROPERTY);
-        fileSize = values.get(FILE_SIZE_PROPERTY);
-        hyperlink = values.get(HYPERLINK_PROPERTY);
-        rights = values.get(RIGHTS_PROPERTY);
-        duration = values.get(DURATION_PROPERTY);
-        importDate = values.get(IMPORT_DATE_PROPERTY);
-        this.uri = uri;
-
+        data.fileName = values.get(FILE_NAME_PROPERTY);
+        data.fileSize = values.get(FILE_SIZE_PROPERTY);
+        data.hyperlink = values.get(HYPERLINK_PROPERTY);
+        data.rights = values.get(RIGHTS_PROPERTY);
+        data.duration = values.get(DURATION_PROPERTY);
+        data.importDate = values.get(IMPORT_DATE_PROPERTY);
+        data.uri = uri;
         System.out.println(values);
     }
 
@@ -261,24 +197,12 @@ public class Technical {
      * @return The information in JSON.
      */
     public String toJSON() {
-        // We could use Gson here - to discuss
-        // Not using a JsonObjectBuilder because of build error problems
-        // java.lang.ClassNotFoundException for javax.json.Json
-        String json = "{\n";
-        json += "\"uri\" : \"" + uri + "\",\n";
-        json += "\"fileName\" : \"" + fileName + "\",\n";
-        json += "\"fileSize\" : " + fileSize + ",\n";
-        json += "\"hyperLink\" : \"" + hyperlink + "\",\n";
-        json += "\"rights\" : \"" + rights + "\",\n";
-        json += "\"duration\" : " + duration + ",\n";
-        json += "\"importDate\" : \"" + importDate + "\"\n";
-        json += "}";
-        return json;
+        return jsonBuilder.toJson(data, technicalDataType.getType());
     }
 
     public static void main(String[] args) throws IOException {
-        String filmURI = R.DATAMODEL_NS + FAKE_NAME;
-        Technical framework = new Technical(filmURI);
-        System.out.println(framework.toJSON());
+        String filmID = R.DATAMODEL_NS + "selma";
+        Technical technical = new Technical(filmID);
+        System.out.println(technical.toJSON());
     }
 }
