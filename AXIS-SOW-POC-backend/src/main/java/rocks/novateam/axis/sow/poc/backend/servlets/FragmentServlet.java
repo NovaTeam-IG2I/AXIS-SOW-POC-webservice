@@ -61,11 +61,21 @@ public class FragmentServlet extends HttpServlet {
 
         JsonObjectBuilder json = Json.createObjectBuilder();
         try {
+            Individual fragment = null;
             if (type.equals(Type.POINT)) {
-                Individual point = createPoint(track, register, startTime);
-                json.add("uri", point.getURI());
-                json.add("status", "ok");
+                fragment = createPoint(track, register, startTime);
+            } else if (type.equals(Type.SEGMENT)) {
+                String end = request.getParameter("end");
+                if (end == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+                int endTime = Integer.valueOf(end);
+                fragment = createSegment(track, register, startTime, endTime);
             }
+
+            json.add("uri", fragment.getURI());
+            json.add("status", "ok");
         } catch (NoSuchElementException | NullPointerException ex) {
             json.add("status", "ko");
             json.add("message", ex.getMessage());
@@ -126,7 +136,7 @@ public class FragmentServlet extends HttpServlet {
 
         // Get the track and find its ESOStructure. Create it if need be.
         Individual track = model.getIndividual(trackUri);
-        if(track == null) {
+        if (track == null) {
             throw new NoSuchElementException("The requested URI could not be found.");
         }
         Individual structure = getStructure(model, track);
@@ -149,6 +159,42 @@ public class FragmentServlet extends HttpServlet {
         dataset.commit();
 
         return point;
+    }
+
+    private Individual createSegment(String trackUri, String registerUri, int start, int end) {
+        String NS = TDBManager.DATAMODEL_NS;
+
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        dataset.begin(ReadWrite.WRITE);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+
+        // Get the track and find its ESOStructure. Create it if need be.
+        Individual track = model.getIndividual(trackUri);
+        if (track == null) {
+            throw new NoSuchElementException("The requested URI could not be found.");
+        }
+        Individual structure = getStructure(model, track);
+
+        // Create the Point and its data
+        OntClass pointClass = model.getOntClass(NS + "MediaUnifiedSegment");
+        Individual segment = pointClass.createIndividual(NS + TDBManager.getUniqueURN(model, track.getLocalName() + "_Fragment"));
+        Property hasStart = model.getProperty(NS + "hasStart");
+        segment.addLiteral(hasStart, start);
+        Property hasEnd = model.getProperty(NS + "hasEnd");
+        segment.addLiteral(hasEnd, end);
+        Property expresses = model.getProperty(NS + "expresses");
+        Individual register = model.getIndividual(registerUri);
+        if (register == null) {
+            throw new NoSuchElementException("The requested URI could not be found.");
+        }
+        segment.addProperty(expresses, register);
+
+        // Link the Point to the Structure
+        linkToStructure(model, structure, segment);
+
+        dataset.commit();
+
+        return segment;
     }
 
     private Individual getStructure(OntModel model, Individual track) {
