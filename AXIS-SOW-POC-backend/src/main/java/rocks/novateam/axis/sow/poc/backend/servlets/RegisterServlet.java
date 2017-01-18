@@ -24,7 +24,7 @@ import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
  *
  * @author Olivier Sailly
  */
-@WebServlet(name = "RegisterServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/individuals/*","/register/add/*","/register/remove/instance/*"})
+@WebServlet(name = "RegisterServlet", urlPatterns = {"/register/categories/*","/register/properties/*","/register/predicates/*","/register/individuals/*","/register/add/*","/register/remove/instance/*"})
 public class RegisterServlet extends HttpServlet {
     private final RegisterManager mRegisterManager;
     private final Gson mGson;
@@ -62,6 +62,9 @@ public class RegisterServlet extends HttpServlet {
                 break;
                 case "individuals":
                     out.print(this.processGetAllIndividuals());
+                break;
+                case "predicates":
+                    out.print(this.processGetAllPredicates());
                 break;
                 case "properties":
                     if(!request.getParameterMap().isEmpty()) out.print(this.processGetProperties(request.getParameter("classuri")));
@@ -181,6 +184,10 @@ public class RegisterServlet extends HttpServlet {
 
     private String processGetAllIndividuals(){
         return this.mGson.toJson(this.mRegisterManager.getAllIndividualsLocalNames(), mStringListType.getType());
+    }
+
+    private String processGetAllPredicates(){
+        return this.mGson.toJson(this.mRegisterManager.getAllPredicatesLocalNames(), mStringListType.getType());
     }
 
     private boolean processAddRegisterInstance(String name, String classURI, String jsonProperties){

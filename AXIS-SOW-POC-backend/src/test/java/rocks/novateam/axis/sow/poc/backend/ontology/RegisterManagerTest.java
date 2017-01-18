@@ -40,6 +40,7 @@ public class RegisterManagerTest {
         testGetRegisterCategories();
         testGetCategoriesRecusivelyByClassName();
         testGetAllIndividualsLocalNames();
+        testGetAllPredicatesLocalNames();
 
         testAddRegisterInstanceByClassName();
         testInstanceExistsByInstanceName();
@@ -78,6 +79,13 @@ public class RegisterManagerTest {
     public void testGetAllIndividualsLocalNames() {
         System.out.println("\nExecuting: rm.getAllIndividualsLocalNames();");
         ArrayList<String> ars = rm.getAllIndividualsLocalNames();
+        for(String s : ars) System.out.println(s);
+        System.out.println("Done.");
+    }
+
+    public void testGetAllPredicatesLocalNames() {
+        System.out.println("\nExecuting: rm.getAllPredicatesLocalNames();");
+        ArrayList<String> ars = rm.getAllPredicatesLocalNames();
         for(String s : ars) System.out.println(s);
         System.out.println("Done.");
     }
@@ -194,5 +202,7 @@ public class RegisterManagerTest {
         RegisterManagerTest trm = new RegisterManagerTest();
 
         trm.runAllTests();
+        /*trm.testGetAllPredicatesLocalNames();
+        trm.testAddRegisterInstanceByClassName();*/
     }
 }
