@@ -5,8 +5,6 @@
  */
 package rocks.novateam.axis.sow.poc.backend.helpers;
 
-import com.google.gson.Gson;
-
 /**
  *
  * @author Olivier Sailly
