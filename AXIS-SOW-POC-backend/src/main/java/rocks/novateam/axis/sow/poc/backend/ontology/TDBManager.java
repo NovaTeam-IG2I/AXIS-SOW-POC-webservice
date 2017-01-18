@@ -79,7 +79,8 @@ public class TDBManager {
      * @see TDBManager#getInstance()
      */
     private TDBManager() {
-        dataset = TDBFactory.createDataset(Configuration.getInstance().getTdbFolder());
+        Configuration config = Configuration.getInstance();
+        dataset = TDBFactory.createDataset(config.getTdbFolder());
         System.out.println("Created a TDB dataset at: "+new File(Configuration.getInstance().getTdbFolder()).getAbsolutePath());
 
         // If the TDB has never been set up, do it.
@@ -146,7 +147,7 @@ public class TDBManager {
         return dataset;
     }
 
-    private void exportOwl(OutputStream out) {
+    public void exportOwl(OutputStream out) {
         dataset.begin(ReadWrite.READ);
         // Get model inside the transaction
         Model model = dataset.getDefaultModel();
@@ -159,7 +160,7 @@ public class TDBManager {
         TDBManager tdbm = TDBManager.getInstance();
 
         // Uncomment the following line to set up a new TDB, comment it to work with an existing one.
-        // tdbm.setUp();
+        //tdbm.setUp();
         Dataset ds = tdbm.getDataset();
         ds.begin(ReadWrite.READ);
         Model model = ds.getDefaultModel();

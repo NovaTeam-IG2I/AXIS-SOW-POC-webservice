@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import rocks.novateam.axis.sow.poc.backend.R;
 import rocks.novateam.axis.sow.poc.backend.helpers.Category;
 import rocks.novateam.axis.sow.poc.backend.helpers.InstanceExistenceState;
 
@@ -130,11 +131,72 @@ public class RegisterManagerTest {
         InstanceExistenceState ies = rm.instanceExistsByInstanceName("testAvecMap"); // build uri then calls instanceExists
         System.out.println("Done.\nrm.instanceExists(\"testAvecMap\"); returned "+ies.toString());
     }
+    
+    public void testAlexProblem() {
+        Map<String,String> map = new HashMap<>();
+        
+        map.put("prop1", "valueprop1");
+        map.put("prop2", "valueprop2");
+        map.put(R.DATAMODEL_NS + "fileName", "Selma.mp4");
+        map.put("http://www.cidoc-crm.org/cidoc-crm/P75i_is_possessed_by", "Pathé");
+        
+        System.out.println("\nMap<String,String> map = new HashMap<>();\n" +
+        "map.put(\"prop1\", \"valueprop1\");\n" +
+        "map.put(\"prop2\", \"valueprop2\");\n" +
+        "map.put(R.DATAMODEL_NS + \"fileName\", \"Selma.mp4\");\n" +
+        "map.put(R.DATAMODEL_NS + \"P75i_is_possessed_by\", \"Pathé\");");
+        
+        System.out.println("mGson.toJson(map, mStringStringMapType.getType()) :\n"+mGson.toJson(map, mStringStringMapType.getType()));
+        
+        String TYPE_OBJECT = R.DATAMODEL_NS + "AudiovisualWork";
+        
+        System.out.println("\nExecuting: rm.addRegisterInstance(\"selma\", "+TYPE_OBJECT+", map);");
+        boolean b = rm.addRegisterInstance("selma", TYPE_OBJECT, map);
+        System.out.println("Done.\nrm.addRegisterInstance(\"selma\", "+TYPE_OBJECT+", map); returned "+(b==true?"true":"false"));
+        
+        System.out.println("\nExecuting: rm.getPropertiesOfAnIndividualByIndividualName(\"selma\");");
+        Map<String, String> result = rm.getPropertiesOfAnIndividualByIndividualName("selma");
+        System.out.println("Done.\nm.getPropertiesOfAnIndividualByIndividualName(\"selma\"); returned result");
+        System.out.println("mGson.toJson(result, mStringStringMapType.getType()) :\n"+mGson.toJson(result, mStringStringMapType.getType()));
+    }
+
+    public void testAlexCode(){
+        String FAKE_NAME = "selma";
+        String URI = R.DATAMODEL_NS + FAKE_NAME;
+        String TYPE_OBJECT = R.DATAMODEL_NS + "AudiovisualWork";
+        String FILE_NAME_PROPERTY = "http://titan.be/axis-csrm/datamodel/ontology/0.4#fileName";
+        String RIGHTS_PROPERTY = "http://www.cidoc-crm.org/cidoc-crm/P75i_is_possessed_by";
+        HashMap<String, String> values = new HashMap<>();
+
+        if(rm.instanceExists(URI) == InstanceExistenceState.EXISTS) {
+            rm.deleteInstance(URI);
+            System.out.println("Deleting: " + URI);
+        }
+
+        values.put(FILE_NAME_PROPERTY, "Selma.mp4");
+        values.put(RIGHTS_PROPERTY, "Pathé");
+        System.out.println("Adding values:");
+        System.out.println(values);
+
+        boolean b = rm.addRegisterInstance(FAKE_NAME, TYPE_OBJECT, values);
+        if(!b)
+            System.out.println("Imposible to add technical framework");
+
+        System.out.println("\nExecuting: rm.getPropertiesOfAnIndividualByIndividualName(\"selma\");");
+        Map<String, String> result = rm.getPropertiesOfAnIndividualByIndividualName("selma");
+        System.out.println("Done.\nm.getPropertiesOfAnIndividualByIndividualName(\"selma\"); returned result");
+        System.out.println("mGson.toJson(result, mStringStringMapType.getType()) :\n"+
+                mGson.toJson(result, mStringStringMapType.getType()).replaceAll("\",\"", "\",\n\""));
+
+    }
 
     public static void main(String[] args) {
         RegisterManagerTest trm = new RegisterManagerTest();
 
-        trm.runAllTests();
+        //trm.runAllTests();
+
+        //trm.testAlexProblem();
+        trm.testAlexCode();
 
         //trm.testAddPredicate(); - FAILED
         //trm.testAddRegisterInstance(); - FIXED
