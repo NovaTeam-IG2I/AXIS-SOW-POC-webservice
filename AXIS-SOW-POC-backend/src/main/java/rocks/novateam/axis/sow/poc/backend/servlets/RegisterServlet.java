@@ -57,14 +57,18 @@ public class RegisterServlet extends HttpServlet {
             ArrayList<String> uriFields = this.getAllFieldsFromURI(request.getRequestURI());
             switch(uriFields.get(0).toLowerCase()){
                 case "categories":
-                    out.print(this.processGetCategories());
+                    if(!request.getParameterMap().isEmpty()) out.print(this.processGetCategories(request.getParameter("classuri")));
+                    else out.print(this.processGetCategories());
                 break;
                 case "individuals":
                     out.print(this.processGetAllIndividuals());
                 break;
                 case "properties":
-                    if(uriFields.size() > 1) out.print(this.processGetProperties(uriFields.get(1)));
-                    else response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                    if(!request.getParameterMap().isEmpty()) out.print(this.processGetCategories(request.getParameter("classuri")));
+                    else {
+                        if(uriFields.size() > 1) out.print(this.processGetPropertiesByName(uriFields.get(1)));
+                        else response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                    }
                 break;
                 case "add":
                     if(uriFields.size() > 1) {
@@ -163,12 +167,20 @@ public class RegisterServlet extends HttpServlet {
         return this.mGson.toJson(this.mRegisterManager.getRegisterCategories(), mCategoriesListType.getType());
     }
 
-    private String processGetProperties(String className){
+    private String processGetCategories(String classURI){
+        return this.mGson.toJson(this.mRegisterManager.getCategoriesRecusively(classURI), mCategoriesListType.getType());
+    }
+    
+    private String processGetProperties(String classURI){
+        return this.mGson.toJson(this.mRegisterManager.getClassPropertiesLocalNames(classURI), mStringListType.getType());
+    }
+
+    private String processGetPropertiesByName(String className){
         return this.mGson.toJson(this.mRegisterManager.getClassPropertiesLocalNamesByClassName(className), mStringListType.getType());
     }
 
     private String processGetAllIndividuals(){
-        return this.mGson.toJson(this.mRegisterManager.getAllIndividuals(), mStringListType.getType());
+        return this.mGson.toJson(this.mRegisterManager.getAllIndividualsLocalNames(), mStringListType.getType());
     }
 
     private boolean processAddRegisterInstance(String name, String classURI, String jsonProperties){

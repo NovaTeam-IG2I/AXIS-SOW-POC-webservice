@@ -1,18 +1,19 @@
 package rocks.novateam.axis.sow.poc.backend.frameworks;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.FileManager;
 
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.R;
+import rocks.novateam.axis.sow.poc.backend.helpers.ProductionData;
+import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 
 /**
  * This class holds all informations about the production framework.
@@ -34,42 +35,21 @@ public class Production {
     private Model model = null;
 
     // ---- Begin framework field definition
-    /**
-     * The entity id of which the framework refers to.
-     */
-    private String id = "";
 
     /**
-     * The work director's name.
+     * Data contained in the Technical Framework.
      */
-    private String director = "";
+    private ProductionData data;
 
     /**
-     * The work duration in minutes.
+     * Gson :JSON generator and serializer.
      */
-    private String duration = "";
+    private final Gson jsonBuilder;
 
     /**
-     * The work productor's name, can be a society.
+     * The typeToken to give to Gson.
      */
-    private String productor = "";
-
-    /**
-     * The year of the work release.
-     */
-    private String release = "";
-
-    /**
-     * The work theme.
-     */
-    private String theme = "";
-
-    /**
-     * The work original title.
-     */
-    private String title = "";
-
-    // private String nationality = "";  // No reference in the ontology
+    private final TypeToken<ProductionData> productionDataType;
 
     // ---- End framework field definition
 
@@ -162,54 +142,20 @@ public class Production {
     // ---- End framework ontology property and value defintion
 
     /**
-     * Fills the object with fake data: for test purpose, can be deleted.
-     */
-    private void fillObjectWithFakeData() {
-        id = R.POC_NS + "Selma";
-        title = "Selma";
-        theme = "Historical drama";
-        release = "2015-01-09";
-        duration = "128";
-        // nationality = "United States";
-        director = "Ava DuVernay";
-        productor = " Cloud Eight Films";
-    }
-
-    /**
-     * Fills the model with fake data: for test purpose, can be deleted.
-     */
-    private void fillModelWithFakeData(String id) {
-        String director = "Ava DuVernay";
-        String duration = "128";
-        String productor = " Cloud Eight Films";
-        String release = "2015-01-09";
-        String theme = "Historical drama";
-        String title = "Selma";
-
-        Model model = getModel();
-        Resource resource = model.createResource(id);
-        resource.addProperty(model.createProperty(TYPE_PROPERTY), TYPE_OBJECT);
-        resource.addProperty(model.createProperty(DIRECTOR_PROPERTY), director);
-        resource.addProperty(model.createProperty(DURATION_PROPERTY), duration);
-        resource.addProperty(model.createProperty(PRODUCTOR_PROPERTY), productor);
-        resource.addProperty(model.createProperty(RELEASE_PROPERTY), release);
-        resource.addProperty(model.createProperty(THEME_PROPERTY), theme);
-        resource.addProperty(model.createProperty(TITLE_PROPERTY), title);
-    }
-
-    /**
-     * This class holds all informations about the production framework. Data
-     * are automatically loaded from the TDB. If no data are not found, the
+     * This class holds all informations about the technical framework. Data are
+     * automatically loaded from the TDB. If no data are not found, the
      * framework holds empty information.
      *
-     * @param id The entity id of which the framework refers to. If null, the
+     * @param uri The entity uri of which the framework refers to. If null, the
      * data holds empty information.
      */
-    public Production(String id) {
-        if(id == null)
+    public Production(String uri) {
+        jsonBuilder = new Gson();
+        productionDataType = new TypeToken<ProductionData>(){};
+        data = new ProductionData();
+        if(uri == null||uri.isEmpty())
             return;
-        fillModelWithFakeData(id);
-        retrieveData(id);
+        retrieveData(uri);
     }
 
     /**
@@ -226,49 +172,28 @@ public class Production {
         }
         return model;
     }
+
     /**
-     * Retrieves all the production framework data.
+     * Retrieves all the technical framework data.
      *
-     * @param id The entity id the production is associated with.
+     * @param uri The entity uri the framewok is associated with.
      */
-    private void retrieveData(String id)
+    private void retrieveData(String uri)
     {
-        String DIRECTOR_SELECT = "director";
-        String DURATION_SELECT = "duration";
-        String PRODUCTOR_SELECT = "productor";
-        String RELEASE_SELECT = "release";
-        String THEME_SELECT = "theme";
-        String TITLE_SELECT = "title";
-
-        String queryString = R.PREFIX + "SELECT " +
-                "?" + DIRECTOR_SELECT + " ?" + DURATION_SELECT + " " +
-                "?" + PRODUCTOR_SELECT + " ?" + RELEASE_SELECT + " " +
-                "?" + THEME_SELECT + " ?" + TITLE_SELECT + " " +
-                "WHERE \n{\n" +
-                "<" + id + "> <" + DIRECTOR_PROPERTY + "> ?" + DIRECTOR_SELECT + ".\n" +
-                "<" + id + "> <" + DURATION_PROPERTY + "> ?" + DURATION_SELECT + ".\n" +
-                "<" + id + "> <" + PRODUCTOR_PROPERTY + "> ?" + PRODUCTOR_SELECT + ".\n" +
-                "<" + id + "> <" + RELEASE_PROPERTY + "> ?" + RELEASE_SELECT + ".\n" +
-                "<" + id + "> <" + THEME_PROPERTY + "> ?" + THEME_SELECT + ".\n" +
-                "<" + id + "> <" + TITLE_PROPERTY + "> ?" + TITLE_SELECT + ".\n" +
-                "}";
-
-        Query query = QueryFactory.create(queryString);
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, getModel())) {
-            ResultSet results = qexec.execSelect();
-            while ( results.hasNext() ) {
-                QuerySolution solution = results.nextSolution();
-
-                // Should maybe use Literal
-                director = solution.getLiteral(DIRECTOR_SELECT).toString();
-                duration = solution.getLiteral(DURATION_SELECT).toString();
-                productor = solution.getLiteral(PRODUCTOR_SELECT).toString();
-                release = solution.getLiteral(RELEASE_SELECT).toString();
-                theme = solution.getLiteral(THEME_SELECT).toString();
-                title = solution.getLiteral(TITLE_SELECT).toString();
-            }
+        RegisterManager manager = new RegisterManager();
+        Map<String, String> values = manager.getPropertiesOfAnIndividual(uri);
+        if(values == null) {
+            System.out.println("No value found");
+            return;
         }
-        this.id = id;
+        data.director = values.get(DIRECTOR_PROPERTY);
+        data.productor = values.get(PRODUCTOR_PROPERTY);
+        data.title = values.get(TITLE_PROPERTY);
+        data.theme = values.get(THEME_PROPERTY);
+        data.release = values.get(RELEASE_PROPERTY);
+        data.duration = values.get(DURATION_PROPERTY);
+        data.uri = uri;
+        System.out.println(values);
     }
 
     /**
@@ -276,25 +201,13 @@ public class Production {
      *
      * @return The information in JSON.
      */
-    public String exportJSONFormat() {
-        // Not using a JsonObjectBuilder because of build error problems
-        // java.lang.ClassNotFoundException for javax.json.Json
-        String json = "{\n";
-        json += "\"id\" : \"" + id + "\",\n";
-        json += "\"director\" : \"" + director + "\",\n";
-        json += "\"duration\" : \"" + duration + "\",\n";
-        json += "\"productor\" : \"" + productor + "\"\n";
-        json += "\"release\" : \"" + release + "\",\n";
-        json += "\"theme\" : \"" + theme + "\",\n";
-        json += "\"title\" : \"" + title + "\",\n";
-        // json += "\"nationality\" : \"" + nationality + "\",\n";
-        json += "}";
-        return json;
+    public String toJSON() {
+        return jsonBuilder.toJson(data, productionDataType.getType());
     }
 
     public static void main(String[] args) throws IOException {
-        String filmID = R.POC_NS + "Selma";
+        String filmID = R.DATAMODEL_NS + "selma";
         Production production = new Production(filmID);
-        System.out.println(production.exportJSONFormat());
+        System.out.println(production.toJSON());
     }
 }
