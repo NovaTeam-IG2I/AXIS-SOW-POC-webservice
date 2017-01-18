@@ -14,10 +14,12 @@ import java.util.ArrayList;
 public class Category {
     private String label;
     private ArrayList<Category> subCategories;
+    private ArrayList<String> instancesNames;
 
     public Category() {
         this.label = "";
         this.subCategories = new ArrayList<>();
+        this.instancesNames = new ArrayList<>();
     }
     
     public Category(String label) {
@@ -43,6 +45,10 @@ public class Category {
         return subCategories;
     }
 
+    public ArrayList<String> getInstancesNames() {
+        return instancesNames;
+    }
+
     public void setLabel(String label) {
         this.label = label;
     }
@@ -64,9 +70,21 @@ public class Category {
         this.subCategories.addAll(alc);
     }
 
+    public void setInstancesNames(ArrayList<String> instancesNames) {
+        this.instancesNames = instancesNames;
+    }
+
+    public void addInstanceName(String name){
+        this.instancesNames.add(name);
+    }
+
+    public void addInstancesNames(ArrayList<String> als){
+        this.instancesNames.addAll(als);
+    }
+
     @Override
     public String toString() {
-        return "Category{" + "label=" + label + ", subClass=" + subCategories + '}';
+        return "Category{" + "label=" + label + ", subClass=" + subCategories + ", instances=" + instancesNames + '}';
     }
     
     public String toTree() {

@@ -95,8 +95,8 @@ public class RegisterManager {
     /**
      * Checks if the Instance already exists, then if not, checks if the class
      * exists, and add the new Instance and its AFP. The given name is converted
-     * to a camelCase syntax string.
-     * If the instance already exists, the method adds the Map<String, String>
+     * to a camelCase syntax string. If the instance already exists, the method
+     * adds the Map<String, String>
      * properties to the existing instance
      *
      * @param name The name of the Instance to add
@@ -118,7 +118,7 @@ public class RegisterManager {
             return false;
         }
         Individual mIndividual;
-        if(!(ies == InstanceExistenceState.EXISTS)){
+        if (!(ies == InstanceExistenceState.EXISTS)) {
             Individual mAFP = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
             mIndividual = mOntClass.createIndividual(NS + name);
             mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
@@ -252,6 +252,11 @@ public class RegisterManager {
      */
     private ArrayList<Category> getCategoriesRecusively(ArrayList<Category> categories, OntClass currentOntClass) {
         Category c = new Category(currentOntClass.getLocalName());
+        ExtendedIterator<? extends OntResource> currentOntClassInstances = currentOntClass.listInstances();
+        while (currentOntClassInstances.hasNext()) {
+            OntResource instance = currentOntClassInstances.next();
+            if(instance != null) c.addInstanceName(instance.getLocalName());
+        }
         if (currentOntClass.hasSubClass()) {
             ExtendedIterator<OntClass> iter = currentOntClass.listSubClasses();
             while (iter.hasNext()) {
@@ -377,6 +382,48 @@ public class RegisterManager {
      */
     public ArrayList<String> getClassPropertiesLocalNamesByClassName(String className) {
         return getClassPropertiesLocalNames(NS + className);
+    }
+
+    /**
+     * Get all predicates names from the ontology model.
+     *
+     * @return An ArrayList<String> containing all predicates local names which
+     * are not DatatypeProperties.
+     */
+    public ArrayList<String> getAllPredicatesLocalNames() {
+        ArrayList<String> properties = new ArrayList<>();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
+        mTDBHelper.finish();
+        OntModel model = mTDBHelper.getOntModel();
+        ExtendedIterator<OntProperty> exItr = model.listAllOntProperties();
+        while (exItr.hasNext()) {
+            OntProperty predicate = exItr.next();
+            if (!predicate.isDatatypeProperty()) {
+                properties.add(predicate.getLocalName());
+            }
+        }
+        return properties;
+    }
+
+    /**
+     * Get all predicates URI from the ontology model.
+     *
+     * @return An ArrayList<String> containing all predicates URI which are not
+     * DatatypeProperties.
+     */
+    public ArrayList<String> getAllPredicatesURI() {
+        ArrayList<String> properties = new ArrayList<>();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
+        mTDBHelper.finish();
+        OntModel model = mTDBHelper.getOntModel();
+        ExtendedIterator<OntProperty> exItr = model.listAllOntProperties();
+        while (exItr.hasNext()) {
+            OntProperty predicate = exItr.next();
+            if (!predicate.isDatatypeProperty()) {
+                properties.add(predicate.getURI());
+            }
+        }
+        return properties;
     }
 
     /**
