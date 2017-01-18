@@ -213,7 +213,7 @@ public class Technical {
      * data holds empty information.
      */
     public Technical(String uri) {
-        if(uri == null)
+        if(uri == null||uri.isEmpty())
             return;
         fillModelWithFakeData(uri);
         retrieveData(uri);
@@ -268,6 +268,7 @@ public class Technical {
      * @return The information in JSON.
      */
     public String toJSON() {
+        // We could use Gson here - to discuss
         // Not using a JsonObjectBuilder because of build error problems
         // java.lang.ClassNotFoundException for javax.json.Json
         String json = "{\n";
