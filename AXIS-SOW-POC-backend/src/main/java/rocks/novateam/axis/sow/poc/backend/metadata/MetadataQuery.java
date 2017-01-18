@@ -16,7 +16,10 @@ import rocks.novateam.axis.sow.poc.backend.R;
 public class MetadataQuery {
 
     /**
-     * https://jena.apache.org/tutorials/rdf_api.html
+     * For more informations about XMP structure, see Adobe XMP Specifications
+     * https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/XMPSpecificationPart1.pdf
+     * https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/XMPSpecificationPart2.pdf
+     * https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/XMPSpecificationPart3.pdf
      */
     private final Model metadata = ModelFactory.createDefaultModel();
 

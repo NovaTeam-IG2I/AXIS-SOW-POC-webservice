@@ -22,6 +22,12 @@ import static rocks.novateam.axis.sow.poc.backend.helpers.ProcessHandler.startPr
 
 public class MetadataHandler {
 
+    /**
+     * For more informations about XMP structure, see Adobe XMP Specifications
+     * https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/XMPSpecificationPart1.pdf
+     * https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/XMPSpecificationPart2.pdf
+     * https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/XMPSpecificationPart3.pdf
+     */
     private static final String EXIF_TOOL_PATH = Configuration.getInstance().getExiftoolPath();
     private static final String XMP_FILE_EXTENSION = ".xmp";
     private static final String RDF_FILE_EXTENSION = ".rdf";
