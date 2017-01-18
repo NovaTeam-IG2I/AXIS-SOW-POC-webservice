@@ -96,13 +96,14 @@ public class RegisterManager {
      * Checks if the Instance already exists, then if not, checks if the class
      * exists, and add the new Instance and its AFP. The given name is converted
      * to a camelCase syntax string.
+     * If the instance already exists, the method adds the Map<String, String>
+     * properties to the existing instance
      *
      * @param name The name of the Instance to add
      * @param classURI The URI of its class
      * @param properties The properties of the Instance to add: keys are
      * properties URIs and values are objects.
-     * @return true if the Instance was added successfully or already exists,
-     * false otherwise
+     * @return true if the Instance was added successfully, false otherwise
      */
     public boolean addRegisterInstance(String name, String classURI, Map<String, String> properties) {
         String label = name;
