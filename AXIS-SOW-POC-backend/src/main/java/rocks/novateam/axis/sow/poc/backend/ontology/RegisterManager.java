@@ -96,21 +96,20 @@ public class RegisterManager {
      * Checks if the Instance already exists, then if not, checks if the class
      * exists, and add the new Instance and its AFP. The given name is converted
      * to a camelCase syntax string.
+     * If the instance already exists, the method adds the Map<String, String>
+     * properties to the existing instance
      *
      * @param name The name of the Instance to add
      * @param classURI The URI of its class
      * @param properties The properties of the Instance to add: keys are
      * properties URIs and values are objects.
-     * @return true if the Instance was added successfully or already exists,
-     * false otherwise
+     * @return true if the Instance was added successfully, false otherwise
      */
     public boolean addRegisterInstance(String name, String classURI, Map<String, String> properties) {
         String label = name;
         name = CamelCaseConverter.convertToCamelCase(name);
         //if this instance already exist
-        if (instanceExistsByInstanceName(name) == InstanceExistenceState.EXISTS) {
-            return true; // This ind already exists
-        }
+        InstanceExistenceState ies = instanceExistsByInstanceName(name);
         TDBHelper mTDBHelper = new TDBHelper(ReadWrite.WRITE);
         OntModel model = mTDBHelper.getOntModel();
         OntClass mOntClass = model.getOntClass(classURI);
@@ -118,16 +117,20 @@ public class RegisterManager {
             mTDBHelper.finish();
             return false;
         }
-
-        Individual mAFP = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
-        Individual mIndividual = mOntClass.createIndividual(NS + name);
+        Individual mIndividual;
+        if(!(ies == InstanceExistenceState.EXISTS)){
+            Individual mAFP = model.getOntClass(NS + "AFP").createIndividual(NS + name + "_AFP");
+            mIndividual = mOntClass.createIndividual(NS + name);
+            mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
+        } else {
+            mIndividual = model.getIndividual(NS + name);
+        }
         mIndividual.addLabel(label, "EN");
         for (Map.Entry<String, String> currentProperty : properties.entrySet()) {
             Property property = model.getProperty(currentProperty.getKey());
             Literal value = ResourceFactory.createStringLiteral(currentProperty.getValue());
             mIndividual.addLiteral(property, value);
         }
-        mIndividual.addProperty(model.getProperty(NS + "isDeclaredBy"), mAFP);
         mTDBHelper.finish();
 
         return (instanceExistsByInstanceName(name) == InstanceExistenceState.EXISTS); //test if it has been created
