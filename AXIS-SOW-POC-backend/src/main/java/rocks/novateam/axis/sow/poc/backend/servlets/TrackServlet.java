@@ -35,14 +35,17 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * Track.</li>
  * </ul>
  *
- * The HTTP response will have a <code>"application/json</code> MIME type and
+ * The HTTP response will have a <code>"application/json"</code> MIME type and
  * will contain:
  * <ul>
  * <li><code>{"status": "ok", "uri": uri}</code> if the request succeeded, where
- * <code>uri</code> is the new track's URI;</li>
+ * <code>uri</code> is the new Track's URI;</li>
  * <li><code>{"status: "ko", "message": message}</code> if the request
  * failed.</li>
  * </ul>
+ *
+ * If parameters are missing from the request, the HTTP response will have a 400
+ * status code.
  *
  * @author Richard Degenne
  */
@@ -152,7 +155,7 @@ public class TrackServlet extends HttpServlet {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
 
-        String trackUri = NS + getNextName(model, name);
+        String trackUri = NS + TDBManager.getUniqueURN(model, name);
         OntClass indexedTrackClass = model.getOntClass(NS + "EditingTrack");
         Individual track = indexedTrackClass.createIndividual(trackUri);
         Property usesProperty = model.getProperty(NS + "uses");
@@ -164,29 +167,6 @@ public class TrackServlet extends HttpServlet {
         dataset.commit();
 
         return track;
-    }
-
-    /**
-     * Finds a suitable URN for the Track.
-     *
-     * This method will add a numeric suffix to the original URN if necessary.
-     *
-     * @param model The {@link OntModel} to use
-     * @param name The URN to be looked up
-     * @return A unique URN
-     */
-    private String getNextName(OntModel model, String name) {
-        String NS = TDBManager.DATAMODEL_NS;
-        Individual individual = model.getIndividual(NS + name);
-        if (individual == null) {
-            return name;
-        }
-        int i = 1;
-        while (individual != null) {
-            individual = model.getIndividual(NS + name);
-            i++;
-        }
-        return name + i;
     }
 
 }
