@@ -64,7 +64,7 @@ public class RegisterServlet extends HttpServlet {
                     out.print(this.processGetAllIndividuals());
                 break;
                 case "properties":
-                    if(!request.getParameterMap().isEmpty()) out.print(this.processGetCategories(request.getParameter("classuri")));
+                    if(!request.getParameterMap().isEmpty()) out.print(this.processGetProperties(request.getParameter("classuri")));
                     else {
                         if(uriFields.size() > 1) out.print(this.processGetPropertiesByName(uriFields.get(1)));
                         else response.sendError(HttpServletResponse.SC_BAD_REQUEST);
