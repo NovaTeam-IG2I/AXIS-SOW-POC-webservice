@@ -4,8 +4,8 @@ import java.io.File;
 
 public class TestMetadataQuery {
 
-    private static final String MP4_FILE_PATH = System.getProperty("user.home") + "/Desktop/video.mp4";
-    private static final String RDF_FILE_PATH = System.getProperty("user.home") + "/Desktop/video.rdf";
+    private static final String MP4_FILE_PATH = System.getProperty("user.home") + "/Desktop/selma.mp4";
+    private static final String RDF_FILE_PATH = System.getProperty("user.home") + "/Desktop/selma.rdf";
 
     public static void main(String[] args) {
         /**
