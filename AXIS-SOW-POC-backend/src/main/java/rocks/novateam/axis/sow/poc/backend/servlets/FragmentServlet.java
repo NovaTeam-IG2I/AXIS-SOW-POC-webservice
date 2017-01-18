@@ -27,29 +27,34 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
  * Handles <code>Fragment</code> creation.
- * 
+ *
  * The HTTP request must contain:
  * <ul>
  * <li>A <code>track</code> field containing a Track's URI;</li>
  * <li>A <code>register</code> field containing a Register's URI;</li>
- * <li>A <code>type</code> field containing either <code>"point"</code> or <code>"segment</code>;</code>
+ * <li>A <code>type</code> field containing either <code>"point"</code> or
+ * <code>"segment"</code>;</li>
  * </ul>
- * 
- * <strong>If <code>type</code> is <code>"Point"</code></strong>, the request must contain a <code>start</code> field containing the Point's timestamp.
- * 
- * <strong>If <code>type</code> is <code>"Segment"</code></strong>, the request must contain <code>start</code> and <code>end</code> fields containing the Segment's timestamps.
- * 
- * The HTTP response will have a <code>"application/json</code> MIME type and
+ *
+ * <p><strong>If <code>type</code> is <code>"Point"</code></strong>, the request
+ * must contain a <code>start</code> field containing the Point's timestamp.</p>
+ *
+ * <p><strong>If <code>type</code> is <code>"Segment"</code></strong>, the request
+ * must contain <code>start</code> and <code>end</code> fields containing the
+ * Segment's timestamps.</p>
+ *
+ * <p>The HTTP response will have a <code>"application/json"</code> MIME type and
  * will contain:
  * <ul>
  * <li><code>{"status": "ok", "uri": uri}</code> if the request succeeded, where
  * <code>uri</code> is the new Fragment's URI;</li>
  * <li><code>{"status: "ko", "message": message}</code> if the request
  * failed.</li>
- * </ul>
- * 
- * If parameters are missing from the request, the HTTP response will have a 400 status code.
- * 
+ * </ul></p>
+ *
+ * If parameters are missing from the request, the HTTP response will have a 400
+ * status code.
+ *
  * @author Richard Degenne
  */
 public class FragmentServlet extends HttpServlet {
@@ -151,13 +156,16 @@ public class FragmentServlet extends HttpServlet {
     }// </editor-fold>  
 
     /**
-     * Creates a <code>Point</code> on a given <code>Track</code> expressing a given <code>Register</code>.
-     * 
-     * @param trackUri  The URI of the <code>Track</code>
-     * @param registerUri   The URI of the <code>Register</code>
-     * @param start The timecode representing the beginning of the <code>Segment</code>
-     * 
-     * @return The {@link Individual} representing the created <code>Point</code>
+     * Creates a <code>Point</code> on a given <code>Track</code> expressing a
+     * given <code>Register</code>.
+     *
+     * @param trackUri The URI of the <code>Track</code>
+     * @param registerUri The URI of the <code>Register</code>
+     * @param start The timecode representing the beginning of the
+     * <code>Segment</code>
+     *
+     * @return The {@link Individual} representing the created
+     * <code>Point</code>
      */
     private Individual createPoint(String trackUri, String registerUri, int start) throws NoSuchElementException, NullPointerException {
         String NS = TDBManager.DATAMODEL_NS;
@@ -194,14 +202,17 @@ public class FragmentServlet extends HttpServlet {
     }
 
     /**
-     * Creates a <code>Segment</code> on a given <code>Track</code> expressing a given <code>Register</code>.
-     * 
-     * @param trackUri  The URI of the <code>Track</code>
-     * @param registerUri   The URI of the <code>Register</code>
-     * @param start The timecode representing the beginning of the <code>Segment</code>
-     * @param end   The timecode representing the end of the <code>Segment</code>
-     * 
-     * @return The {@link Individual} representing the created <code>Segment</code>
+     * Creates a <code>Segment</code> on a given <code>Track</code> expressing a
+     * given <code>Register</code>.
+     *
+     * @param trackUri The URI of the <code>Track</code>
+     * @param registerUri The URI of the <code>Register</code>
+     * @param start The timecode representing the beginning of the
+     * <code>Segment</code>
+     * @param end The timecode representing the end of the <code>Segment</code>
+     *
+     * @return The {@link Individual} representing the created
+     * <code>Segment</code>
      */
     private Individual createSegment(String trackUri, String registerUri, int start, int end) throws NoSuchElementException, NullPointerException {
         String NS = TDBManager.DATAMODEL_NS;
@@ -241,13 +252,14 @@ public class FragmentServlet extends HttpServlet {
 
     /**
      * Fetches the <code>ESOStructure</code> of a given <code>Track</code>.
-     * 
-     * Should the structure be missing, it is created and linked to the <code>Track</code>.
-     * 
+     *
+     * Should the structure be missing, it is created and linked to the
+     * <code>Track</code>.
+     *
      * @param model The {@link OntModel} to work on
      * @param track The {@link Individual} representing the <code>Track</code>
-     * 
-     * @return  The {@link Individual} representing the <code>ESOStructure</code>
+     *
+     * @return The {@link Individual} representing the <code>ESOStructure</code>
      */
     private Individual getStructure(OntModel model, Individual track) {
         String NS = TDBManager.DATAMODEL_NS;
@@ -270,9 +282,11 @@ public class FragmentServlet extends HttpServlet {
 
     /**
      * Adds a <code>Fragment</code> to a <code>ESOStructure</code>'s fragments.
-     * 
-     * In an <code>ESOStructure</code>, <code>Fragment</code>s are stored as a linked list. This method iterates over the list until its end, and adds the <code>Fragment</code>.
-     * 
+     *
+     * In an <code>ESOStructure</code>, <code>Fragment</code>s are stored as a
+     * linked list. This method iterates over the list until its end, and adds
+     * the <code>Fragment</code>.
+     *
      * @param model The {@link OntModel} to work on
      * @param structure The <code>ESOStructure</code>
      * @param fragment The <code>Fragment</code> to insert
