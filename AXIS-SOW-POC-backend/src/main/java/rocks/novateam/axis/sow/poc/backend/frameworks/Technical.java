@@ -3,18 +3,11 @@ package rocks.novateam.axis.sow.poc.backend.frameworks;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
 
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.R;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.FileManager;
 import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 
