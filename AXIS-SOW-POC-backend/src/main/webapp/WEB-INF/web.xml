@@ -81,6 +81,17 @@
         <url-pattern>/track</url-pattern>
     </servlet-mapping>
     <!-- End track servlet handling -->
+    
+    <!-- Fragment servlet handling -->
+    <servlet>
+        <servlet-name>FragmentServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.FragmentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FragmentServlet</servlet-name>
+        <url-pattern>/fragment</url-pattern>
+    </servlet-mapping>
+    <!-- End fragment servlet handling -->
     <session-config>
         <session-timeout>
             30
