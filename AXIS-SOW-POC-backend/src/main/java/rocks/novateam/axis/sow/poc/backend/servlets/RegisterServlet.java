@@ -24,8 +24,26 @@ import org.apache.jena.rdf.model.ModelFactory;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
+ * Handles register creation.
  *
- * @author richou
+ * The HTTP request must:
+ * <ul>
+ * <li>Contain a <code>class</code> parameter, containing the URI of the class
+ * for the new track;</li>
+ * <li>Contain a <code>name</code> parameter, containing the name of the new
+ * Register.</li>
+ * </ul>
+ *
+ * The HTTP response will have a <code>"application/json</code> MIME type and
+ * will contain:
+ * <ul>
+ * <li><code>{"status": "ok", "uri": uri}</code> if the request succeeded, where
+ * <code>uri</code> is the new register's URI;</li>
+ * <li><code>{"status: "ko", "message": message}</code> if the request
+ * failed.</li>
+ * </ul>
+ *
+ * @author Richard Degenne
  */
 public class RegisterServlet extends HttpServlet {
 
@@ -106,16 +124,33 @@ public class RegisterServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    /**
+     * Creates a new <code>Register</code> in the triple store.
+     *
+     * This method will also create the associated label.
+     *
+     * <p>
+     * <strong>Warning</strong>: The method does not assert that the given class
+     * is a sub-class of <code>Register</code>. This might result in unexpected
+     * behavior.
+     *
+     * @param classUri The new register's class' URI
+     * @param name The URN to use for the new <code>Register</code>
+     *
+     * @return The created {@link Individual}
+     *
+     * @throws NoSuchElementException When the class could not be found.
+     */
     private Individual createRegister(String classUri, String name) {
         String NS = TDBManager.DATAMODEL_NS;
 
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-        
+
         OntClass class_ = model.getOntClass(classUri);
-        
-        if(class_ == null) {
+
+        if (class_ == null) {
             throw new NoSuchElementException("The requested URI does not exist.");
         }
 
