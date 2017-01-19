@@ -17,7 +17,6 @@ import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -438,16 +437,16 @@ public class RegisterManager {
         Map<String, String> properties = new HashMap<>();
         TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
         mTDBHelper.finish();
-        OntModel model = mTDBHelper.getOntModel();
-        Individual individual = model.getIndividual(uri);
-        if (individual == null) {
+        Individual mIndividual = mTDBHelper.getOntModel().getIndividual(uri);
+        if (mIndividual == null) {
+            System.out.println("This individual doesn't exist");
             return null;
         }
-        StmtIterator exItr = individual.listProperties();
+        StmtIterator exItr = mIndividual.listProperties();
         while (exItr.hasNext()) {
             Property predicate = exItr.next().getPredicate();
             if (predicate.canAs(DatatypeProperty.class)) {
-                properties.put(predicate.getURI(), individual.getPropertyValue(predicate).toString());
+                properties.put(predicate.getURI(), mIndividual.getPropertyValue(predicate).toString());
             }
         }
         return properties;
