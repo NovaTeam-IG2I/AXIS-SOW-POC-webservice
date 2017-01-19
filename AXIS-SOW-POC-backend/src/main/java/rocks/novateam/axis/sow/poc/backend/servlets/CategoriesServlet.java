@@ -7,10 +7,27 @@ package rocks.novateam.axis.sow.poc.backend.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.reasoner.Reasoner;
+import org.apache.jena.reasoner.ReasonerRegistry;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
  *
@@ -29,18 +46,26 @@ public class CategoriesServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        JsonArrayBuilder categories = Json.createArrayBuilder();
+
+        try {
+            for(JsonObject data : getData()) {
+                categories.add(data);
+            }
+            
+            // Build the response object
+            json.add("status", "ok");
+            json.add("categories", categories);
+        } catch (NoSuchElementException ex) {
+            json.add("status", "ko")
+                    .add("message", ex.getMessage());
+        }
+
+        // Send response
+        response.setContentType("application/json");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet CategoriesServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet CategoriesServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            out.println(json.build().toString());
         }
     }
 
@@ -82,5 +107,40 @@ public class CategoriesServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private Iterable<JsonObject> getData() {
+        String NS = TDBManager.DATAMODEL_NS;
+        ArrayList<JsonObject> jsons = new ArrayList<>();
+
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        dataset.begin(ReadWrite.READ);
+        Model base = dataset.getDefaultModel();
+        dataset.end();
+
+        // Build the inferred model
+        Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
+        OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
+        reasoner.bindSchema(base);
+        ontModelSpec.setReasoner(reasoner);
+        OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
+        
+        OntClass registerClass = model.getOntClass(NS+"Register");
+        OntClass current;
+        for(ExtendedIterator<OntClass> i = registerClass.listSubClasses(false) ; i.hasNext() ;) {
+            current = i.next();
+            JsonObjectBuilder json = Json.createObjectBuilder();
+            try {
+            json.add("name", current.getLocalName());
+            json.add("uri", current.getURI());
+            jsons.add(json.build());
+            }
+            catch(NullPointerException ex) {
+                System.out.println("Error: "+ex.getMessage());
+                System.out.println("Skipping...");
+            }
+        }
+        
+        return jsons;
+    }
 
 }
