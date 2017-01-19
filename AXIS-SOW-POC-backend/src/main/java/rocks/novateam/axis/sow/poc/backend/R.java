@@ -51,7 +51,6 @@ public class R {
     /**
      * The prefix used in every SPARQL requests.
      */
-<<<<<<< HEAD
     public static final String PREFIX = "PREFIX rdfs: <" + RDFS_NS + ">\n"
             + "PREFIX rdf: <" + RDF_NS + ">\n"
             + "PREFIX datamodel: <" + DATAMODEL_NS + ">\n"
@@ -130,12 +129,6 @@ public class R {
         public static final Resource MacAtomTag = ResourceFactory.createResource(CREATORATOM_NS + "macAtom");
 
     }
-=======
-    public static final String PREFIX = "PREFIX rdfs: <" + RDFS_NS + ">\n" +
-            "PREFIX rdf: <" + RDF_NS + ">\n" +
-            "PREFIX datamodel: <" + DATAMODEL_NS + ">\n" +
-            "PREFIX cidoc: <" + CIDOC_NS + ">\n" +
-            "PREFIX poc: <" + POC_NS + ">\n";
 
     /**
      * The rdfs label property.
@@ -166,6 +159,5 @@ public class R {
      * The labelproperty.
      */
     public static String LABEL_PROPERTY = "label";
->>>>>>> feature-model
 
 }

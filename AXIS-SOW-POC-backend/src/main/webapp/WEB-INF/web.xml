@@ -92,6 +92,18 @@
         <url-pattern>/fragment</url-pattern>
     </servlet-mapping>
     <!-- End fragment servlet handling -->
+
+    <!-- Register servlet handling -->
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    <!-- End register servlet handling -->
+
     <session-config>
         <session-timeout>
             30

@@ -7,15 +7,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDBFactory;
 import rocks.novateam.axis.sow.poc.backend.Configuration;
@@ -162,8 +158,6 @@ public class TDBManager {
         model.write(out);
     }
     
-    
-
     /**
      * Finds a unique URN for the given name.
      *
