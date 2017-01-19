@@ -30,8 +30,25 @@ import org.apache.jena.util.iterator.ExtendedIterator;
 import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
+ * Lists all available Register subclasses.
  *
- * @author richou
+ * The HTTP response will have a <code>"application/json"</code> MIME type and
+ * will contain:
+ * <ul>
+ * <li><code>{'status': 'ok', 'categories': <em>categories</em>}</code> if the
+ * request succeeded ;</li>
+ * <li><code>{'status': 'ko', 'message': <em>message</em>}</code> if the request
+ * failed.</li>
+ * </ul>
+ *
+ * The <code>categories</code> attribute is an array of objects of the following
+ * form:
+ *
+ * <pre>
+ * {"uri": category URI, "name": cateogry name}
+ * </pre>
+ *
+ * @author Richard Degenne
  */
 public class CategoriesServlet extends HttpServlet {
 
@@ -50,10 +67,10 @@ public class CategoriesServlet extends HttpServlet {
         JsonArrayBuilder categories = Json.createArrayBuilder();
 
         try {
-            for(JsonObject data : getData()) {
+            for (JsonObject data : getData()) {
                 categories.add(data);
             }
-            
+
             // Build the response object
             json.add("status", "ok");
             json.add("categories", categories);
@@ -108,6 +125,15 @@ public class CategoriesServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    /**
+     * Lists all sub-classes of <code>Register</code> present in the triple
+     * store.
+     *
+     * For each sub-class, builds a {@link JsonObject} containing the class'
+     * name and URI.
+     *
+     * @return An {@link Iterable} of {@link JsonObject}s.
+     */
     private Iterable<JsonObject> getData() {
         String NS = TDBManager.DATAMODEL_NS;
         ArrayList<JsonObject> jsons = new ArrayList<>();
@@ -123,23 +149,22 @@ public class CategoriesServlet extends HttpServlet {
         reasoner.bindSchema(base);
         ontModelSpec.setReasoner(reasoner);
         OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
-        
-        OntClass registerClass = model.getOntClass(NS+"Register");
+
+        OntClass registerClass = model.getOntClass(NS + "Register");
         OntClass current;
-        for(ExtendedIterator<OntClass> i = registerClass.listSubClasses(false) ; i.hasNext() ;) {
+        for (ExtendedIterator<OntClass> i = registerClass.listSubClasses(false); i.hasNext();) {
             current = i.next();
             JsonObjectBuilder json = Json.createObjectBuilder();
             try {
-            json.add("name", current.getLocalName());
-            json.add("uri", current.getURI());
-            jsons.add(json.build());
-            }
-            catch(NullPointerException ex) {
-                System.out.println("Error: "+ex.getMessage());
+                json.add("name", current.getLocalName());
+                json.add("uri", current.getURI());
+                jsons.add(json.build());
+            } catch (NullPointerException ex) {
+                System.out.println("Error: " + ex.getMessage());
                 System.out.println("Skipping...");
             }
         }
-        
+
         return jsons;
     }
 
