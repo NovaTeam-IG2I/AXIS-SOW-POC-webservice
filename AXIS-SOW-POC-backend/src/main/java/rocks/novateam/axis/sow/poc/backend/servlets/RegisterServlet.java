@@ -7,10 +7,21 @@ package rocks.novateam.axis.sow.poc.backend.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.NoSuchElementException;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.ModelFactory;
+import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
 
 /**
  *
@@ -29,18 +40,30 @@ public class RegisterServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        String name = request.getParameter("name");
+        String uri = request.getParameter("class");
+
+        if (uri == null || name == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        try {
+            Individual register = createRegister(uri, name);
+
+            // Build the response object
+            json.add("uri", register.getURI());
+            json.add("status", "ok");
+        } catch (NoSuchElementException | NullPointerException ex) {
+            json.add("status", "ko")
+                    .add("message", ex.getMessage());
+        }
+
+        // Send response
+        response.setContentType("application/json");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RegisterServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RegisterServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            out.println(json.build().toString());
         }
     }
 
@@ -83,4 +106,24 @@ public class RegisterServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private Individual createRegister(String classUri, String name) {
+        String NS = TDBManager.DATAMODEL_NS;
+
+        Dataset dataset = TDBManager.getInstance().getDataset();
+        dataset.begin(ReadWrite.WRITE);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
+        
+        OntClass class_ = model.getOntClass(classUri);
+        
+        if(class_ == null) {
+            throw new NoSuchElementException("The requested URI does not exist.");
+        }
+
+        String registerUri = NS + TDBManager.getUniqueURN(model, name);
+        Individual register = class_.createIndividual(registerUri);
+        register.setLabel(name, null);
+        dataset.commit();
+
+        return register;
+    }
 }

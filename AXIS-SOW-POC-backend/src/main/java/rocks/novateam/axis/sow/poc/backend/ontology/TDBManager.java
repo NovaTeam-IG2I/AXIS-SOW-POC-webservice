@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -155,7 +157,32 @@ public class TDBManager {
 
         model.write(out);
     }
-
+    
+    
+    /**
+     * Finds a unique URN for the given name.
+     *
+     * This method will add a numeric suffix to the original URN if necessary.
+     *
+     * @param model     The model to use for the URN resolution
+     * @param name The URN to be looked up
+     * @return A unique URN
+     */
+    public static String getUniqueURN(OntModel model, String name) {
+        String NS = TDBManager.DATAMODEL_NS;
+        
+        Individual individual = model.getIndividual(NS + name);
+        if (individual == null) {
+            return name;
+        }
+        int i = 1;
+        while (individual != null) {
+            individual = model.getIndividual(NS + name);
+            i++;
+        }
+        return name + i;
+    }
+    
     public static void main(String[] args) throws FileNotFoundException {
         TDBManager tdbm = TDBManager.getInstance();
 
