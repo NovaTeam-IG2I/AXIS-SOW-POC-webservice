@@ -103,7 +103,17 @@
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
     <!-- End register servlet handling -->
-
+    
+    <!-- Categories servlet handling -->
+    <servlet>
+        <servlet-name>CategoriesServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.CategoriesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CategoriesServlet</servlet-name>
+        <url-pattern>/categories</url-pattern>
+    </servlet-mapping>
+    <!-- End categories servlet handling -->
     <session-config>
         <session-timeout>
             30
