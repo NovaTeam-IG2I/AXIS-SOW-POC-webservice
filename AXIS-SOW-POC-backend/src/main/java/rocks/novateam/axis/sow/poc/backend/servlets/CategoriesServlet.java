@@ -140,15 +140,7 @@ public class CategoriesServlet extends HttpServlet {
 
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.READ);
-        Model base = dataset.getDefaultModel();
-        dataset.end();
-
-        // Build the inferred model
-        Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
-        OntModelSpec ontModelSpec = OntModelSpec.OWL_MEM;
-        reasoner.bindSchema(base);
-        ontModelSpec.setReasoner(reasoner);
-        OntModel model = ModelFactory.createOntologyModel(ontModelSpec, base);
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, dataset.getDefaultModel());
 
         OntClass registerClass = model.getOntClass(NS + "Register");
         OntClass current;
