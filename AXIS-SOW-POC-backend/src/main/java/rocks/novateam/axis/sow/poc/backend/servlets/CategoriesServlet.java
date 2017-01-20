@@ -141,6 +141,7 @@ public class CategoriesServlet extends HttpServlet {
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.READ);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, dataset.getDefaultModel());
+        dataset.end();
 
         OntClass registerClass = model.getOntClass(NS + "Register");
         OntClass current;

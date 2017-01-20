@@ -143,11 +143,14 @@ public class RegisterServlet extends HttpServlet {
      */
     private Individual createRegister(String classUri, String name) {
         String NS = TDBManager.DATAMODEL_NS;
+        System.out.println("Name: "+name);
+        System.out.println("Class: "+classUri);
 
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
-
+        Individual register = null;
+        try {
         OntClass class_ = model.getOntClass(classUri);
 
         if (class_ == null) {
@@ -155,9 +158,14 @@ public class RegisterServlet extends HttpServlet {
         }
 
         String registerUri = NS + TDBManager.getUniqueURN(model, name);
-        Individual register = class_.createIndividual(registerUri);
+        register = class_.createIndividual(registerUri);
         register.setLabel(name, null);
         dataset.commit();
+        }
+        catch(Exception ex) {
+            System.out.println(ex.getMessage());
+            dataset.abort();
+        }
 
         return register;
     }
