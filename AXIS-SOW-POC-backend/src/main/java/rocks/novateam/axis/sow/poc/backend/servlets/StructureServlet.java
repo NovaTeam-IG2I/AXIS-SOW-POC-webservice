@@ -149,6 +149,7 @@ public class StructureServlet extends HttpServlet {
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.READ);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, dataset.getDefaultModel());
+        dataset.end();
 
         Individual film = model.getIndividual(uri);
         if (film == null) {

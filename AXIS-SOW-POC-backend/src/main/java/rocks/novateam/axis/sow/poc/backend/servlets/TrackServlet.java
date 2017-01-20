@@ -145,7 +145,7 @@ public class TrackServlet extends HttpServlet {
      */
     private Individual createIndexedTrack(String uri, String name) throws NoSuchElementException {
         String NS = TDBManager.DATAMODEL_NS;
-
+        
         Dataset dataset = TDBManager.getInstance().getDataset();
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
