@@ -59,7 +59,18 @@
         <url-pattern>/technical</url-pattern>
     </servlet-mapping>
     <!-- End technical servlet handling -->
-    
+
+    <!-- Clip servlet handling -->
+    <servlet>
+        <servlet-name>ClipServlet</servlet-name>
+        <servlet-class>rocks.novateam.axis.sow.poc.backend.servlets.ClipServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ClipServlet</servlet-name>
+        <url-pattern>/clip</url-pattern>
+    </servlet-mapping>
+    <!-- End clip servlet handling -->
+
     <!-- Export servlet handling -->
     <servlet>
         <servlet-name>ExportServlet</servlet-name>
