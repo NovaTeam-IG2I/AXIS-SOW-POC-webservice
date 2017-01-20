@@ -4,11 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import rocks.novateam.axis.sow.poc.backend.Configuration;
 import rocks.novateam.axis.sow.poc.backend.R;
@@ -27,7 +24,6 @@ import static rocks.novateam.axis.sow.poc.backend.frameworks.Technical.HYPERLINK
 import static rocks.novateam.axis.sow.poc.backend.frameworks.Technical.IMPORT_DATE_PROPERTY;
 import static rocks.novateam.axis.sow.poc.backend.frameworks.Technical.RIGHTS_PROPERTY;
 
-import rocks.novateam.axis.sow.poc.backend.helpers.TechnicalData;
 import rocks.novateam.axis.sow.poc.backend.ontology.RegisterManager;
 
 /**
@@ -48,7 +44,7 @@ public class Clip {
     /**
      * Data contained in the Clip Framework.
      */
-    private Map<String,String> data;
+    private final Map<String,String> data;
 
     /**
      * Gson :JSON generator and serializer.
@@ -74,7 +70,7 @@ public class Clip {
         data = new HashMap<>();
         if(uri == null||uri.isEmpty())
             return;
-        retrieveAllDataButProdTech(uri);
+        retrieveData(uri);
     }
 
     /**
