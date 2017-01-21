@@ -177,7 +177,7 @@ public class FragmentServlet extends HttpServlet {
         // Get the track and find its ESOStructure. Create it if need be.
         Individual track = model.getIndividual(trackUri);
         if (track == null) {
-            throw new NoSuchElementException("The requested URI could not be found.");
+            throw new NoSuchElementException("The requested Track could not be found.");
         }
         Individual structure = getStructure(model, track);
 
@@ -189,7 +189,7 @@ public class FragmentServlet extends HttpServlet {
         Property expresses = model.getProperty(NS + "expresses");
         Individual register = model.getIndividual(registerUri);
         if (register == null) {
-            throw new NoSuchElementException("The requested URI could not be found.");
+            throw new NoSuchElementException("The requested Register could not be found.");
         }
         point.addProperty(expresses, register);
 
@@ -224,7 +224,7 @@ public class FragmentServlet extends HttpServlet {
         // Get the track and find its ESOStructure. Create it if need be.
         Individual track = model.getIndividual(trackUri);
         if (track == null) {
-            throw new NoSuchElementException("The requested URI could not be found.");
+            throw new NoSuchElementException("The requested Track could not be found.");
         }
         Individual structure = getStructure(model, track);
 
@@ -238,7 +238,7 @@ public class FragmentServlet extends HttpServlet {
         Property expresses = model.getProperty(NS + "expresses");
         Individual register = model.getIndividual(registerUri);
         if (register == null) {
-            throw new NoSuchElementException("The requested URI could not be found.");
+            throw new NoSuchElementException("The requested Register could not be found.");
         }
         segment.addProperty(expresses, register);
 
@@ -264,9 +264,6 @@ public class FragmentServlet extends HttpServlet {
     private Individual getStructure(OntModel model, Individual track) {
         String NS = TDBManager.DATAMODEL_NS;
 
-        if (track == null) {
-            throw new NoSuchElementException("The requested URI does not exist.");
-        }
         Property isDefinedByStructure = model.getProperty(NS + "isDefinedByStructure");
         Individual structure;
         try {
