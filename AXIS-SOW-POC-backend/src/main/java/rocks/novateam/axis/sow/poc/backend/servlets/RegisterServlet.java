@@ -150,10 +150,10 @@ public class RegisterServlet extends HttpServlet {
         dataset.begin(ReadWrite.WRITE);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, dataset.getDefaultModel());
         Individual register = null;
-        try {
         OntClass class_ = model.getOntClass(classUri);
 
         if (class_ == null) {
+            dataset.abort();
             throw new NoSuchElementException("The requested URI does not exist.");
         }
 
@@ -161,11 +161,6 @@ public class RegisterServlet extends HttpServlet {
         register = class_.createIndividual(registerUri);
         register.setLabel(name, null);
         dataset.commit();
-        }
-        catch(Exception ex) {
-            System.out.println(ex.getMessage());
-            dataset.abort();
-        }
 
         return register;
     }

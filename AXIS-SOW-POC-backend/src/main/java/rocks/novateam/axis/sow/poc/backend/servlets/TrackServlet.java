@@ -152,6 +152,7 @@ public class TrackServlet extends HttpServlet {
 
         Individual film = model.getIndividual(uri);
         if (film == null) {
+            dataset.abort();
             throw new NoSuchElementException("The requested URI does not exist.");
         }
 

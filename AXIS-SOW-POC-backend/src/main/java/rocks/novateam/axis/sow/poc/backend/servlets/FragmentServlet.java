@@ -36,14 +36,17 @@ import rocks.novateam.axis.sow.poc.backend.ontology.TDBManager;
  * <code>"segment"</code>;</li>
  * </ul>
  *
- * <p><strong>If <code>type</code> is <code>"Point"</code></strong>, the request
+ * <p>
+ * <strong>If <code>type</code> is <code>"Point"</code></strong>, the request
  * must contain a <code>start</code> field containing the Point's timestamp.</p>
  *
- * <p><strong>If <code>type</code> is <code>"Segment"</code></strong>, the request
+ * <p>
+ * <strong>If <code>type</code> is <code>"Segment"</code></strong>, the request
  * must contain <code>start</code> and <code>end</code> fields containing the
  * Segment's timestamps.</p>
  *
- * <p>The HTTP response will have a <code>"application/json"</code> MIME type and
+ * <p>
+ * The HTTP response will have a <code>"application/json"</code> MIME type and
  * will contain:
  * <ul>
  * <li><code>{"status": "ok", "uri": uri}</code> if the request succeeded, where
@@ -177,6 +180,7 @@ public class FragmentServlet extends HttpServlet {
         // Get the track and find its ESOStructure. Create it if need be.
         Individual track = model.getIndividual(trackUri);
         if (track == null) {
+            dataset.abort();
             throw new NoSuchElementException("The requested Track could not be found.");
         }
         Individual structure = getStructure(model, track);
@@ -189,6 +193,7 @@ public class FragmentServlet extends HttpServlet {
         Property expresses = model.getProperty(NS + "expresses");
         Individual register = model.getIndividual(registerUri);
         if (register == null) {
+            dataset.abort();
             throw new NoSuchElementException("The requested Register could not be found.");
         }
         point.addProperty(expresses, register);
@@ -224,6 +229,7 @@ public class FragmentServlet extends HttpServlet {
         // Get the track and find its ESOStructure. Create it if need be.
         Individual track = model.getIndividual(trackUri);
         if (track == null) {
+            dataset.abort();
             throw new NoSuchElementException("The requested Track could not be found.");
         }
         Individual structure = getStructure(model, track);
@@ -238,6 +244,7 @@ public class FragmentServlet extends HttpServlet {
         Property expresses = model.getProperty(NS + "expresses");
         Individual register = model.getIndividual(registerUri);
         if (register == null) {
+            dataset.abort();
             throw new NoSuchElementException("The requested Register could not be found.");
         }
         segment.addProperty(expresses, register);

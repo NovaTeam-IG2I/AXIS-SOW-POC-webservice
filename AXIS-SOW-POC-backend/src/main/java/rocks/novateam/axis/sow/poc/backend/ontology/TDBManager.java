@@ -174,12 +174,14 @@ public class TDBManager {
         if (individual == null) {
             return name;
         }
-        int i = 1;
-        while (individual != null) {
-            individual = model.getIndividual(NS + name);
+        int i = 0;
+        String newName = null;
+        while(individual != null) {
             i++;
+            newName = name+i;
+            individual = model.getIndividual(NS+newName);
         }
-        return name + i;
+        return newName;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
