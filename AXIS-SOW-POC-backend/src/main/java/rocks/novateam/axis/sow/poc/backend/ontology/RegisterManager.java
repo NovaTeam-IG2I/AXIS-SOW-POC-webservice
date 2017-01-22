@@ -480,7 +480,7 @@ public class RegisterManager {
                 } else {
                     labelPos = pUri.lastIndexOf("/");
                 }
-                properties.put(pUri.substring(labelPos), mIndividual.getPropertyValue(predicate).toString());
+                properties.put(pUri.substring(labelPos+1), mIndividual.getPropertyValue(predicate).toString());
             }
         }
         return properties;
