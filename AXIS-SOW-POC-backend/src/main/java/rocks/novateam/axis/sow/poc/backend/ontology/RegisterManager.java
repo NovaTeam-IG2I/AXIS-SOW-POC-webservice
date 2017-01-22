@@ -453,6 +453,34 @@ public class RegisterManager {
     }
 
     /**
+     * This function gives a map with all properties (and their values) of a
+     * given individual.
+     *
+     * @param uri The individual's uri
+     * @return A map with property names as keys and property values as values or
+     * null if the Individual is not found. Only DatatypeProperties are added
+     */
+    public Map<String, String> getPropertiesOfAnIndividualWithLabel(String uri) {
+        Map<String, String> properties = new HashMap<>();
+        TDBHelper mTDBHelper = new TDBHelper(ReadWrite.READ, false);
+        mTDBHelper.finish();
+        Individual mIndividual = mTDBHelper.getOntModel().getIndividual(uri);
+        if (mIndividual == null) {
+            System.out.println("This individual doesn't exist");
+            return null;
+        }
+        StmtIterator exItr = mIndividual.listProperties();
+        while (exItr.hasNext()) {
+            Property predicate = exItr.next().getPredicate();
+            if (predicate.canAs(DatatypeProperty.class)) {
+                String pUri = predicate.getURI();
+                properties.put(pUri.substring(pUri.lastIndexOf("#")), mIndividual.getPropertyValue(predicate).toString());
+            }
+        }
+        return properties;
+    }
+
+    /**
      * This function give a map with all properties (and their values) of a
      * given individual. This method construct the uri with the given name
      *

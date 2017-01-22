@@ -98,7 +98,7 @@ public class Clip {
     private void retrieveData(String uri)
     {
         RegisterManager manager = new RegisterManager();
-        Map<String, String> values = manager.getPropertiesOfAnIndividual(uri);
+        Map<String, String> values = manager.getPropertiesOfAnIndividualWithLabel(uri);
         if(values == null) {
             System.out.println("No value found");
             return;
