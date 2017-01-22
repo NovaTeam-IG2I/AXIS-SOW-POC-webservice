@@ -474,7 +474,13 @@ public class RegisterManager {
             Property predicate = exItr.next().getPredicate();
             if (predicate.canAs(DatatypeProperty.class)) {
                 String pUri = predicate.getURI();
-                properties.put(pUri.substring(pUri.lastIndexOf("#")), mIndividual.getPropertyValue(predicate).toString());
+                int labelPos = 0;
+                if(pUri.contains("#")){
+                    labelPos = pUri.lastIndexOf("#");
+                } else {
+                    labelPos = pUri.lastIndexOf("/");
+                }
+                properties.put(pUri.substring(labelPos), mIndividual.getPropertyValue(predicate).toString());
             }
         }
         return properties;
@@ -488,7 +494,7 @@ public class RegisterManager {
      * @return A map with property names as keys and property values as values
      */
     public Map<String, String> getPropertiesOfAnIndividualByIndividualName(String individualName) {
-        return getPropertiesOfAnIndividual(NS + individualName);
+        return getPropertiesOfAnIndividualWithLabel(NS + individualName);
     }
 
     /**
