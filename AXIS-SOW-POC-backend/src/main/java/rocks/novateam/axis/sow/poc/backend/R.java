@@ -75,6 +75,12 @@ public class R {
     public static final String CREATORATOM_NS = "http://ns.adobe.com/creatorAtom/1.0/";
     public static final String TMFILMV2_NS = "http://ns.adobe.com/dva/dynamic/TM-Film-v2/1.0/";
 
+    public static class RDF {
+
+        public static final Resource DESCRIPTION_TAG = ResourceFactory.createResource(RDF_NS + "Description");
+
+    }
+
     public static class XMP {
 
         public static final Property CREATEDATE = ResourceFactory.createProperty(XMP_NS + "CreateDate");
@@ -92,7 +98,8 @@ public class R {
         public static final Resource ALTTIMECODE_TAG = ResourceFactory.createResource(XMPDM_NS + "altTimecode");
         public static final Resource DURATION_TAG = ResourceFactory.createResource(XMPDM_NS + "duration");
         public static final Resource TRACKS_TAG = ResourceFactory.createResource(XMPDM_NS + "Tracks");
-
+        public static final Resource MARKERS_TAG = ResourceFactory.createResource(XMPDM_NS + "markers");
+        
         public static final Property VIDEOFRAMERATE = ResourceFactory.createProperty(XMPDM_NS + "videoFrameRate");
         public static final Property STARTTIME = ResourceFactory.createProperty(XMPDM_NS + "startTime");
         public static final Property DURATION = ResourceFactory.createProperty(XMPDM_NS + "duration");
@@ -104,6 +111,7 @@ public class R {
         public static final Property STARTTIMESAMPLESIZE = ResourceFactory.createProperty(XMPDM_NS + "startTimeSampleSize");
         public static final Property VIDEOFIELDORDER = ResourceFactory.createProperty(XMPDM_NS + "videoFieldOrder");
         public static final Property VIDEOPIXELASPECTRATIO = ResourceFactory.createProperty(XMPDM_NS + "videoPixelAspectRatio");
+        public static final Property TRACKTYPE = ResourceFactory.createProperty(XMPDM_NS + "trackType");
 
     }
 

@@ -24,8 +24,9 @@ public class TestMetadataQuery {
          * rdf file from it, and finally store the rdf/xml content in the TDB
          */
         MetadataQuery meta = new MetadataQuery(new File(RDF_FILE_PATH));
-        System.out.println(meta.getVideoFrameRate().toString());
+        //System.out.println(meta.getVideoFrameRate().toString());
         System.out.println(meta.getComments().toString());
+        //System.out.println(meta.getDuration().toString());
     }
 
 }
