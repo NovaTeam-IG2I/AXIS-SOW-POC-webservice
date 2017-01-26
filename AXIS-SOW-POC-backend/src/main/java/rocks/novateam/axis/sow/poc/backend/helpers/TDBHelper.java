@@ -37,7 +37,7 @@ public final class TDBHelper {
         this.mDataset = mTDBManager.getDataset();
         this.mDataset.begin(this.mReadWrite);
         this.mModel = mDataset.getDefaultModel();
-        this.mOntModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, mModel);
+        this.mOntModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, mModel);
     }
 
     /**
