@@ -548,7 +548,7 @@ public class RegisterManager {
     }
 
     /**
-     * Checks if a given predicate exists. This public method can be use to
+     * Checks if a given predicate exists. This public method can be used to
      * check whether a predicate exists or not.
      *
      * @param uri The predicate uri to look up
